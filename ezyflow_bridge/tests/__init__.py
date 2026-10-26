@@ -12,6 +12,7 @@ from . import (
     test_freeze,
     test_fulfilment_rights,
     test_group_by,
+    test_help_page,
     test_offer,
     test_order_rights,
     test_product_rights,

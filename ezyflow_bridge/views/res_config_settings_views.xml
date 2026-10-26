@@ -2,7 +2,8 @@
 <odoo>
     <!--
         The EzyFlow page of the Settings, the one place an administrator
-        configures the bridge (ADR 0020): the Connector block shows the three
+        configures the bridge (ADR 0020): the Help block opens the bridge help
+        page (ADR 0030); the Connector block shows the three
         wake-up keys (ADR 0006), database-wide system parameters, the secret
         behind the password widget; one setting per WMS constraint (ADR 0017),
         Apply stock reports (ADR 0018) and the proforma report (ADR 0016) are
@@ -23,6 +24,27 @@
                     name="ezyflow_bridge"
                     logo="/ezyflow_bridge/static/description/icon.png"
                 >
+                    <!-- The bridge help page (ADR 0030), first: the one document for
+                         the administrator, shown here and from Apps. No setting. -->
+                    <block
+                        title="Help"
+                        name="ezy_help"
+                        help="How to configure the bridge and what people meet on Odoo's screens, in one page."
+                    >
+                        <setting
+                            id="ezy_help"
+                            string="EzyFlow bridge help"
+                            help="The same page is shown from Apps, on the EzyFlow bridge module."
+                        >
+                            <button
+                                name="%(action_ezyflow_bridge_help)d"
+                                type="action"
+                                string="Open the EzyFlow bridge help"
+                                class="btn-link"
+                                icon="oi-arrow-right"
+                            />
+                        </setting>
+                    </block>
                     <block
                         title="Connector"
                         name="ezy_connector"

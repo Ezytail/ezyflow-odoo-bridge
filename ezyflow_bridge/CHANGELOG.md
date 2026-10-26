@@ -25,6 +25,31 @@ release that changes the bridge.
 | 3.8.3 | v0.8.2 (2026-10-23) | v0.8.2 |
 | 3.9.0 | not released yet | — |
 | 3.10.0 | not released yet | — |
+| 3.11.0 | not released yet | — |
+
+## 3.11.0
+
+The bridge help page, the one document for the Odoo administrator, shown
+inside Odoo (ADR 0030).
+
+- `static/description/index.html`: the page Odoo renders as the module's
+  description, in two parts, Configure (what the administrator does inside
+  Odoo) and Run (what people meet on Odoo's screens). English, present tense,
+  text and two tables, no screenshot. Odoo reads the file on every render, so
+  the page follows the installed zip without an upgrade step.
+- A **Help** block, first in the EzyFlow page of the Settings, holding one
+  button, **Open the EzyFlow bridge help**: a window action
+  (`action_ezyflow_bridge_help`) that opens the bridge's own module record in a
+  dialog on a form view of the bridge's own
+  (`ir_module_module_view_form_ezyflow_help`), showing the rendered description
+  and nothing else, no Upgrade or Uninstall header, no tabs. The block adds no
+  setting (ADR 0020 holds as it is).
+- The README is cut to the developer's sections (What it ships, Behaviours,
+  Conventions); its Installing, Settings and Multi-currency orders sections are
+  replaced by one line pointing at the page.
+- No new field, no new right (the action and the view are reachable by the
+  Administration, Settings group, as Apps and the settings page are), no
+  migration. A minor version for the view, the action and the block.
 
 ## 3.10.0
 

@@ -4,7 +4,7 @@
     "summary": "Fields and behaviours the EzyFlow connector needs, nothing else",
     # Series-less on purpose (ADR 0015): Odoo prepends its own series when it
     # records the installed version, so one tree serves Odoo 19 and Odoo 20.
-    "version": "3.10.0",
+    "version": "3.11.0",
     "category": "Supply Chain",
     "author": "Ezytail",
     "website": "https://github.com/Ezytail/ezyflow-odoo",
@@ -18,6 +18,7 @@
         "views/sale_order_views.xml",
         "views/res_partner_views.xml",
         "views/delivery_carrier_views.xml",
+        "views/ir_module_module_views.xml",
         "views/res_config_settings_views.xml",
         "views/product_views.xml",
     ],

@@ -5,24 +5,12 @@ on: the fields and behaviours the connector needs and nothing else. It lives in 
 connector's repository and is versioned and tagged with the service image; the
 Odoo side installs the tagged version the image was built against.
 
-## Installing
-
-Each GitHub release of the connector attaches `ezyflow_bridge-<version>.zip`
-next to the image of the same version. Unzip it into a directory on Odoo's
-addons path (the `ezyflow_bridge/` folder is at the zip's root), update the
-apps list and install **EzyFlow bridge**; upgrade with `-u ezyflow_bridge`.
-The same zip installs on Odoo 19 and Odoo 20. The repository
-README covers the connector user and its key; everything else is set on the
-EzyFlow settings page (below).
-
-On Odoo 20 the Apps screen lists a module only as an official app or an
-industry download; the "All" entry of its panel is hidden. A command-line
-install on an existing database (`odoo -d <db> -i ezyflow_bridge`) registers
-the module before that type field exists in the registry, so the row gets no
-type and the bridge, installed and working, never shows in Apps; "Update Apps
-List" does not repair it. Since 3.3.1 the post-install hook sets the type, and
-`-u ezyflow_bridge` repairs an older install through the 3.3.1 migration
-(`hooks.py`). Odoo 19 has no such field.
+This README is the developer's document. The Odoo administrator's document is
+the bridge help page (ADR 0030), `static/description/index.html`, shown in
+Odoo from Apps and from the **Help** block of the EzyFlow settings page: how to
+install and upgrade, the connector user and its key, the settings page block by
+block, the operation types, what the publication names by id, and what people
+meet on Odoo's screens. Nothing of it is repeated here.
 
 ## What it ships
 
@@ -43,7 +31,7 @@ List" does not repair it. Since 3.3.1 the post-install hook sets the type, and
   company is visible to every company of the database.
 - Three system parameters, shipped empty: `ezyflow.activity` (the activity),
   `ezyflow.wakeup_url` and `ezyflow.wakeup_secret`, set from the
-  Connector block of the EzyFlow settings page (below).
+  Connector block of the EzyFlow settings page (ADR 0020).
 - The contract: closed sets and the channel code in `models/contract.py`, on
   four models. A channel is a code, not a fixed list: 1 to 32 capital letters,
   digits, hyphens or underscores (`^[A-Z0-9_-]{1,32}$`), such as WEB, PRO or
@@ -62,7 +50,7 @@ List" does not repair it. Since 3.3.1 the post-install hook sets the type, and
   reports** (`ezy_apply_stock_reports`, since 3.6.0), off by default,
   and the proforma report (`ezy_proforma_report_id`, since 3.8.0), a
   sales order report, Odoo's pro forma when empty, all on the EzyFlow page of
-  the Settings (below).
+  the Settings (ADR 0020).
 - The shop identity (`ezy_shop_product_id` on the product template, `ezy_shop_variant_id` on the
   variant): the id the product has in the web shop, indexed, not copied on duplicate, shown on
   the product forms.
@@ -76,7 +64,10 @@ List" does not repair it. Since 3.3.1 the post-install hook sets the type, and
   upgraded to 3.7.0.
 - The behaviours behind those fields, listed below.
 - The **EzyFlow** page of the Settings, with its own icon
-  (`static/description/icon.png`).
+  (`static/description/icon.png`), and the bridge help page
+  (`static/description/index.html`, ADR 0030) that its **Help** block opens
+  through `action_ezyflow_bridge_help` on a form view of the bridge's own
+  (`views/ir_module_module_views.xml`).
 - Odoo tests for every behaviour, tagged `post_install`, run in the
   connector's Testcontainers job on every supported Odoo series.
 
@@ -224,91 +215,6 @@ List" does not repair it. Since 3.3.1 the post-install hook sets the type, and
     names (one for duties, one for import fees); they count in the total. Both
     fields are plain fields of the sales order: the connector's existing rights
     on sales orders cover them, read and write on the total, read on the flag.
-
-## Settings
-
-**Settings > EzyFlow** is the bridge's own page (an `<app>` of the settings
-form, the same markup on Odoo 19 and 20) and the one documented place
-to configure the bridge. Like the rest of the Settings it is reachable
-by the Administration, Settings group only; the connector user never sees it.
-System Parameters (developer mode) stays an escape hatch for scripts and
-support.
-
-Its **Connector** block (since 3.8.0) shows the three wake-up keys of behaviour
-9, one set for the whole database whichever company is selected: **Activity**
-(`ezyflow.activity`), **Wake-up URL** (`ezyflow.wakeup_url`) and **Wake-up
-secret** (`ezyflow.wakeup_secret`), the last behind a password field. They stay
-system parameters, read and written through settings fields declared with
-`config_parameter`, so an upgrade changes nothing for a value already set.
-Saving the page without touching the secret keeps it. Clearing it and saving
-clears the parameter: the bridge then signs with an empty secret, the connector
-answers 401 to every wake-up, and the publication is polled on its interval
-only. The password field only masks the secret in the administrator's browser,
-which System Parameters already shows to the same group.
-
-Its **WMS constraints**
-block shows one setting per switch of behaviour 8, for the current company. A
-company turns off what its WMS does not need; the figures themselves are not
-editable. Until 3.4.0 the bridge had two switches
-in the Inventory settings, `ezy_check_product_constraints` and
-`ezy_check_partner_constraints`; the 3.5.0 migration carries their values onto
-the switches they covered (internal reference length and requirement, product
-name; partner name, street) and leaves every other switch on.
-
-Its **Stock** block (since 3.6.0) shows **Apply stock reports**, a switch of the
-current company, off at install and at upgrade. Off, the connector
-writes every figure of a WMS stock report, stale zeros included, as a pending
-count that a person reviews and applies from the physical inventory, and Odoo
-republishes nothing for the report. On, the report is applied as before, unless
-the publication turned `overwrite_stock` off. WMS movements are always applied;
-one applied on a cell clears the pending count there. The connector user reads
-the switch with its internal-user rights, once the bridge's installed contract
-version (`ir.module.module`) says it exists; a bridge without the switch reads
-as off.
-
-Its **Documents** block (since 3.8.0) shows the **Proforma report** of the
-current company: the sales order report the connector renders as the Proforma
-of the company's orders (`ezy_render_proforma` on the sales order) and
-forwards to the WMS for shipment paperwork. The list offers sales order reports
-only; empty, the render uses Odoo's pro forma invoice
-(`sale.report_saleorder_pro_forma`). The render reads the report from the
-order's company, not from the user's, so a database with two companies sets each
-one by switching company on the page. The list restricts the form,
-not what RPC or an import writes: a report of another model renders Odoo's pro
-forma with a logged warning. Deleting the chosen report empties the field. Every
-internal user can read the field, the connector user included. Until 3.7.1 the
-report was a system parameter; the 3.8.0 migration copies its value onto every
-company that has none yet, drops a value that names no sales order report with a
-logged warning, and deletes the parameter.
-
-## Multi-currency orders
-
-What the Odoo administrator configures for a tenant whose shop sells in the
-customer's currency (behaviour 12; the connector configures none of it):
-
-- The currencies, active, with a rate provider or rates kept by hand
-  (Accounting or Invoicing settings). Exchange differences between Odoo's rate
-  and the shop's payout are Odoo's accounting, not the connector's.
-- One price list per currency, and one per currency and channel where the
-  tenant prices channels apart, of the company or shared. The publication names
-  each one with its currency and channel; the list gives the order its currency
-  and nothing else, the shop's amounts are written as they are. A list whose
-  currency is not the one the publication says for it refuses the publication
-  at activation.
-- Two service products for the duties and the import fees a DDP sale collects at
-  checkout, with the income account and taxes accounting wants; the publication
-  names them by id. A product that is not a service, or archived, refuses the
-  publication at activation.
-- For a tenant registered for VAT in the destination country (a Swiss VAT
-  number for DDP sales to Switzerland): a fiscal position for that country with
-  its foreign VAT number and tax mapping, auto-applied by country. The quotation,
-  the proforma and the invoice print the position's foreign VAT number in place
-  of the company's.
-- A tenant whose publication names no price list accepts orders in the company
-  currency only, and Odoo still gives a customer's order the price list set on
-  the customer, else the company's default list: keep the default list in the
-  company currency and do not set a price list in another currency on a
-  customer of such a tenant.
 
 ## Conventions
 
