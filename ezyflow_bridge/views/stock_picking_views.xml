@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Behaviour 7: the WMS state is read-only in the header and the list; a
+         person offers a transfer of a manual operation type with the button. -->
+    <record id="view_picking_form_ezyflow" model="ir.ui.view">
+        <field name="name">stock.picking.form.ezyflow</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//header/field[@name='state'][1]" position="before">
+                <field name="ezy_logistics_mode" invisible="1" />
+                <field name="ezy_is_frozen" invisible="1" />
+                <button
+                    name="action_ezy_offer_to_logistics"
+                    string="Offer to logistics"
+                    type="object"
+                    groups="stock.group_stock_user"
+                    invisible="ezy_wms_state or ezy_hold or ezy_logistics_mode != 'manual' or picking_type_code == 'internal' or state not in ('confirmed', 'assigned')"
+                />
+                <field name="ezy_wms_state" widget="badge" readonly="1" />
+            </xpath>
+            <xpath expr="//div[@role='alert'][1]" position="before">
+                <div class="alert alert-warning" role="alert" invisible="not ezy_is_frozen">
+                    This transfer is in the hands of the WMS: Odoo neither reserves nor
+                    unreserves it, and only the EzyFlow connector may change its lines.
+                </div>
+            </xpath>
+            <xpath expr="//field[@name='picking_type_id']" position="after">
+                <field name="ezy_channel" readonly="state in ('cancel', 'done')" />
+                <field name="ezy_hold" readonly="state in ('cancel', 'done')" />
+                <field name="ezy_final_recipient_id" readonly="state in ('cancel', 'done')" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="vpicktree_ezyflow" model="ir.ui.view">
+        <field name="name">stock.picking.list.ezyflow</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.vpicktree" />
+        <field name="arch" type="xml">
+            <field name="state" position="after">
+                <field
+                    name="ezy_wms_state"
+                    optional="show"
+                    widget="badge"
+                    readonly="1"
+                    decoration-danger="ezy_wms_state in ('refused_by_logistics', 'cancelled_by_logistics')"
+                    decoration-success="ezy_wms_state == 'shipped'"
+                    decoration-info="ezy_wms_state == 'ready_for_logistics'"
+                />
+                <field name="ezy_hold" optional="hide" />
+                <field name="ezy_channel" optional="hide" />
+            </field>
+        </field>
+    </record>
+</odoo>

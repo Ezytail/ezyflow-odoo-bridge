@@ -1,0 +1,15 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_ir_module_module_ezyflow_connector,ir.module.module read for the EzyFlow connector,base.model_ir_module_module,group_ezyflow_connector,1,0,0,0
+access_sale_order_ezyflow_connector,sale.order read write create for the EzyFlow connector,sale.model_sale_order,group_ezyflow_connector,1,1,1,0
+access_sale_order_line_ezyflow_connector,sale.order.line read write create for the EzyFlow connector,sale.model_sale_order_line,group_ezyflow_connector,1,1,1,0
+access_purchase_order_ezyflow_connector,purchase.order read for the EzyFlow connector,purchase.model_purchase_order,group_ezyflow_connector,1,0,0,0
+access_delivery_carrier_ezyflow_connector,delivery.carrier read create for the EzyFlow connector,delivery.model_delivery_carrier,group_ezyflow_connector,1,0,1,0
+access_res_partner_ezyflow_connector,res.partner read write create for the EzyFlow connector,base.model_res_partner,group_ezyflow_connector,1,1,1,0
+access_product_template_ezyflow_connector,product.template read write create for the EzyFlow connector,product.model_product_template,group_ezyflow_connector,1,1,1,0
+access_product_product_ezyflow_connector,product.product read write create for the EzyFlow connector,product.model_product_product,group_ezyflow_connector,1,1,1,0
+access_product_pricelist_ezyflow_connector,product.pricelist read for the EzyFlow connector,product.model_product_pricelist,group_ezyflow_connector,1,0,0,0
+access_product_pricelist_item_ezyflow_connector,product.pricelist.item read write create for the EzyFlow connector,product.model_product_pricelist_item,group_ezyflow_connector,1,1,1,0
+access_product_attribute_ezyflow_connector,product.attribute read create for the EzyFlow connector,product.model_product_attribute,group_ezyflow_connector,1,0,1,0
+access_product_attribute_value_ezyflow_connector,product.attribute.value read create for the EzyFlow connector,product.model_product_attribute_value,group_ezyflow_connector,1,0,1,0
+access_product_template_attribute_line_ezyflow_connector,product.template.attribute.line read write create for the EzyFlow connector,product.model_product_template_attribute_line,group_ezyflow_connector,1,1,1,0
+access_product_template_attribute_value_ezyflow_connector,product.template.attribute.value read write create for the EzyFlow connector,product.model_product_template_attribute_value,group_ezyflow_connector,1,1,1,0

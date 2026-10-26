@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- S4: the connector writes and creates sales order lines only on orders
+         that have a transfer in the hand-off with the WMS; S5 adds the lines of
+         draft orders, the ones it creates from shop orders. Every other order's
+         lines stay read-only to it (least privilege, ADR 0013). -->
+    <record id="rule_sale_order_line_ezyflow_connector" model="ir.rule">
+        <field name="name">EzyFlow connector: lines of draft orders and of orders in the WMS hand-off</field>
+        <field name="model_id" ref="sale.model_sale_order_line" />
+        <field name="groups" eval="[(4, ref('group_ezyflow_connector'))]" />
+        <field name="domain_force">["|", ("order_id.state", "=", "draft"), ("order_id.picking_ids.ezy_wms_state", "!=", False)]</field>
+        <field name="perm_read" eval="False" />
+        <field name="perm_write" eval="True" />
+        <field name="perm_create" eval="True" />
+        <field name="perm_unlink" eval="False" />
+    </record>
+
+    <!-- S5: the connector writes a sales order (its state, at a shop
+         cancellation) only when the order carries an origin, the mark of an
+         order it created from a shop or a hand-off references. A quotation a
+         person types in Odoo has none and stays theirs (ADR 0013). -->
+    <record id="rule_sale_order_ezyflow_connector" model="ir.rule">
+        <field name="name">EzyFlow connector: writes on orders that carry an origin</field>
+        <field name="model_id" ref="sale.model_sale_order" />
+        <field name="groups" eval="[(4, ref('group_ezyflow_connector'))]" />
+        <field name="domain_force">[("origin", "!=", False)]</field>
+        <field name="perm_read" eval="False" />
+        <field name="perm_write" eval="True" />
+        <field name="perm_create" eval="False" />
+        <field name="perm_unlink" eval="False" />
+    </record>
+</odoo>

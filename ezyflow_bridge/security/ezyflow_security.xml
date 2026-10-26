@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record model="ir.module.category" id="module_category_ezyflow">
+        <field name="name">EzyFlow</field>
+        <field name="description">Access rights of the EzyFlow connector.</field>
+        <field name="sequence">60</field>
+    </record>
+
+    <record model="res.groups.privilege" id="res_groups_privilege_ezyflow">
+        <field name="name">EzyFlow</field>
+        <field name="category_id" ref="module_category_ezyflow" />
+    </record>
+
+    <!--
+        The connector user of a publication is a member of this group and nothing
+        more. The group only implies the internal-user rights; each slice adds the
+        implied functional groups it needs (ADR 0013, least privilege).
+
+        api_key_duration lets an administrator mint a ten-year API key through
+        Odoo's own API-key screen (ADR 0013): the connector user never gets
+        Settings rights and no custom code touches key generation.
+    -->
+    <record id="group_ezyflow_connector" model="res.groups">
+        <field name="name">EzyFlow connector</field>
+        <field name="privilege_id" ref="res_groups_privilege_ezyflow" />
+        <!-- S1: the connector reads transfers and operation types and writes the
+             WMS state (a stock user's rights); it gets no manager right. S2 adds
+             read access to sales orders, purchase orders and carriers through
+             ir.model.access.csv rather than a sales or purchase group, so no
+             group-scoped record rule hides another person's orders from it. S4
+             adds write and create on sales order lines the same way: validating
+             a delivery that carries a product the order did not name makes core
+             sale_stock add the line to the order, and the connector user is the
+             one validating. The record rule below narrows that right to the
+             lines of orders in the hand-off; the alternatives (a sudo inside a
+             bridge override of the validation, or a sales group) were set aside
+             because an override would track sale_stock at every upgrade (ADR 0011)
+             and a sales group would scope the connector's view of orders. S5
+             adds, the same way, create and write on partners (customers, their
+             addresses, relay points), on sales orders (created from shop
+             orders, cancelled from the shop), on products (customs data, the
+             service product of a carrier it creates) and create on carriers;
+             the line rule widens to draft orders, and a rule narrows the
+             writes on sales orders to the ones that carry an origin (the mark
+             of an order created from a shop). Partners and products cannot be
+             narrowed the same way: a customer or a variant has no field that
+             says the connector made it, and the flows must find and update
+             the ones people made (an address, a variant's customs data).
+             Never unlink. Odoo 20's own sale_stock lets every stock user
+             update any sales order and any sales order line, and ir.access
+             permissions add up, so there the bridge's rules only narrow the
+             creates; the write narrowing holds on Odoo 19.
+             S6 adds read on price lists and read, write and create on their
+             items (the price sink writes variant-level items), create on
+             attributes and attribute values (the product flows create the
+             ones a shop variant names), and write and create on template
+             attribute lines and values (a product's variants). Never unlink:
+             a variant leaves the catalogue by archiving. -->
+        <field name="implied_ids" eval="[(4, ref('base.group_user')), (4, ref('stock.group_stock_user'))]" />
+        <field name="api_key_duration">3650</field>
+        <field name="comment">
+            Technical user a publication of the EzyFlow connector acts as. Holder of
+            the long-dated API key the portal stores as the publication's secret.
+        </field>
+    </record>
+
+    <!-- Access rights and the S4 record rule are series-specific (ADR 0015):
+         Odoo 19 declares them as ir.model.access rows plus an ir.rule, Odoo 20
+         merged both into ir.access. The bridge loads security/odoo<series>/
+         through this call, on install and on every update, so the xml ids stay
+         owned by the module. -->
+    <function model="ezyflow.bridge.security" name="load_series_security" />
+</odoo>

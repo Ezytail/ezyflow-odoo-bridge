@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_order_form_ezyflow" model="ir.ui.view">
+        <field name="name">sale.order.form.ezyflow</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='other_information']//field[@name='team_id']" position="after">
+                <field name="ezy_channel" />
+                <field name="ezy_final_recipient_id" />
+            </xpath>
+        </field>
+    </record>
+
+    <!-- The delivery status already shows the WMS values through the extended
+         selection; the list colours the two the sales team acts on. -->
+    <record id="view_order_tree_ezyflow" model="ir.ui.view">
+        <field name="name">sale.order.list.ezyflow</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale_stock.view_order_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='delivery_status']" position="attributes">
+                <attribute name="decoration-danger">delivery_status in ('refused_by_logistics', 'cancelled_by_logistics')</attribute>
+                <attribute name="decoration-success">delivery_status in ('full', 'shipped')</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>

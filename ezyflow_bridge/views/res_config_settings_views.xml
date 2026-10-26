@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="res_config_settings_view_form_ezyflow" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.ezyflow</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="stock.res_config_settings_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//block[@name='operations_setting_container']" position="after">
+                <block title="EzyFlow" name="ezyflow_setting_container">
+                    <setting
+                        id="ezy_check_product_constraints"
+                        help="Refuse product names over 30 characters, internal references over 17, and sellable goods without internal reference or barcode."
+                    >
+                        <field name="ezy_check_product_constraints" />
+                    </setting>
+                    <setting
+                        id="ezy_check_partner_constraints"
+                        help="Refuse partner names over 50 characters and streets over 35."
+                    >
+                        <field name="ezy_check_partner_constraints" />
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>
