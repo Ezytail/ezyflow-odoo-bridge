@@ -51,8 +51,9 @@ List" does not repair it. Since 3.3.1 the post-install hook sets the type, and
   the hold (`ezy_hold`) and the channel (`ezy_channel`, copied down from the
   sales order). Partner and sales order: the channel, copied from the delivery
   address when the order is created. Company: one switch per WMS constraint
-  (`ezy_wms_*`, fourteen of them, ADR 0017), on by default, on the EzyFlow page
-  of the Settings (below).
+  (`ezy_wms_*`, fourteen of them, ADR 0017), on by default, and **Apply stock
+  reports** (`ezy_apply_stock_reports`, ADR 0018, since 3.6.0), off by default,
+  all on the EzyFlow page of the Settings (below).
 - The shop identity (`ezy_shop_product_id` on the product template, `ezy_shop_variant_id` on the
   variant): the id the product has in the web shop, indexed, not copied on duplicate, shown on
   the product forms.
@@ -170,6 +171,17 @@ in the Inventory settings, `ezy_check_product_constraints` and
 `ezy_check_partner_constraints`; the 3.5.0 migration carries their values onto
 the switches they covered (internal reference length and requirement, product
 name; partner name, street) and leaves every other switch on.
+
+Its **Stock** block (since 3.6.0) shows **Apply stock reports**, a switch of the
+current company, off at install and at upgrade (ADR 0018). Off, the connector
+writes every figure of a WMS stock report, stale zeros included, as a pending
+count that a person reviews and applies from the physical inventory, and Odoo
+republishes nothing for the report. On, the report is applied as before, unless
+the publication turned `overwrite_stock` off. WMS movements are always applied;
+one applied on a cell clears the pending count there. The connector user reads
+the switch with its internal-user rights, once the bridge's installed contract
+version (`ir.module.module`, readable since S1) says it exists; a bridge without
+the switch reads as off.
 
 ## Conventions
 

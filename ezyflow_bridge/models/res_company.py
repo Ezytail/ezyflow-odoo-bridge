@@ -4,9 +4,19 @@ from odoo import fields, models
 
 class ResCompany(models.Model):
     """One switch per WMS constraint (behaviour 8, ADR 0017), on by default.
-    Each help names the exact figure; none binds the connector user."""
+    Each help names the exact figure; none binds the connector user. And
+    Apply stock reports (ADR 0018), off by default, which the connector reads."""
 
     _inherit = "res.company"
+
+    ezy_apply_stock_reports = fields.Boolean(
+        string="Apply stock reports",
+        default=False,
+        help="Apply the figures of a WMS stock report to the quantities on hand. "
+        "Off, they are written as pending counts to review and apply from the "
+        "physical inventory, and Odoo republishes nothing for the report. WMS "
+        "movements are always applied.",
+    )
 
     ezy_wms_default_code_length = fields.Boolean(
         string="Internal reference: at most 16 characters",

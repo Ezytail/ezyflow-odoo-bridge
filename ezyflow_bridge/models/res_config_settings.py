@@ -3,9 +3,14 @@ from odoo import fields, models
 
 
 class ResConfigSettings(models.TransientModel):
-    """The EzyFlow page of the Settings: one setting per WMS constraint."""
+    """The EzyFlow page of the Settings: one setting per WMS constraint, and
+    Apply stock reports (ADR 0018)."""
 
     _inherit = "res.config.settings"
+
+    ezy_apply_stock_reports = fields.Boolean(
+        related="company_id.ezy_apply_stock_reports", readonly=False
+    )
 
     ezy_wms_default_code_length = fields.Boolean(
         related="company_id.ezy_wms_default_code_length", readonly=False

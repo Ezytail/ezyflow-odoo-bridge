@@ -3,6 +3,29 @@
 The bridge's contract version (series-less, ADR 0015). The connector expects the
 same major and minor (`src/Odoo.Service/Odoo/BridgeContract.cs`).
 
+## 3.6.0
+
+Apply stock reports (ADR 0018).
+
+- A company switch `ezy_apply_stock_reports`, **off** by default, in a new
+  **Stock** block of the EzyFlow page of the Settings. The new column reads off
+  for every existing company, so the upgrade needs no migration.
+- Off, the connector writes a WMS stock report as pending counts (the physical
+  inventory's counted quantities) and republishes nothing; on, it applies the
+  report as before, when the publication's `overwrite_stock` allows it.
+- No new right: the connector user reads the company switch with the
+  internal-user rights it already has, after checking the installed contract
+  version in `ir.module.module` (readable since S1); an older bridge reads as
+  off.
+
+Before going live on 3.6.0:
+
+- Deploy the connector built for 3.6.0 together with the bridge: an older
+  connector does not read the switch and keeps applying every report.
+- An Odoo that relied on reports being applied keeps pending counts from the
+  upgrade on until an administrator turns **Apply stock reports** on for each
+  company that wants it.
+
 ## 3.5.0
 
 The WMS constraints (ADR 0017, behaviour 8 of the README).
