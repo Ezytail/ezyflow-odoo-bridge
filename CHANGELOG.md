@@ -3,6 +3,18 @@
 The bridge's contract version (series-less, ADR 0015). The connector expects the
 same major and minor (`src/Odoo.Service/Odoo/BridgeContract.cs`).
 
+## 3.8.3
+
+One click groups transfers and orders by WMS state.
+
+- Behaviour 7 adds a **WMS state** entry to the Group By menu of the transfers
+  list and a **Delivery Status** entry to the one of the sales orders list.
+  Both fields are stored, so the grouping already worked through "Add custom
+  group"; the predefined entries make it one click, the refused and cancelled
+  transfers in buckets of their own. The refusal reason stays a chatter note
+  and is not a grouping.
+- No new field, no new right, no migration.
+
 ## 3.8.2
 
 A frozen transfer gives its reservation back when it is validated or cancelled

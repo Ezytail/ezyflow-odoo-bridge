@@ -53,4 +53,17 @@
             </field>
         </field>
     </record>
+
+    <!-- Behaviour 7: one click groups the transfers by WMS state, the refused
+         and cancelled ones in buckets of their own. -->
+    <record id="view_picking_internal_search_ezyflow" model="ir.ui.view">
+        <field name="name">stock.picking.search.ezyflow</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_internal_search" />
+        <field name="arch" type="xml">
+            <filter name="status" position="after">
+                <filter string="WMS state" name="ezy_wms_state" context="{'group_by': 'ezy_wms_state'}" />
+            </filter>
+        </field>
+    </record>
 </odoo>

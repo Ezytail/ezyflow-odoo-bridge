@@ -103,7 +103,9 @@ Fields and behaviours land slice by slice; see `docs/slices/` in the repository.
    a cancellation in Odoo still reaches the WMS.
 7. Visibility. The WMS state is read-only in the transfer form and list; the
    sales order's delivery status shows the WMS values (refused wins, then
-   cancelled, then the transfer touched last).
+   cancelled, then the transfer touched last). The Group By menu of the transfers
+   list offers the WMS state and the one of the sales orders list the delivery
+   status, so the refused and cancelled ones sit in buckets of their own.
 8. WMS constraints (ADR 0017, per-rule switches since 3.5.0). When a person
    saves or confirms a record, the bridge refuses the values Reflex would
    refuse later. The figures are Reflex's own (ezyflow-reflex's declared rules

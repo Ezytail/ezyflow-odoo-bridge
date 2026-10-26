@@ -25,4 +25,17 @@
             </xpath>
         </field>
     </record>
+
+    <!-- Behaviour 7: one click groups the orders by delivery status, which
+         carries the WMS values once a transfer is in the hand-off. -->
+    <record id="view_sales_order_filter_ezyflow" model="ir.ui.view">
+        <field name="name">sale.order.search.ezyflow</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_sales_order_filter" />
+        <field name="arch" type="xml">
+            <filter name="order_month" position="after">
+                <filter string="Delivery Status" name="ezy_delivery_status" context="{'group_by': 'delivery_status'}" />
+            </filter>
+        </field>
+    </record>
 </odoo>

@@ -11,6 +11,7 @@ from . import (
     test_delivery_status,
     test_freeze,
     test_fulfilment_rights,
+    test_group_by,
     test_offer,
     test_order_rights,
     test_product_rights,
