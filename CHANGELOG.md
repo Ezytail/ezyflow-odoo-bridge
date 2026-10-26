@@ -1,7 +1,51 @@
 # Changelog of the EzyFlow bridge
 
-The bridge's contract version (series-less, ADR 0015). The connector expects the
+The bridge's contract version (series-less). The connector expects the
 same major and minor (`src/Odoo.Service/Odoo/BridgeContract.cs`).
+
+## Pairing
+
+Each service release is built against one bridge version and ships it as
+`ezyflow_bridge-<service version>.zip`. The table pairs them: read
+from `BridgeContract.ExpectedVersionText` and the manifest at each tag. No
+service release was built against a bridge before 3.3.1. Add a row with every
+release that changes the bridge.
+
+| Bridge | First service release built against it | Service releases |
+| --- | --- | --- |
+| 3.3.1 | v0.1.0 (2026-10-14) | v0.1.0 |
+| 3.4.0 | v0.2.0 (2026-10-14) | v0.2.0 |
+| 3.5.0 | v0.3.0 (2026-10-15) | v0.3.0 |
+| 3.6.0 | v0.4.0 (2026-10-15) | v0.4.0 |
+| 3.7.0 | v0.5.0 (2026-10-16) | v0.5.0 |
+| 3.7.1 | v0.5.1 (2026-10-19) | v0.5.1 |
+| 3.8.0 | v0.6.0 (2026-10-20) | v0.6.0 |
+| 3.8.1 | v0.7.0 (2026-10-20) | v0.7.0, v0.7.1, v0.7.2, v0.8.0 |
+| 3.8.2 | v0.8.1 (2026-10-23) | v0.8.1 |
+| 3.8.3 | v0.8.2 (2026-10-23) | v0.8.2 |
+| 3.9.0 | not released yet | — |
+
+## 3.9.0
+
+The shop total on the sales order, and the warning when Odoo's total differs
+(behaviour 12).
+
+- `ezy_shop_total` on the sales order: what the customer paid the shop, in the
+  order's currency, written by the connector when it creates the order from a
+  shop order; empty on an order a person types or copies. The connector writes
+  it only on a bridge from 3.9.0, so an older bridge gets the order without it.
+- `ezy_total_differs`, computed and stored: true when the shop total is set and
+  differs from the order total beyond the currency's rounding; a total of zero
+  reads as not set, so a fully discounted order never warns. The order form
+  shows a warning naming both figures; the order is created and confirmed
+  whatever the gap, a person checks the taxes and the fiscal position.
+- The README gains what the Odoo administrator configures for orders in the
+  customer's currency: currencies and rates, one price list per currency and
+  channel, the two service products for duties and import fees, the fiscal
+  position with the foreign VAT number.
+- No new right: the connector's existing rights on sales orders cover both
+  fields. No migration: the flag is computed for existing orders when the
+  module is upgraded, and stays off on them.
 
 ## 3.8.3
 
@@ -52,7 +96,7 @@ Before going live on 3.8.2:
 
 ## 3.8.1
 
-The write guard covers the unit on Odoo 20 (issue #52).
+The write guard covers the unit on Odoo 20.
 
 - Behaviour 6 refuses a person's change of unit on the moves and move lines of
   a frozen transfer on Odoo 20 too. Odoo 20 renamed the unit `uom_id` (Odoo 19:
@@ -61,7 +105,7 @@ The write guard covers the unit on Odoo 20 (issue #52).
 
 ## 3.8.0
 
-Every bridge setting lives on the EzyFlow settings page (ADR 0020).
+Every bridge setting lives on the EzyFlow settings page.
 
 - A **Connector** block on the EzyFlow page of the Settings shows the three
   wake-up keys, `ezyflow.activity`, `ezyflow.wakeup_url` and
@@ -90,7 +134,7 @@ Before going live on 3.8.0:
 
 ## 3.7.1
 
-The connector validates past `stock_sms`'s one-time window (ADR 0019, issue #36).
+The connector validates past `stock_sms`'s one-time window.
 
 - Behaviour 11: when the connector user validates a delivery, the bridge records
   `stock_sms`'s one-time "SMS confirmation" window as received for its company,
@@ -108,7 +152,7 @@ and spends IAP credits, which is what the window warned about.
 
 ## 3.6.0
 
-Apply stock reports (ADR 0018).
+Apply stock reports.
 
 - A company switch `ezy_apply_stock_reports`, **off** by default, in a new
   **Stock** block of the EzyFlow page of the Settings. The new column reads off
@@ -118,8 +162,7 @@ Apply stock reports (ADR 0018).
   report as before, when the publication's `overwrite_stock` allows it.
 - No new right: the connector user reads the company switch with the
   internal-user rights it already has, after checking the installed contract
-  version in `ir.module.module` (readable since S1); an older bridge reads as
-  off.
+  version in `ir.module.module`; an older bridge reads as off.
 
 Before going live on 3.6.0:
 
@@ -131,14 +174,14 @@ Before going live on 3.6.0:
 
 ## 3.5.0
 
-The WMS constraints (ADR 0017, behaviour 8 of the README).
+The WMS constraints (behaviour 8 of the README).
 
 - One company switch per constraint, on by default, on a new **EzyFlow** page of
   the Settings that replaces the EzyFlow block of the Inventory settings. The
   migration carries the 3.4.0 switches `ezy_check_product_constraints` and
   `ezy_check_partner_constraints` onto the switches they covered and leaves
   every new one on.
-- Two figures tighten to Reflex's own:
+- Two figures tighten to the WMS's own:
   - internal reference: at most **16** characters (was 17);
   - partner name: at most **35** characters (was 50).
   An existing record above the new figure is not touched; it is refused only
@@ -154,7 +197,7 @@ The WMS constraints (ADR 0017, behaviour 8 of the README).
   when its sequence is edited (a warehouse's short code renamed included).
 - The context key `ezy_defer_wms_identity` defers the product constraints only.
 - The connector user is no longer bound: what a shop sends lands in Odoo as it
-  is, and Reflex's declared rules judge it. Administrators and code run as
+  is, and the WMS's declared rules judge it. Administrators and code run as
   superuser stay bound.
 
 Before going live on 3.5.0:
@@ -166,7 +209,7 @@ Before going live on 3.5.0:
   "SMS confirmation" window on the first delivery a company validates, and the
   connector cannot close that delivery until a person dismisses it once
   (Inventory, validate any delivery, then confirm or disable the SMS). Not
-  needed from 3.7.1 on (ADR 0019).
+  needed from 3.7.1 on.
 
 ## 3.4.0
 

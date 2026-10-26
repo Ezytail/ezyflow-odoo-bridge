@@ -8,6 +8,21 @@
             <xpath expr="//page[@name='other_information']//field[@name='team_id']" position="after">
                 <field name="ezy_channel" />
                 <field name="ezy_final_recipient_id" />
+                <field name="ezy_shop_total" />
+                <field name="ezy_total_differs" invisible="1" />
+            </xpath>
+            <!-- Behaviour 12: the shop total differs from Odoo's; a person checks
+                 the taxes and the fiscal position, the order stands. The two
+                 fields below are shown a second time on purpose, read-only: the
+                 editable shop total lives in the Other information tab above. -->
+            <xpath expr="//sheet" position="before">
+                <div class="alert alert-warning" role="alert" invisible="not ezy_total_differs">
+                    The shop collected
+                    <field name="ezy_shop_total" readonly="1" class="oe_inline" />
+                    for this order while its total here is
+                    <field name="amount_total" readonly="1" class="oe_inline" />:
+                    check the taxes and the fiscal position.
+                </div>
             </xpath>
         </field>
     </record>

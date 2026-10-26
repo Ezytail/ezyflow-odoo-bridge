@@ -16,7 +16,8 @@ DEFAULT_PROFORMA_REPORT = "sale.report_saleorder_pro_forma"
 class SaleOrder(models.Model):
     """Channel copy-down (behaviour 3), the WMS values on the delivery status
     (behaviour 7), the delivery contact WMS constraint (behaviour 8), the
-    proforma rendering and the removed lines (S8)."""
+    proforma rendering and the removed lines (S8), the shop total and its
+    warning (behaviour 12)."""
 
     _inherit = "sale.order"
 
@@ -49,6 +50,35 @@ class SaleOrder(models.Model):
         selection_add=WMS_STATES,
         ondelete={key: "set null" for key, _label in WMS_STATES},
     )
+    ezy_shop_total = fields.Monetary(
+        string="Shop total",
+        currency_field="currency_id",
+        copy=False,
+        help="What the customer paid the shop for this order, in the order's "
+        "currency, written by the connector when the order is created. A "
+        "difference with the order total is shown on the form; the order is "
+        "never refused for it. A total of zero reads as not set, so a fully "
+        "discounted order never warns.",
+    )
+    ezy_total_differs = fields.Boolean(
+        string="Shop total differs",
+        compute="_compute_ezy_total_differs",
+        store=True,
+        help="The shop total is set and differs from the order total beyond the "
+        "currency's rounding: a tax or a fiscal position to check.",
+    )
+
+    @api.depends("ezy_shop_total", "amount_total", "currency_id")
+    def _compute_ezy_total_differs(self):
+        # Behaviour 12 (ADR 0028): a gap between what the shop collected and
+        # what Odoo computes is shown to a person, never refused. An unset
+        # total reads as zero on a Monetary field, so zero means "not set".
+        for order in self:
+            order.ezy_total_differs = bool(order.ezy_shop_total) and (
+                order.currency_id.compare_amounts(order.ezy_shop_total, order.amount_total) != 0
+                if order.currency_id
+                else order.ezy_shop_total != order.amount_total
+            )
 
     @api.depends("partner_shipping_id.ezy_channel")
     def _compute_ezy_channel(self):

@@ -41,7 +41,7 @@
                     <block
                         title="WMS constraints"
                         name="ezy_wms_constraints"
-                        help="What a person saves or confirms is refused when Reflex would refuse it later. The connector user is never bound: an order from a shop lands as the shop sent it."
+                        help="What a person saves or confirms is refused when the WMS would refuse it later. The connector user is never bound: an order from a shop lands as the shop sent it."
                     >
                         <setting id="ezy_wms_default_code_length" help="Refuse an internal reference longer than 16 characters.">
                             <field name="ezy_wms_default_code_length" />

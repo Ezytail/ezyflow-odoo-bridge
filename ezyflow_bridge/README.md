@@ -1,7 +1,7 @@
 # EzyFlow bridge
 
-The Odoo addon (Odoo 19 and 20, one source tree, ADR 0015) the EzyFlow connector depends on: the fields and behaviours
-the connector needs and nothing else (ADR 0001, ADR 0004). It lives in the
+The Odoo addon (Odoo 19 and 20, one source tree) the EzyFlow connector depends
+on: the fields and behaviours the connector needs and nothing else. It lives in the
 connector's repository and is versioned and tagged with the service image; the
 Odoo side installs the tagged version the image was built against.
 
@@ -11,7 +11,7 @@ Each GitHub release of the connector attaches `ezyflow_bridge-<version>.zip`
 next to the image of the same version. Unzip it into a directory on Odoo's
 addons path (the `ezyflow_bridge/` folder is at the zip's root), update the
 apps list and install **EzyFlow bridge**; upgrade with `-u ezyflow_bridge`.
-The same zip installs on Odoo 19 and Odoo 20 (ADR 0015). The repository
+The same zip installs on Odoo 19 and Odoo 20. The repository
 README covers the connector user and its key; everything else is set on the
 EzyFlow settings page (below).
 
@@ -30,32 +30,33 @@ List" does not repair it. Since 3.3.1 the post-install hook sets the type, and
   connector user belongs to. It implies the inventory user rights (read
   transfers and operation types, write the WMS state) and nothing more. Its
   `api_key_duration` is ten years, so an administrator mints the connector's
-  API key through the normal API-key screen with a dated expiry (ADR 0013).
+  API key through the normal API-key screen with a dated expiry.
   The group can read `ir.module.module`, which the connector uses to check the
-  contract version at activation. The order flows (S5) add customers, sales
-  orders and delivery methods; the catalogue flows (S6) add price lists (read)
+  contract version at activation. The order flows add customers, sales
+  orders and delivery methods; the catalogue flows add price lists (read)
   and their items, attributes and their values, and the attribute lines and
-  values of templates (read, write, create). The stock flows (S7) add no right:
+  values of templates (read, write, create). The stock flows add no right:
   the inventory user rights the group implies already read and write quants and
   read bills of materials, and Odoo 19 and 20 apply an inventory adjustment
   without a manager right. Nothing is ever unlinked. Attributes
   and their values carry no company in Odoo: one created for one publication's
   company is visible to every company of the database.
 - Three system parameters, shipped empty: `ezyflow.activity` (the activity),
-  `ezyflow.wakeup_url` and `ezyflow.wakeup_secret` (ADR 0006), set from the
-  Connector block of the EzyFlow settings page (below, ADR 0020).
-- The S1 contract (`docs/slices/S1-bridge-contract.md`), the closed sets in
-  `models/contract.py`, on four models. Operation type: the logistics mode
+  `ezyflow.wakeup_url` and `ezyflow.wakeup_secret`, set from the
+  Connector block of the EzyFlow settings page (below).
+- The contract: closed sets in `models/contract.py`, on four models.
+  Operation type: the logistics mode
   (`ezy_logistics_mode`: off, auto, manual) and the channel allow-list
   (`ezy_channels`, comma-separated channel codes, empty for every channel),
-  the per-warehouse switch of ADR 0002. Transfer: the WMS state
-  (`ezy_wms_state`, eight values, one field, no state on the moves, ADR 0003),
+  the per-warehouse switch. Transfer: the WMS state
+  (`ezy_wms_state`, eight values, one field, no state on the moves),
   the hold (`ezy_hold`) and the channel (`ezy_channel`, copied down from the
   sales order). Partner and sales order: the channel, copied from the delivery
-  address when the order is created. Company: one switch per WMS constraint
-  (`ezy_wms_*`, fourteen of them, ADR 0017), on by default, and **Apply stock
-  reports** (`ezy_apply_stock_reports`, ADR 0018, since 3.6.0), off by default,
-  and the proforma report (`ezy_proforma_report_id`, ADR 0020, since 3.8.0), a
+  address when the order is created, and the shop total with its flag
+  (`ezy_shop_total`, `ezy_total_differs`, since 3.9.0). Company: one switch per WMS constraint
+  (`ezy_wms_*`, fourteen of them), on by default, and **Apply stock
+  reports** (`ezy_apply_stock_reports`, since 3.6.0), off by default,
+  and the proforma report (`ezy_proforma_report_id`, since 3.8.0), a
   sales order report, Odoo's pro forma when empty, all on the EzyFlow page of
   the Settings (below).
 - The shop identity (`ezy_shop_product_id` on the product template, `ezy_shop_variant_id` on the
@@ -63,7 +64,7 @@ List" does not repair it. Since 3.3.1 the post-install hook sets the type, and
   the product forms.
 - The SKU key (`ezy_sku_key` on the variant, since 3.7.0): the internal reference
   trimmed, its letters a-z upper-cased, every other character kept, stored and
-  indexed. Two SKUs are the same when their keys are (CONTEXT.md, "SKU"): the
+  indexed. Two SKUs are the same when their keys are: the
   duplicate check of behaviour 8 and the connector's SKU lookups match on it
   exactly instead of scanning the products with `ILIKE`. Only a-z fold because
   the connector computes the same key and Python and .NET disagree on Unicode
@@ -74,8 +75,6 @@ List" does not repair it. Since 3.3.1 the post-install hook sets the type, and
   (`static/description/icon.png`).
 - Odoo tests for every behaviour, tagged `post_install`, run in the
   connector's Testcontainers job on every supported Odoo series.
-
-Fields and behaviours land slice by slice; see `docs/slices/` in the repository.
 
 ## Behaviours
 
@@ -106,10 +105,10 @@ Fields and behaviours land slice by slice; see `docs/slices/` in the repository.
    cancelled, then the transfer touched last). The Group By menu of the transfers
    list offers the WMS state and the one of the sales orders list the delivery
    status, so the refused and cancelled ones sit in buckets of their own.
-8. WMS constraints (ADR 0017, per-rule switches since 3.5.0). When a person
-   saves or confirms a record, the bridge refuses the values Reflex would
-   refuse later. The figures are Reflex's own (ezyflow-reflex's declared rules
-   and the widths of its REST API), fixed per bridge release; each has its own
+8. WMS constraints (per-rule switches since 3.5.0). When a person
+   saves or confirms a record, the bridge refuses the values the WMS would
+   refuse later. The figures are the WMS's own (its declared rules and the
+   widths of its API), fixed per bridge release; each has its own
    company switch, on by default:
 
    | Switch | Constraint |
@@ -147,7 +146,7 @@ Fields and behaviours land slice by slice; see `docs/slices/` in the repository.
    a product by its internal reference and scans the barcode when there is
    one.
 
-   Reflex keeps one article per internal reference and merges two products
+   The WMS keeps one article per internal reference and merges two products
    sent under the same one instead of refusing them, so an internal reference
    already held by another active product of the company, or by a product
    shared by every company, is refused, compared by its SKU key (above). The
@@ -166,7 +165,7 @@ Fields and behaviours land slice by slice; see `docs/slices/` in the repository.
 
    The constraints bind people only. The connector user (a member of the
    EzyFlow connector group) is exempt, so an order or a product from a shop
-   lands as the shop sent it and Reflex's declared rules judge it on the way to
+   lands as the shop sent it and the WMS's declared rules judge it on the way to
    the warehouse; administrators and code run as superuser stay bound, unlike
    the write guard of behaviour 6. Each figure is checked when its own field is
    written, so a record already above a figure tightened in 3.5.0 (internal
@@ -185,14 +184,15 @@ Fields and behaviours land slice by slice; see `docs/slices/` in the repository.
    the WMS, they are not a security boundary.
 9. Wake-up. A transfer entering ready for logistics, a product or an order
    changing posts a small signed notification to the connector from a
-   post-commit hook (ADR 0006; `models/wakeup.py`).
-10. Chatter silence (ADR 0012, added in 3.3.0). Nothing the connector user does
+   post-commit hook (`models/wakeup.py`).
+10. Chatter silence (added in 3.3.0). Nothing the connector user does
     in a transaction leaves a tracking line, the recompute of a tracked stored
     field (a transfer's state) included: Odoo prepares that tracking in the
     environment that flushes the transaction, which does not always carry the
     connector's `tracking_disable`, so the bridge disables it for the connector
-    group itself (`models/mail_thread.py`, on `mail.thread` itself, gated by Odoo's cached group check: ADR 0011 addendum).
-11. SMS window (ADR 0019, added in 3.7.1). Odoo's `stock_sms` answers the
+    group itself (`models/mail_thread.py`, on `mail.thread` itself, gated by
+    Odoo's cached group check).
+11. SMS window (added in 3.7.1). Odoo's `stock_sms` answers the
     first validation of a delivery to a customer with a phone with a one-time
     window until someone in the company acknowledges it, and the connector
     cannot answer a window. When the connector user validates a transfer, the
@@ -204,12 +204,27 @@ Fields and behaviours land slice by slice; see `docs/slices/` in the repository.
     decides whether a text goes out; people validating in a company that has
     not received the window still see it. Does nothing without `stock_sms`.
     The tests lift Odoo's test-mode skip of the window to see it.
+12. Shop total (added in 3.9.0). A shop order is booked in the currency the
+    customer paid in, on the price list the publication names for that currency
+    and channel, its amounts written as the shop collected them. The connector
+    writes what the customer paid on the order (`ezy_shop_total`, Monetary in
+    the order's currency) when it creates it, and the bridge computes
+    `ezy_total_differs`: true when the shop total is set and differs from the
+    order total beyond the currency's rounding (a total of zero reads as not
+    set, so a fully discounted order never warns). The order form then shows a
+    warning naming both figures, in the Other information tab and above the
+    sheet; the order stands, a person checks the taxes and the fiscal position.
+    Duties and import fees a DDP sale collected arrive as ordinary order lines
+    on two service products the Odoo administrator creates and the publication
+    names (one for duties, one for import fees); they count in the total. Both
+    fields are plain fields of the sales order: the connector's existing rights
+    on sales orders cover them, read and write on the total, read on the flag.
 
 ## Settings
 
 **Settings > EzyFlow** is the bridge's own page (an `<app>` of the settings
-form, the same markup on Odoo 19 and 20, ADR 0015) and the one documented place
-to configure the bridge (ADR 0020). Like the rest of the Settings it is reachable
+form, the same markup on Odoo 19 and 20) and the one documented place
+to configure the bridge. Like the rest of the Settings it is reachable
 by the Administration, Settings group only; the connector user never sees it.
 System Parameters (developer mode) stays an escape hatch for scripts and
 support.
@@ -228,32 +243,32 @@ which System Parameters already shows to the same group.
 
 Its **WMS constraints**
 block shows one setting per switch of behaviour 8, for the current company. A
-tenant whose WMS is not Reflex turns off what it does not need; the figures
-themselves are not editable (ADR 0017). Until 3.4.0 the bridge had two switches
+company turns off what its WMS does not need; the figures themselves are not
+editable. Until 3.4.0 the bridge had two switches
 in the Inventory settings, `ezy_check_product_constraints` and
 `ezy_check_partner_constraints`; the 3.5.0 migration carries their values onto
 the switches they covered (internal reference length and requirement, product
 name; partner name, street) and leaves every other switch on.
 
 Its **Stock** block (since 3.6.0) shows **Apply stock reports**, a switch of the
-current company, off at install and at upgrade (ADR 0018). Off, the connector
+current company, off at install and at upgrade. Off, the connector
 writes every figure of a WMS stock report, stale zeros included, as a pending
 count that a person reviews and applies from the physical inventory, and Odoo
 republishes nothing for the report. On, the report is applied as before, unless
 the publication turned `overwrite_stock` off. WMS movements are always applied;
 one applied on a cell clears the pending count there. The connector user reads
 the switch with its internal-user rights, once the bridge's installed contract
-version (`ir.module.module`, readable since S1) says it exists; a bridge without
-the switch reads as off.
+version (`ir.module.module`) says it exists; a bridge without the switch reads
+as off.
 
 Its **Documents** block (since 3.8.0) shows the **Proforma report** of the
 current company: the sales order report the connector renders as the Proforma
-of the company's orders (`ezy_render_proforma` on the sales order, S8) and
+of the company's orders (`ezy_render_proforma` on the sales order) and
 forwards to the WMS for shipment paperwork. The list offers sales order reports
 only; empty, the render uses Odoo's pro forma invoice
 (`sale.report_saleorder_pro_forma`). The render reads the report from the
 order's company, not from the user's, so a database with two companies sets each
-one by switching company on the page (ADR 0014). The list restricts the form,
+one by switching company on the page. The list restricts the form,
 not what RPC or an import writes: a report of another model renders Odoo's pro
 forma with a logged warning. Deleting the chosen report empties the field. Every
 internal user can read the field, the connector user included. Until 3.7.1 the
@@ -261,9 +276,38 @@ report was a system parameter; the 3.8.0 migration copies its value onto every
 company that has none yet, drops a value that names no sales order report with a
 logged warning, and deletes the parameter.
 
+## Multi-currency orders
+
+What the Odoo administrator configures for a tenant whose shop sells in the
+customer's currency (behaviour 12; the connector configures none of it):
+
+- The currencies, active, with a rate provider or rates kept by hand
+  (Accounting or Invoicing settings). Exchange differences between Odoo's rate
+  and the shop's payout are Odoo's accounting, not the connector's.
+- One price list per currency, and one per currency and channel where the
+  tenant prices channels apart, of the company or shared. The publication names
+  each one with its currency and channel; the list gives the order its currency
+  and nothing else, the shop's amounts are written as they are. A list whose
+  currency is not the one the publication says for it refuses the publication
+  at activation.
+- Two service products for the duties and the import fees a DDP sale collects at
+  checkout, with the income account and taxes accounting wants; the publication
+  names them by id. A product that is not a service, or archived, refuses the
+  publication at activation.
+- For a tenant registered for VAT in the destination country (a Swiss VAT
+  number for DDP sales to Switzerland): a fiscal position for that country with
+  its foreign VAT number and tax mapping, auto-applied by country. The quotation,
+  the proforma and the invoice print the position's foreign VAT number in place
+  of the company's.
+- A tenant whose publication names no price list accepts orders in the company
+  currency only, and Odoo still gives a customer's order the price list set on
+  the customer, else the company's default list: keep the default list in the
+  company currency and do not set a price list in another currency on a
+  customer of such a tenant.
+
 ## Conventions
 
-Odoo 19 and 20, written to the APIs both series share (ADR 0015):
+Odoo 19 and 20, written to the APIs both series share:
 `models.Constraint` (never `_sql_constraints`), `Domain` from `odoo.fields`,
 `@api.model_create_multi`, series-less manifest version `x.y.z` (Odoo prepends
 its own series when it records the installed version). A branch on

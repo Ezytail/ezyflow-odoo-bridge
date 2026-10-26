@@ -19,9 +19,11 @@ from . import (
     test_relay,
     test_series_security,
     test_shop_identity,
+    test_shop_total,
     test_sms_warning,
     test_stock_settings,
     test_template_identity,
     test_wakeup,
     test_wms_settings,
+    test_wms_state,
 )
