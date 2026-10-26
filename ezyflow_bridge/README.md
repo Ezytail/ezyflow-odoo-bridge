@@ -12,7 +12,8 @@ next to the image of the same version. Unzip it into a directory on Odoo's
 addons path (the `ezyflow_bridge/` folder is at the zip's root), update the
 apps list and install **EzyFlow bridge**; upgrade with `-u ezyflow_bridge`.
 The same zip installs on Odoo 19 and Odoo 20 (ADR 0015). The repository
-README covers the connector user, its key and the system parameters.
+README covers the connector user and its key; everything else is set on the
+EzyFlow settings page (below).
 
 On Odoo 20 the Apps screen lists a module only as an official app or an
 industry download; the "All" entry of its panel is hidden. A command-line
@@ -41,7 +42,8 @@ List" does not repair it. Since 3.3.1 the post-install hook sets the type, and
   and their values carry no company in Odoo: one created for one publication's
   company is visible to every company of the database.
 - Three system parameters, shipped empty: `ezyflow.activity` (the activity),
-  `ezyflow.wakeup_url` and `ezyflow.wakeup_secret` (ADR 0006).
+  `ezyflow.wakeup_url` and `ezyflow.wakeup_secret` (ADR 0006), set from the
+  Connector block of the EzyFlow settings page (below, ADR 0020).
 - The S1 contract (`docs/slices/S1-bridge-contract.md`), the closed sets in
   `models/contract.py`, on four models. Operation type: the logistics mode
   (`ezy_logistics_mode`: off, auto, manual) and the channel allow-list
@@ -53,7 +55,9 @@ List" does not repair it. Since 3.3.1 the post-install hook sets the type, and
   address when the order is created. Company: one switch per WMS constraint
   (`ezy_wms_*`, fourteen of them, ADR 0017), on by default, and **Apply stock
   reports** (`ezy_apply_stock_reports`, ADR 0018, since 3.6.0), off by default,
-  all on the EzyFlow page of the Settings (below).
+  and the proforma report (`ezy_proforma_report_id`, ADR 0020, since 3.8.0), a
+  sales order report, Odoo's pro forma when empty, all on the EzyFlow page of
+  the Settings (below).
 - The shop identity (`ezy_shop_product_id` on the product template, `ezy_shop_variant_id` on the
   variant): the id the product has in the web shop, indexed, not copied on duplicate, shown on
   the product forms.
@@ -197,7 +201,25 @@ Fields and behaviours land slice by slice; see `docs/slices/` in the repository.
 ## Settings
 
 **Settings > EzyFlow** is the bridge's own page (an `<app>` of the settings
-form, the same markup on Odoo 19 and 20, ADR 0015). Its **WMS constraints**
+form, the same markup on Odoo 19 and 20, ADR 0015) and the one documented place
+to configure the bridge (ADR 0020). Like the rest of the Settings it is reachable
+by the Administration, Settings group only; the connector user never sees it.
+System Parameters (developer mode) stays an escape hatch for scripts and
+support.
+
+Its **Connector** block (since 3.8.0) shows the three wake-up keys of behaviour
+9, one set for the whole database whichever company is selected: **Activity**
+(`ezyflow.activity`), **Wake-up URL** (`ezyflow.wakeup_url`) and **Wake-up
+secret** (`ezyflow.wakeup_secret`), the last behind a password field. They stay
+system parameters, read and written through settings fields declared with
+`config_parameter`, so an upgrade changes nothing for a value already set.
+Saving the page without touching the secret keeps it. Clearing it and saving
+clears the parameter: the bridge then signs with an empty secret, the connector
+answers 401 to every wake-up, and the publication is polled on its interval
+only. The password field only masks the secret in the administrator's browser,
+which System Parameters already shows to the same group.
+
+Its **WMS constraints**
 block shows one setting per switch of behaviour 8, for the current company. A
 tenant whose WMS is not Reflex turns off what it does not need; the figures
 themselves are not editable (ADR 0017). Until 3.4.0 the bridge had two switches
@@ -216,6 +238,21 @@ one applied on a cell clears the pending count there. The connector user reads
 the switch with its internal-user rights, once the bridge's installed contract
 version (`ir.module.module`, readable since S1) says it exists; a bridge without
 the switch reads as off.
+
+Its **Documents** block (since 3.8.0) shows the **Proforma report** of the
+current company: the sales order report the connector renders as the Proforma
+of the company's orders (`ezy_render_proforma` on the sales order, S8) and
+forwards to the WMS for shipment paperwork. The list offers sales order reports
+only; empty, the render uses Odoo's pro forma invoice
+(`sale.report_saleorder_pro_forma`). The render reads the report from the
+order's company, not from the user's, so a database with two companies sets each
+one by switching company on the page (ADR 0014). The list restricts the form,
+not what RPC or an import writes: a report of another model renders Odoo's pro
+forma with a logged warning. Deleting the chosen report empties the field. Every
+internal user can read the field, the connector user included. Until 3.7.1 the
+report was a system parameter; the 3.8.0 migration copies its value onto every
+company that has none yet, drops a value that names no sales order report with a
+logged warning, and deletes the parameter.
 
 ## Conventions
 

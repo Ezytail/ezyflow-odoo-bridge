@@ -5,6 +5,7 @@
 # module not imported here never runs.
 from . import (
     test_apps_visibility,
+    test_bridge_settings,
     test_channel,
     test_constraints,
     test_delivery_status,

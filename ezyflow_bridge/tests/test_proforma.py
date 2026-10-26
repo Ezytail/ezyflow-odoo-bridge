@@ -1,18 +1,21 @@
 # Part of the EzyFlow connector for Odoo. See LICENSE in the repository root.
 import base64
+from unittest.mock import patch
 
 from odoo import Command
 from odoo.exceptions import UserError
 from odoo.tests import tagged
 
+from ..models import sale_order
 from .common import EzyflowBridgeCase
 
 
 @tagged("post_install", "-at_install")
 class TestProforma(EzyflowBridgeCase):
     """S8: the connector renders a validated order's Proforma through the bridge's
-    public method, and a product line deleted from a quotation is recorded on its
-    order for the order source."""
+    public method, with the proforma report of the order's company (ADR 0020),
+    and a product line deleted from a quotation is recorded on its order for the
+    order source."""
 
     def set_param(self, key, value):
         # Through the record, the API both series share (ADR 0015).
@@ -58,9 +61,91 @@ class TestProforma(EzyflowBridgeCase):
         # creation time, so two renders are compared by length, not bytes.
         self.assertEqual(len(pdf), len(reference))
 
-    def test_the_report_name_comes_from_the_system_parameter(self):
-        self.set_param("ezyflow.proforma_report", "sale.report_saleorder")
+    def report_rendered_for(self, order, user=None, **context):
+        """The report the render hands to Odoo, resolved as Odoo resolves it;
+        nothing is laid out."""
+        refs = []
+
+        def render(_reports, report_ref, res_ids=None, data=None):
+            refs.append(report_ref)
+            return b"%PDF-1.7 stub", "pdf"
+
+        reports = self.env["ir.actions.report"]
+        with patch.object(type(reports), "_render_qweb_pdf", render):
+            order.with_user(user or self.connector_user).with_context(
+                **context
+            ).ezy_render_proforma()
+        self.assertEqual(len(refs), 1)
+        return reports._get_report(refs[0])
+
+    def default_report(self):
+        return self.env["ir.actions.report"]._get_report(sale_order.DEFAULT_PROFORMA_REPORT)
+
+    def test_an_empty_field_renders_odoo_s_pro_forma(self):
+        self.assertFalse(self.company.ezy_proforma_report_id)
         order = self.confirm_order().sale_id
+
+        with self.assertNoLogs(sale_order._logger.name, "WARNING"):
+            report = self.report_rendered_for(order)
+
+        self.assertEqual(report, self.env.ref("sale.action_report_pro_forma_invoice"))
+        self.assertEqual(report, self.default_report())
+
+    def test_the_render_uses_the_report_of_the_order_s_company(self):
+        quotation = self.env.ref("sale.action_report_saleorder")
+        pro_forma = self.env.ref("sale.action_report_pro_forma_invoice")
+        second = self.env["res.company"].create({"name": "Second company"})
+        self.company.ezy_proforma_report_id = quotation
+        second.ezy_proforma_report_id = pro_forma
+        self.connector_user.company_ids = [Command.link(second.id)]
+        first_order = self.confirm_order().sale_id
+        second_order = (
+            self.env["sale.order"]
+            .with_company(second)
+            .create({"partner_id": self.customer.id, "company_id": second.id})
+        )
+        # The connector's current company is the first one: the report follows
+        # the order, never the user's company.
+        both = [self.company.id, second.id]
+
+        self.assertEqual(
+            self.report_rendered_for(first_order, allowed_company_ids=both), quotation
+        )
+        self.assertEqual(
+            self.report_rendered_for(second_order, allowed_company_ids=both), pro_forma
+        )
+
+    def test_a_report_of_another_model_renders_the_default_with_a_warning(self):
+        # The form offers sales order reports only; RPC writes past the domain.
+        other = self.env["ir.actions.report"].search([("model", "!=", "sale.order")], limit=1)
+        self.assertTrue(other)
+        self.company.with_user(self.admin_user).write({"ezy_proforma_report_id": other.id})
+        self.assertEqual(self.company.ezy_proforma_report_id, other)
+        order = self.confirm_order().sale_id
+
+        with self.assertLogs(sale_order._logger.name, "WARNING") as logs:
+            report = self.report_rendered_for(order)
+
+        self.assertEqual(report, self.default_report())
+        self.assertIn("not a sale.order report", logs.output[0])
+
+    def test_deleting_the_chosen_report_empties_the_field(self):
+        chosen = self.env.ref("sale.action_report_saleorder").copy({"name": "House proforma"})
+        self.company.ezy_proforma_report_id = chosen
+
+        chosen.unlink()
+
+        self.assertFalse(self.company.ezy_proforma_report_id)
+        order = self.confirm_order().sale_id
+        self.assertEqual(self.report_rendered_for(order), self.default_report())
+
+    def test_the_connector_reads_the_company_report_and_renders_it(self):
+        quotation = self.env.ref("sale.action_report_saleorder")
+        self.company.ezy_proforma_report_id = quotation
+        order = self.confirm_order().sale_id
+
+        [values] = self.company.with_user(self.connector_user).read(["ezy_proforma_report_id"])
+        self.assertEqual(values["ezy_proforma_report_id"][0], quotation.id)
         pdf = base64.b64decode(self.render_as_connector(order))
         self.assertTrue(pdf.startswith(b"%PDF"))
 

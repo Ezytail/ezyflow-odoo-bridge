@@ -2,8 +2,8 @@
 <odoo noupdate="1">
     <!--
         Wake-up parameters (ADR 0006). All three are set by the administrator
-        after installation; the bridge ships them empty so they exist and are
-        visible in Settings > Technical > System Parameters.
+        after installation, in the Connector block of the EzyFlow settings page
+        (ADR 0020); the bridge ships them empty so they exist.
 
         ezyflow.activity       the activity this Odoo belongs to on the platform
         ezyflow.wakeup_url     the connector's wake-up endpoint
@@ -20,15 +20,5 @@
     <record id="param_ezyflow_wakeup_secret" model="ir.config_parameter">
         <field name="key">ezyflow.wakeup_secret</field>
         <field name="value"></field>
-    </record>
-    <!--
-        Proforma report (S8). The xml id of the report the connector's proforma
-        rendering uses (sale.order.ezy_render_proforma); Odoo's pro-forma invoice
-        unless the administrator points it at another sale.order report. Empty
-        falls back to the same default.
-    -->
-    <record id="param_ezyflow_proforma_report" model="ir.config_parameter">
-        <field name="key">ezyflow.proforma_report</field>
-        <field name="value">sale.report_saleorder_pro_forma</field>
     </record>
 </odoo>

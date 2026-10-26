@@ -5,7 +5,9 @@ from odoo import fields, models
 class ResCompany(models.Model):
     """One switch per WMS constraint (behaviour 8, ADR 0017), on by default.
     Each help names the exact figure; none binds the connector user. And
-    Apply stock reports (ADR 0018), off by default, which the connector reads."""
+    Apply stock reports (ADR 0018), off by default, which the connector reads.
+    And the proforma report (ADR 0020), read by the render of the company's
+    orders."""
 
     _inherit = "res.company"
 
@@ -16,6 +18,16 @@ class ResCompany(models.Model):
         "Off, they are written as pending counts to review and apply from the "
         "physical inventory, and Odoo republishes nothing for the report. WMS "
         "movements are always applied.",
+    )
+
+    ezy_proforma_report_id = fields.Many2one(
+        "ir.actions.report",
+        string="Proforma report",
+        domain=[("model", "=", "sale.order")],
+        ondelete="set null",
+        help="The sales order report the connector renders as the Proforma of this "
+        "company's orders and forwards to the WMS for shipment paperwork. Empty, "
+        "Odoo's pro forma invoice.",
     )
 
     ezy_wms_default_code_length = fields.Boolean(

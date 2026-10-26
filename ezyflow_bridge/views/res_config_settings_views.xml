@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <!--
-        The EzyFlow page of the Settings (ADR 0017): one setting per WMS
-        constraint, each a switch of the current company, and Apply stock
-        reports (ADR 0018), a switch of the current company too. Written to the
-        settings form both series share (ADR 0015): an <app> inside the base
-        form, its <block> and <setting> elements.
+        The EzyFlow page of the Settings, the one place an administrator
+        configures the bridge (ADR 0020): the Connector block shows the three
+        wake-up keys (ADR 0006), database-wide system parameters, the secret
+        behind the password widget; one setting per WMS constraint (ADR 0017),
+        Apply stock reports (ADR 0018) and the proforma report (ADR 0016) are
+        fields of the current company. Written to the settings form both series
+        share (ADR 0015): an <app> inside the base form, its <block> and
+        <setting> elements.
     -->
     <record id="res_config_settings_view_form_ezyflow" model="ir.ui.view">
         <field name="name">res.config.settings.view.form.ezyflow</field>
@@ -20,6 +23,21 @@
                     name="ezyflow_bridge"
                     logo="/ezyflow_bridge/static/description/icon.png"
                 >
+                    <block
+                        title="Connector"
+                        name="ezy_connector"
+                        help="How Odoo wakes the EzyFlow connector up when a transfer is ready for logistics. One set for the whole database, whichever company is selected."
+                    >
+                        <setting id="ezy_activity" help="The activity this Odoo belongs to on the EzyFlow platform.">
+                            <field name="ezy_activity" />
+                        </setting>
+                        <setting id="ezy_wakeup_url" help="The connector's wake-up endpoint, https://&lt;connector&gt;/wake-up.">
+                            <field name="ezy_wakeup_url" />
+                        </setting>
+                        <setting id="ezy_wakeup_secret" help="The secret the wake-ups are signed with, the value the publication's odoo_wakeup_secret points to. Cleared, every wake-up is refused and the connector polls on its interval only.">
+                            <field name="ezy_wakeup_secret" password="True" />
+                        </setting>
+                    </block>
                     <block
                         title="WMS constraints"
                         name="ezy_wms_constraints"
@@ -74,6 +92,11 @@
                     <block title="Stock" name="ezy_stock">
                         <setting id="ezy_apply_stock_reports" help="Apply the figures of a WMS stock report to the quantities on hand. Off, they are written as pending counts to review and apply from the physical inventory, and Odoo republishes nothing for the report. WMS movements are always applied.">
                             <field name="ezy_apply_stock_reports" />
+                        </setting>
+                    </block>
+                    <block title="Documents" name="ezy_documents">
+                        <setting id="ezy_proforma_report_id" help="The sales order report the connector renders as the proforma of this company's orders and forwards to the WMS for shipment paperwork. Empty, Odoo's pro forma invoice.">
+                            <field name="ezy_proforma_report_id" options="{'no_create': True, 'no_open': True}" />
                         </setting>
                     </block>
                 </app>

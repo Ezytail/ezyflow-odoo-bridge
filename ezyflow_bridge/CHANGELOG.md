@@ -3,6 +3,35 @@
 The bridge's contract version (series-less, ADR 0015). The connector expects the
 same major and minor (`src/Odoo.Service/Odoo/BridgeContract.cs`).
 
+## 3.8.0
+
+Every bridge setting lives on the EzyFlow settings page (ADR 0020).
+
+- A **Connector** block on the EzyFlow page of the Settings shows the three
+  wake-up keys, `ezyflow.activity`, `ezyflow.wakeup_url` and
+  `ezyflow.wakeup_secret`, the secret behind a password field. They stay
+  database-wide system parameters, still seeded empty, so a value already set
+  is kept and shown.
+- The proforma report becomes a field of the company,
+  `ezy_proforma_report_id`, a sales order report chosen from a list in a new
+  **Documents** block, empty by default (Odoo's pro forma). The render reads it
+  from the order's company; a report of another model written through RPC
+  renders Odoo's pro forma with a logged warning, as before.
+- The system parameter `ezyflow.proforma_report` is retired: the migration
+  copies its value onto every company whose field is empty, drops a value that
+  names no sales order report with a logged warning, and deletes the parameter.
+  The bridge no longer ships it.
+- No new right: every internal user, the connector user included, reads the
+  company field.
+
+Before going live on 3.8.0:
+
+- A database with several companies that relied on one parameter for all of
+  them gets that report on every company, archived ones included; an
+  administrator changes it per company on the page if needed.
+- Scripts or runbooks that set `ezyflow.proforma_report` now write nothing the
+  bridge reads; set the company's **Proforma report** instead.
+
 ## 3.7.1
 
 The connector validates past `stock_sms`'s one-time window (ADR 0019, issue #36).

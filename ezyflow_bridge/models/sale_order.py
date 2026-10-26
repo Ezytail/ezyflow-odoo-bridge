@@ -10,7 +10,6 @@ from .wms_constraints import binds
 
 _logger = logging.getLogger(__name__)
 
-PROFORMA_REPORT_PARAM = "ezyflow.proforma_report"
 DEFAULT_PROFORMA_REPORT = "sale.report_saleorder_pro_forma"
 
 
@@ -111,29 +110,27 @@ class SaleOrder(models.Model):
         forwards to the WMS for shipment paperwork. Rendered by this public method
         because report rendering is private in Odoo 19.
 
-        The report comes from the system parameter ``ezyflow.proforma_report``
-        (``sale.report_saleorder_pro_forma`` when empty). The order is read as
-        the caller, so an order the caller cannot read raises AccessError; the
-        rendering itself runs as superuser, since the connector user holds no
-        sales group: any internal user who can read the order gets the priced
-        document. Returns the PDF in base64, or an empty string when nothing
-        was rendered."""
+        The report is the proforma report of the order's company
+        (``ezy_proforma_report_id``, ADR 0020), Odoo's pro forma invoice when it
+        is empty. The order is read as the caller, so an order the caller cannot
+        read raises AccessError; the rendering itself runs as superuser, since
+        the connector user holds no sales group: any internal user who can read
+        the order gets the priced document. Returns the PDF in base64, or an
+        empty string when nothing was rendered."""
         self.ensure_one()
         self.check_access("read")
-        # Read through the record, the API both series share (ADR 0015).
-        report_ref = (
-            self.env["ezyflow.wakeup"]._param(PROFORMA_REPORT_PARAM).strip()
-            or DEFAULT_PROFORMA_REPORT
-        )
-        # The parameter may only name a sales order report: rendering runs as
-        # superuser, and another model's report would render its records by
-        # colliding id.
-        report = self.env.ref(report_ref, raise_if_not_found=False)
-        if not report or report._name != "ir.actions.report" or report.model != "sale.order":
+        report = self.sudo().company_id.ezy_proforma_report_id
+        report_ref = report or DEFAULT_PROFORMA_REPORT
+        # The form offers sales order reports only, but RPC or an import writes
+        # past the field's domain: rendering runs as superuser, and another
+        # model's report would render its records by colliding id.
+        if report and report.model != "sale.order":
             _logger.warning(
-                "EzyFlow: %s names %r, which is not a sale.order report; rendering %s",
-                PROFORMA_REPORT_PARAM,
-                report_ref,
+                "EzyFlow: the proforma report of %s is %s, a %s report, not a "
+                "sale.order report; rendering %s",
+                self.company_id.display_name,
+                report.display_name,
+                report.model,
                 DEFAULT_PROFORMA_REPORT,
             )
             report_ref = DEFAULT_PROFORMA_REPORT
