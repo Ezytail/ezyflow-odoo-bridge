@@ -1,0 +1,420 @@
+<section class="container">
+    <h1>EzyFlow bridge</h1>
+
+    <p>
+        EzyFlow bridge est le module Odoo dont le connecteur EzyFlow a besoin, et rien d'autre :
+        quelques champs, quelques comportements et une page de paramètres, pour qu'Odoo et le
+        système de gestion d'entrepôt (le WMS) échangent transferts, stock, produits et commandes à
+        travers EzyFlow. Le connecteur lui-même fonctionne hors d'Odoo. Les personnes qui le font
+        fonctionner pour votre société sont <strong>l'équipe EzyFlow</strong> : elles vous
+        transmettent les valeurs dont le connecteur a besoin, reçoivent les identifiants de ce que
+        vous créez dans Odoo et voient les refus que décide le connecteur.
+    </p>
+    <p>
+        Cette page s'adresse à l'administrateur Odoo. Elle comporte deux parties.
+        <strong>Configurer</strong> décrit ce que vous faites dans Odoo pour que le connecteur
+        fonctionne. <strong>Utiliser</strong> décrit ce que les utilisateurs rencontrent sur les
+        écrans d'Odoo une fois qu'il fonctionne, rédigé pour que vous le leur transmettiez. La même
+        page est affichée ici depuis <strong>Apps</strong> et depuis le bloc <strong>Aide</strong> de
+        la page de paramètres EzyFlow.
+    </p>
+
+    <h2>Configurer</h2>
+
+    <h3>1. Installer et mettre à niveau</h3>
+    <p>
+        Chaque version du connecteur est livrée avec une archive zip de ce module. Décompressez-la
+        dans un répertoire du chemin des modules d'Odoo (le dossier <code>ezyflow_bridge</code> se
+        trouve à la racine de l'archive), redémarrez Odoo, ouvrez <strong>Apps</strong>, choisissez
+        <strong>Mettre à jour la liste des Apps</strong> et installez <strong>EzyFlow bridge</strong>.
+        La même archive s'installe sur Odoo 19 et sur Odoo 20.
+    </p>
+    <p>
+        Pour mettre à niveau, remplacez le dossier par celui de la nouvelle version, puis lancez Odoo
+        une fois avec <code>-u ezyflow_bridge</code> ou ouvrez le module dans <strong>Apps</strong> et
+        appuyez sur <strong>Mettre à niveau</strong>. L'équipe EzyFlow vous indique quelle version du
+        module son connecteur attend : un connecteur face à un module d'une autre version majeure
+        refuse de fonctionner avec lui, et un connecteur face à une autre version mineure fonctionne
+        et l'en avertit.
+    </p>
+    <p>
+        Sur Odoo 20, un module installé en ligne de commande sur une base existante
+        (<code>-i ezyflow_bridge</code>) est installé et fonctionne, mais reste masqué dans
+        <strong>Apps</strong> jusqu'à la prochaine mise à niveau du module, qui répare son entrée.
+        Installez depuis Apps quand vous le pouvez, ou lancez une fois <code>-u ezyflow_bridge</code>
+        après une installation en ligne de commande.
+    </p>
+
+    <h3>2. L'utilisateur connecteur et sa clé</h3>
+    <p>
+        Le connecteur se connecte à Odoo avec un utilisateur qui lui est propre. Créez un utilisateur
+        qui appartient à la société que sert le connecteur, donnez-lui le groupe
+        <strong>Connecteur EzyFlow</strong> et aucun autre droit : le groupe porte déjà tout ce dont
+        le connecteur a besoin, et chaque droit ajouté élargit ce que permettrait une clé divulguée.
+        Ne lui donnez aucun rôle de vente, d'achat ou d'administration. Le connecteur s'adresse
+        toujours à Odoo en anglais, quelle que soit la langue de l'utilisateur connecteur : les refus
+        que lit l'équipe EzyFlow sont donc en anglais.
+    </p>
+    <p>
+        Donnez ensuite une clé API à cet utilisateur. Connecté en tant qu'utilisateur connecteur,
+        ouvrez ses <strong>Préférences</strong>, l'onglet <strong>Sécurité</strong>, et appuyez sur
+        <strong>Ajouter une clé API</strong>. Donnez à la clé une date d'expiration : le groupe
+        autorise jusqu'à dix ans. Sur Odoo 20, laissez la <strong>Portée</strong> sur RPC, la valeur
+        par défaut de l'écran. Odoo n'affiche la clé qu'une fois : transmettez-la à l'équipe EzyFlow
+        par le canal qu'elle vous indique, jamais en clair par e-mail, et notez sa date d'expiration
+        là où quelqu'un la verra avant qu'elle n'arrive.
+    </p>
+    <p>
+        Pour renouveler la clé, ajoutez une nouvelle clé sur le même utilisateur, transmettez-la à
+        l'équipe EzyFlow et supprimez l'ancienne une fois qu'elle confirme que le connecteur
+        fonctionne avec la nouvelle. Le connecteur prend la nouvelle clé en compte en moins d'une
+        minute.
+    </p>
+    <p>
+        Quand la clé expire ou est supprimée, Odoo refuse le connecteur et l'équipe EzyFlow le voit
+        comme une alarme de son côté : après quelques refus, le connecteur suspend son travail pour
+        votre Odoo et le reprend de lui-même dès qu'une clé valide est en place. Quand un droit manque
+        sur un type d'enregistrement, l'équipe EzyFlow voit un refus qui nomme cet enregistrement ;
+        vérifiez que l'utilisateur a toujours le groupe <strong>Connecteur EzyFlow</strong>, qu'il est
+        actif et qu'il appartient toujours à la société. Rien dans Odoo n'affiche ces refus : l'équipe
+        EzyFlow vous les signale.
+    </p>
+
+    <h3>3. La page de paramètres EzyFlow</h3>
+    <p>
+        Ouvrez <strong>Paramètres</strong> et choisissez <strong>EzyFlow</strong> dans le menu de
+        gauche. C'est le seul endroit où le module se configure ; les Paramètres système ne le sont
+        pas. La page modifie la société sélectionnée dans la barre supérieure : ce qui est dit
+        ci-dessous être par société se règle donc une fois pour chaque société que sert le
+        connecteur. Les trois clés du bloc Connecteur valent pour toute la base et s'affichent quelle
+        que soit la société sélectionnée.
+    </p>
+    <p>
+        <strong>Connecteur</strong>. Trois valeurs que vous transmet l'équipe EzyFlow, un seul jeu
+        pour toute la base : <strong>Activité</strong>, <strong>URL de réveil</strong> et
+        <strong>Secret de réveil</strong>. Grâce à elles, Odoo réveille le connecteur dès qu'un
+        transfert est prêt pour lui au lieu d'attendre la prochaine interrogation. Enregistrer la page
+        sans toucher au secret le conserve. Vider le secret et enregistrer l'efface : le connecteur
+        refuse alors tout réveil et ne lit Odoo qu'à son intervalle, ce qui coûte du délai, jamais des
+        données.
+    </p>
+    <p>
+        <strong>Contraintes WMS</strong>. Un interrupteur par règle et par société, tous activés à
+        l'installation du module. Quand un interrupteur est activé, une personne qui enregistre ou
+        confirme un enregistrement que le WMS refuserait plus tard est refusée immédiatement, avec un
+        message qui nomme l'enregistrement, le champ et la limite. Les limites sont celles du WMS
+        qu'EzyFlow sert pour vous ; une société sur un autre WMS désactive ce dont elle n'a pas
+        besoin. Les interrupteurs ne s'appliquent qu'aux personnes : ce que le connecteur écrit depuis
+        une boutique arrive tel que la boutique l'a envoyé, et le WMS en juge en chemin vers
+        l'entrepôt.
+    </p>
+    <table class="table table-sm table-bordered">
+        <thead>
+            <tr>
+                <th>Interrupteur</th>
+                <th>Ce qui est refusé</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td><strong>Référence interne : au plus 16 caractères</strong></td><td>Une référence interne de plus de 16 caractères.</td></tr>
+            <tr><td><strong>Référence interne : A-Z 0-9 _ . - # seulement</strong></td><td>Une référence interne contenant tout autre caractère, minuscules comprises.</td></tr>
+            <tr><td><strong>Référence interne : un seul produit actif par référence</strong></td><td>Une référence interne que détient déjà un autre produit actif de la société, ou un produit partagé par toutes les sociétés, quelle que soit sa casse. Les produits archivés ne comptent pas.</td></tr>
+            <tr><td><strong>Référence interne : obligatoire pour les marchandises vendables</strong></td><td>Une marchandise vendable enregistrée sans référence interne.</td></tr>
+            <tr><td><strong>Nom du produit : au plus 30 caractères</strong></td><td>Un nom de produit de plus de 30 caractères.</td></tr>
+            <tr><td><strong>Code-barres : lettres et chiffres seulement</strong></td><td>Un code-barres contenant autre chose qu'une lettre ou un chiffre. Le code-barres lui-même est facultatif.</td></tr>
+            <tr><td><strong>Code-barres : au plus 35 caractères</strong></td><td>Un code-barres de plus de 35 caractères.</td></tr>
+            <tr><td><strong>Nom du contact : au plus 35 caractères</strong></td><td>Un nom de contact ou d'adresse de plus de 35 caractères.</td></tr>
+            <tr><td><strong>Rue et rue 2 : au plus 35 caractères chacune</strong></td><td>Une rue ou une rue 2 de plus de 35 caractères.</td></tr>
+            <tr><td><strong>Ville : au plus 35 caractères</strong></td><td>Une ville de plus de 35 caractères.</td></tr>
+            <tr><td><strong>Code postal : au plus 9 caractères</strong></td><td>Un code postal de plus de 9 caractères.</td></tr>
+            <tr><td><strong>Téléphone : au plus 20 caractères</strong></td><td>Un numéro de téléphone de plus de 20 caractères.</td></tr>
+            <tr><td><strong>E-mail : au plus 140 caractères</strong></td><td>Une adresse e-mail de plus de 140 caractères.</td></tr>
+            <tr><td><strong>Adresse de livraison : téléphone et e-mail obligatoires à la confirmation</strong></td><td>La confirmation d'une commande client dont l'adresse de livraison n'a pas de téléphone ou pas d'e-mail. Les devis, les fournisseurs et les réceptions ne sont pas concernés. Une commande payée sur le site web d'Odoo est confirmée par Odoo après le paiement : cet interrupteur rend donc le téléphone et l'e-mail obligatoires lors du paiement en ligne.</td></tr>
+            <tr><td><strong>Référence de transfert : au plus 20 caractères parmi A-Z 0-9 _ - . # / \</strong></td><td>Un type d'opération de réception ou de livraison proposé au WMS dont la prochaine référence de transfert dépasserait 20 caractères ou utiliserait un autre caractère. Le message indique la référence que la séquence produirait ensuite.</td></tr>
+        </tbody>
+    </table>
+    <p>
+        Un enregistrement d'une société est jugé selon les interrupteurs de cette société. Un contact
+        ou un produit qui n'appartient à aucune société est jugé selon les interrupteurs de la société
+        dans laquelle la personne travaille. Chaque limite est vérifiée quand son propre champ est
+        écrit : un enregistrement qui dépasse déjà une limite est refusé la prochaine fois que
+        quelqu'un modifie ce champ, pas avant.
+    </p>
+    <p>
+        <strong>Stock</strong>. <strong>Appliquer les rapports de stock</strong>, par société,
+        désactivé à l'installation du module. Le WMS envoie un rapport de ce qu'il détient pour chaque
+        produit. Désactivé, le connecteur écrit chaque quantité du rapport comme un comptage en
+        attente qu'une personne vérifie et applique depuis <strong>Inventaire physique</strong>, et
+        Odoo n'annonce rien aux boutiques pour ce rapport. Activé, les quantités sont appliquées
+        immédiatement aux quantités en stock, sauf si l'équipe EzyFlow a désactivé l'application de
+        son côté pour votre société. Les mouvements WMS, une réception ou une expédition enregistrée
+        par le WMS hors d'un document Odoo, sont toujours appliqués, quel que soit l'interrupteur.
+    </p>
+    <p>
+        <strong>Documents</strong>. <strong>Rapport proforma</strong>, par société : le rapport de
+        commande client que le connecteur génère comme proforma des commandes de la société et
+        transmet au WMS pour les documents d'expédition. La liste ne propose que des rapports de
+        commande client. Laissé vide, le connecteur génère la facture pro forma d'Odoo.
+    </p>
+
+    <h3>4. Types d'opération que sert le WMS</h3>
+    <p>
+        Ouvrez <strong>Inventaire</strong>, <strong>Configuration</strong>, <strong>Types d'opérations</strong>.
+        Chaque type de réception et de livraison porte un <strong>Mode logistique</strong> qui indique
+        si ses transferts vont au WMS : <strong>Automatique : proposé dès la réservation</strong>
+        transmet un transfert dès qu'Odoo réserve son stock, <strong>Manuel : proposé quand une
+        personne le décide</strong> attend que quelqu'un appuie sur <strong>Proposer à la
+        logistique</strong> sur le transfert, et <strong>Désactivé : jamais proposé</strong> garde le
+        type dans Odoo. Les transferts internes ne sont jamais proposés, quel que soit le mode. Le
+        champ <strong>Canaux autorisés</strong> à côté nomme les canaux de vente que le type propose,
+        sous forme de codes séparés par des virgules ; vide, il propose tous les canaux. Un même
+        entrepôt peut ainsi servir le WMS pour son canal web et garder ses ventes au comptoir dans
+        Odoo.
+    </p>
+    <p>
+        Les lots et numéros de série circulent dans les deux sens avec le WMS : le connecteur les
+        écrit sur les livraisons et sur les réceptions qu'il enregistre. Laissez
+        <strong>Créer nouveau</strong> et <strong>Utiliser les existants</strong> activés, comme Odoo
+        les livre, sur les types de réception et de retour que sert le WMS, et laissez tels quels les
+        réglages des types de livraison. Un produit suivi que le WMS reçoit sans lot donne une
+        réception refusée : le WMS envoie les lots, ou le suivi du produit est désactivé.
+    </p>
+
+    <h3>5. Ce que la publication nomme par identifiant</h3>
+    <p>
+        L'équipe EzyFlow décrit votre Odoo au connecteur dans une publication, qui nomme plusieurs de
+        vos enregistrements par leur identifiant en base. Vous les créez, puis transmettez chaque
+        identifiant à l'équipe EzyFlow ; le connecteur les vérifie à son démarrage et refuse de
+        fonctionner tant que chacun n'est pas tel que décrit. L'identifiant se lit dans la barre
+        d'adresse du navigateur quand l'enregistrement est ouvert, ou en mode développeur sous
+        <strong>Afficher les métadonnées</strong>.
+    </p>
+    <ul>
+        <li>
+            <strong>Devises.</strong> Chaque devise dans laquelle une boutique vend, active, avec un
+            fournisseur de taux ou des taux tenus à la main dans les paramètres de Comptabilité ou de
+            Facturation. Une commande de boutique est enregistrée dans la devise dans laquelle le
+            client a payé, ses montants écrits tels que la boutique les a encaissés ; les écarts de
+            change par rapport au taux d'Odoo relèvent de la comptabilité, pas du connecteur.
+        </li>
+        <li>
+            <strong>Listes de prix.</strong> Une liste de prix par devise, et une par devise et par
+            canal là où vous tarifez les canaux séparément, de la société ou partagée. La publication
+            nomme chacune avec sa devise et son canal ; la liste donne sa devise à la commande et rien
+            d'autre. Une liste dont la devise n'est pas celle que la publication indique pour elle
+            bloque le connecteur jusqu'à ce que l'une des deux soit corrigée. Gardez la liste de prix
+            par défaut de la société dans la devise de la société, et n'attribuez pas à un client une
+            liste de prix dans une autre devise : Odoo donnerait aux commandes de boutique de ce client
+            une devise que la publication n'attend pas.
+        </li>
+        <li>
+            <strong>Droits de douane et frais d'importation.</strong> Deux produits de type service,
+            l'un pour les droits de douane et l'autre pour les frais d'importation qu'une boutique
+            encaisse au paiement pour une vente livrée droits acquittés, avec le compte de produits et
+            les taxes que souhaite la comptabilité. Ils arrivent comme des lignes ordinaires de la
+            commande. Un produit qui n'est pas un service, ou qui est archivé, bloque le connecteur.
+        </li>
+        <li>
+            <strong>Position fiscale.</strong> Là où la société est immatriculée à la TVA dans un pays
+            de destination, une position fiscale pour ce pays avec son numéro de TVA étranger et sa
+            correspondance de taxes, appliquée automatiquement selon le pays. Le devis, la proforma et
+            la facture impriment alors le numéro de TVA de la position à la place de celui de la
+            société.
+        </li>
+    </ul>
+
+    <h3>6. Données douanières des produits</h3>
+    <p>
+        Une livraison vers un autre pays, et une commande de boutique destinée à l'étranger, déclarent
+        ce qu'Odoo connaît des marchandises : le <strong>Code SH</strong> et l'<strong>Origine des
+        marchandises</strong> du produit, champs propres à Odoo sur la fiche produit. Rien n'est
+        renseigné par défaut. Une livraison ou une commande de boutique à destination de l'étranger
+        dont les marchandises n'ont pas l'un des deux est refusée par le connecteur, qui nomme les
+        produits ; l'équipe EzyFlow voit le refus, Odoo non. Renseignez les deux champs sur chaque
+        produit susceptible de passer une frontière ; un kit est déclaré par ses composants, ce sont
+        donc les composants qui les portent.
+    </p>
+
+    <h3>7. Deux sociétés sur une même base</h3>
+    <p>
+        Le connecteur sert chaque société par une publication qui lui est propre, dont l'utilisateur
+        connecteur appartient à cette société. Sur la page de paramètres EzyFlow, changez de société
+        dans la barre supérieure pour régler les contraintes WMS de cette société, son interrupteur
+        <strong>Appliquer les rapports de stock</strong> et son <strong>Rapport proforma</strong>. Les
+        trois clés du bloc <strong>Connecteur</strong> sont partagées par toutes les sociétés de la
+        base : elles se règlent donc une seule fois.
+    </p>
+
+    <h2>Utiliser</h2>
+
+    <h3>1. Les transferts et le WMS</h3>
+    <p>
+        Une réception ou une livraison d'un type d'opération en mode logistique est proposée au WMS :
+        dès qu'Odoo réserve son stock en mode <strong>Automatique</strong>, quand quelqu'un appuie sur
+        <strong>Proposer à la logistique</strong> dans l'en-tête du transfert en mode
+        <strong>Manuel</strong>. Un transfert dont la case <strong>Bloqué</strong> est cochée n'est
+        jamais proposé, quel que soit le mode, tant que la case n'est pas décochée.
+    </p>
+    <p>
+        L'<strong>État WMS</strong>, dans l'en-tête du transfert et en colonne de la liste des
+        transferts, indique où en est le transfert dans sa remise au WMS. Odoo fixe la première
+        valeur ; le WMS, par l'intermédiaire du connecteur, écrit les suivantes.
+    </p>
+    <table class="table table-sm table-bordered">
+        <thead>
+            <tr>
+                <th>État WMS</th>
+                <th>Signification</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td><strong>Prêt pour la logistique</strong></td><td>Odoo a proposé le transfert ; le connecteur ne l'a pas encore pris.</td></tr>
+            <tr><td><strong>Envoyé à la logistique</strong></td><td>Le WMS l'a reçu.</td></tr>
+            <tr><td><strong>Préparation à faire</strong></td><td>Le WMS l'a accepté et planifié.</td></tr>
+            <tr><td><strong>Préparation en cours</strong></td><td>L'entrepôt est en train de le préparer ou de le réceptionner.</td></tr>
+            <tr><td><strong>Préparation terminée</strong></td><td>L'entrepôt a terminé ; les quantités sont connues.</td></tr>
+            <tr><td><strong>Refusé par la logistique</strong></td><td>Le WMS l'a refusé ; le motif est connu de l'équipe EzyFlow.</td></tr>
+            <tr><td><strong>Annulé par la logistique</strong></td><td>Le WMS l'a annulé.</td></tr>
+            <tr><td><strong>Expédié</strong></td><td>Le colis a quitté l'entrepôt ; le transfert est validé.</td></tr>
+        </tbody>
+    </table>
+    <p>
+        Le menu <strong>Regrouper par</strong> de la liste des transferts propose
+        <strong>État WMS</strong> : les transferts refusés et les transferts annulés se retrouvent
+        ainsi dans des groupes à part.
+    </p>
+    <p>
+        D'<strong>Envoyé à la logistique</strong> à <strong>Annulé par la logistique</strong>, le
+        transfert est entre les mains du WMS et un bandeau l'indique : Odoo ne le réserve ni ne le
+        libère, et seul le connecteur peut modifier ses lignes (produits, quantités, lots). L'en-tête
+        reste le vôtre : les dates, le contact, les notes et l'annulation. Annuler un transfert dans
+        Odoo atteint le WMS, qui cesse d'y travailler.
+    </p>
+    <p>
+        Quand l'entrepôt expédie moins que ce que demandait le transfert, le connecteur valide le
+        transfert pour ce qui a été expédié et Odoo crée un reliquat pour le reste, comme pour toute
+        validation partielle ; le reliquat est proposé à son tour. Les lots et numéros de série que
+        l'entrepôt a préparés ou reçus sont écrits par le connecteur sur les lignes du transfert : le
+        transfert indique ainsi quel lot est parti chez quel client, et lequel est entré.
+    </p>
+
+    <h3>2. Commandes client venues d'une boutique</h3>
+    <p>
+        Une commande que le connecteur crée depuis une boutique porte, dans son onglet
+        <strong>Autres informations</strong>, le <strong>Canal</strong>, un code tel que WEB ou PRO
+        qui indique par quel canal de vente la commande est arrivée. Le canal est recopié sur le
+        client quand le connecteur en crée un, et sur les transferts. Une personne qui saisit un
+        canal doit saisir un code : lettres majuscules, chiffres, traits d'union et tirets bas,
+        jusqu'à 32 caractères.
+    </p>
+    <p>
+        Le <strong>Statut de livraison</strong> de la commande affiche l'état WMS de ses transferts.
+        Quand une commande a plusieurs transferts, <strong>Refusé par la logistique</strong> l'emporte,
+        puis <strong>Annulé par la logistique</strong>, puis l'état du transfert que le WMS a touché en
+        dernier. Le menu <strong>Regrouper par</strong> de la liste des commandes propose
+        <strong>Statut de livraison</strong>.
+    </p>
+    <p>
+        Le <strong>Total boutique</strong> de l'onglet <strong>Autres informations</strong> est ce que
+        le client a payé à la boutique, dans la devise de la commande. Quand Odoo calcule un autre
+        total pour les mêmes lignes, un avertissement au-dessus de la commande indique les deux
+        montants. La commande est maintenue et confirmée : vérifiez les taxes des lignes et la
+        position fiscale du client, les deux éléments qui font différer le total d'Odoo de celui de la
+        boutique. Les droits de douane et frais d'importation encaissés par la boutique apparaissent
+        comme des lignes ordinaires sur les deux produits de type service nommés dans Configurer.
+    </p>
+    <p>
+        Un colis livré en point relais est adressé au point relais, un contact à part entière qui
+        porte un <strong>Code relais</strong> ; le client qui le retire est le
+        <strong>Destinataire final</strong> de la commande et du transfert. Le connecteur génère la
+        proforma de la commande avec le <strong>Rapport proforma</strong> de la société et la
+        transmet au WMS pour les documents d'expédition ; rien n'est joint à la commande pour autant.
+    </p>
+    <p>
+        Quand une personne confirme une commande à la main et que l'interrupteur <strong>Adresse de
+        livraison : téléphone et e-mail obligatoires à la confirmation</strong> est activé, l'adresse
+        de livraison doit avoir un téléphone et un e-mail, car le transporteur a besoin des deux : la
+        confirmation est refusée tant qu'ils ne sont pas renseignés.
+    </p>
+
+    <h3>3. Produits</h3>
+    <p>
+        Les contraintes WMS de Configurer sont ce qu'une personne rencontre en enregistrant un
+        produit : un message qui nomme le champ et la limite, pour la référence interne, le nom du
+        produit et le code-barres. La référence interne est ce par quoi le WMS connaît un produit,
+        un seul produit actif la détient donc : pour remplacer un produit, archivez d'abord l'ancien,
+        puis le nouveau peut reprendre sa référence. Le code-barres est facultatif ; le WMS le scanne
+        quand il y en a un. Le <strong>Code SH</strong> et l'<strong>Origine des marchandises</strong>
+        sont nécessaires sur chaque produit susceptible d'être expédié à l'étranger, comme indiqué dans
+        Configurer.
+    </p>
+    <p>
+        Un kit est un produit doté d'une nomenclature de type kit : le WMS connaît ses composants,
+        jamais le kit, si bien qu'Odoo ne tient aucun stock sur un kit et n'affiche aucune quantité
+        en stock pour lui. Sa disponibilité est calculée à partir de celle des composants. Les
+        dimensions, les poids et les conditionnements appartiennent au WMS : ils y sont tenus, pas sur
+        le produit Odoo.
+    </p>
+
+    <h3>4. Contacts</h3>
+    <p>
+        Les contraintes WMS d'un contact ou d'une adresse sont celles de Configurer : le nom, les
+        lignes de rue, la ville, le code postal, le téléphone et l'e-mail ont chacun une limite, et le
+        message la nomme. Un point relais est un contact comme un autre, créé par le connecteur avec
+        un <strong>Code relais</strong> et un <strong>Transporteur relais</strong> ; laissez ces deux
+        champs tels quels.
+    </p>
+
+    <h3>5. Inventaire</h3>
+    <p>
+        Le WMS compte le stock. Son rapport de ce qu'il détient arrive dans Odoo de l'une de deux
+        façons, selon l'interrupteur <strong>Appliquer les rapports de stock</strong> de Configurer :
+        appliqué aux quantités en stock, ou écrit en comptages en attente que quelqu'un vérifie et
+        applique depuis <strong>Inventaire</strong>, <strong>Opérations</strong>,
+        <strong>Inventaire physique</strong>. Un comptage en attente peut être appliqué sans risque
+        juste après le rapport qui l'a écrit ; le rapport suivant redonne les quantités. Un mouvement
+        WMS, une réception ou une expédition que l'entrepôt a enregistrée hors d'un document Odoo, est
+        toujours appliqué, et efface le comptage en attente de l'emplacement qu'il touche.
+    </p>
+    <p>
+        Le WMS tient le stock des lots et numéros de série. Odoo enregistre sur les transferts quel
+        lot est allé où, mais la quantité qu'Odoo affiche par lot n'est pas rapprochée de celle du
+        WMS ; le chiffre fiable par produit est le total. La disponibilité d'un kit est republiée aux
+        boutiques chaque fois que l'un de ses composants bouge ou que sa nomenclature change, entre
+        deux rapports.
+    </p>
+
+    <h3>6. Qui a fait quoi</h3>
+    <p>
+        L'utilisateur connecteur ne laisse aucune ligne dans le fil de discussion, à dessein : un
+        transfert que le WMS a fait passer par ses huit états porterait sinon un message par étape.
+        Pour savoir si le connecteur ou une personne a touché un enregistrement en dernier, ouvrez ses
+        métadonnées (mode développeur, <strong>Afficher les métadonnées</strong>) et lisez
+        <strong>Mis à jour par</strong>. Les notes propres à Odoo apparaissent toujours : le silence
+        couvre les écritures du connecteur, pas les messages d'Odoo.
+    </p>
+
+    <h3>7. Quand quelque chose semble anormal</h3>
+    <p>
+        Avant d'appeler l'équipe EzyFlow, relevez dans Odoo : la référence du transfert ou de la
+        commande, son <strong>État WMS</strong> ou son <strong>Statut de livraison</strong>, et
+        l'heure de sa dernière écriture (<strong>Mis à jour le</strong> dans les métadonnées).
+        Transmettez-lui ces trois éléments ; elle retrouve l'échange correspondant de son côté. Un
+        transfert qui reste en <strong>Prêt pour la logistique</strong> plus longtemps qu'une
+        interrogation signifie que le connecteur n'a pas lu Odoo : vérifiez que l'utilisateur
+        connecteur est actif et que sa clé n'a pas expiré, puis interrogez l'équipe EzyFlow.
+    </p>
+    <p>
+        Un refus que décide le connecteur est visible par l'équipe EzyFlow, pas dans Odoo : un produit
+        suivi reçu sans lot, un produit expédié à l'étranger sans données douanières, un canal qui
+        n'est pas un code, une commande dans une devise qu'aucune liste de prix ne sert. Le transfert
+        ou la commande n'en porte aucune trace. Quand l'équipe EzyFlow signale un tel refus, la
+        correction se fait dans Odoo ou dans la boutique, et la prochaine modification de
+        l'enregistrement est relue.
+    </p>
+
+    <p>
+        Ce qui a changé entre deux versions du module, et où est passé un interrupteur, se trouve dans
+        le CHANGELOG du module, livré à côté de cette page.
+    </p>
+</section>

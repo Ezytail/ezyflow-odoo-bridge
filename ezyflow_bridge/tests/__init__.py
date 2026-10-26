@@ -13,6 +13,7 @@ from . import (
     test_fulfilment_rights,
     test_group_by,
     test_help_page,
+    test_i18n,
     test_offer,
     test_order_rights,
     test_product_rights,

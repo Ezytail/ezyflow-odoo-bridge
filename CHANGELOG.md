@@ -25,7 +25,27 @@ release that changes the bridge.
 | 3.8.3 | v0.8.2 (2026-10-23) | v0.8.2 |
 | 3.9.0 | not released yet | — |
 | 3.10.0 | not released yet | — |
-| 3.11.0 | not released yet | — |
+| 3.11.0 | v0.13.0 (2026-10-24) | v0.13.0 |
+| 3.12.0 | not released yet | — |
+
+## 3.12.0
+
+English and French (ADR 0031): the bridge speaks the person's language, the
+connector hears English.
+
+- `i18n/ezyflow_bridge.pot` and `i18n/fr.po`: every term the module has,
+  translated to French in the glossary's words. Odoo loads them on install and
+  upgrade for the active languages, and when French is activated later; one
+  file serves every French variant (fr_FR, fr_BE, fr_CH, fr_CA).
+- `static/description/index.fr.html`: the bridge help page in French, same
+  parts, same tables. `ir.module.module._get_desc` is overridden for the
+  bridge's own module row only: the page named after the base language of the
+  person's language is served when it exists, `index.html` otherwise; Apps and
+  the Help dialog follow the person's language together. Both pages say the
+  connector speaks to Odoo in English whatever the connector user's language.
+- No new field, no new right, no migration. A minor version for the override
+  and the translations; the connector pins `lang` to `en_US` in its context in
+  the same release.
 
 ## 3.11.0
 

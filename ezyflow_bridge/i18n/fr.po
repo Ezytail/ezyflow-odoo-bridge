@@ -1,0 +1,1210 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* ezyflow_bridge
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0-20261015\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-24 21:53+0000\n"
+"PO-Revision-Date: 2026-10-24 21:53+0000\n"
+"Last-Translator: Ezytail\n"
+"Language-Team: Ezytail\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#. module: ezyflow_bridge
+#: model:res.groups,comment:ezyflow_bridge.group_ezyflow_connector
+msgid ""
+"\n"
+"            Technical user a publication of the EzyFlow connector acts as. Holder of\n"
+"            the long-dated API key the portal stores as the publication's secret.\n"
+"        "
+msgstr ""
+"\n"
+"            Utilisateur technique au nom duquel agit une publication du connecteur EzyFlow. Détenteur\n"
+"            de la clé API de longue durée que le portail conserve comme secret de la publication.\n"
+"        "
+
+#. module: ezyflow_bridge
+#. odoo-python
+#: code:addons/ezyflow_bridge/models/product_product.py:0
+msgid ""
+"%(field)s %(value)s of %(product)s is already used by %(holder)s; the WMS "
+"keeps one product per reference."
+msgstr ""
+"%(field)s %(value)s de %(product)s est déjà utilisé par %(holder)s ; le WMS "
+"ne garde qu'un produit par référence."
+
+#. module: ezyflow_bridge
+#. odoo-python
+#: code:addons/ezyflow_bridge/models/stock_picking_type.py:0
+msgid ""
+"%(field)s of %(name)s would give its next transfer the reference "
+"%(example)s; the WMS accepts at most %(limit)s characters of %(alphabet)s. "
+"Shorten the sequence prefix or turn the logistics mode off."
+msgstr ""
+"%(field)s de %(name)s donnerait à son prochain transfert la référence "
+"%(example)s ; le WMS accepte au plus %(limit)s caractères parmi "
+"%(alphabet)s. Raccourcissez le préfixe de la séquence ou désactivez le mode "
+"logistique."
+
+#. module: ezyflow_bridge
+#. odoo-python
+#: code:addons/ezyflow_bridge/models/res_partner.py:0
+msgid ""
+"%(field)s of %(partner)s is longer than %(limit)s characters, the most the "
+"WMS accepts."
+msgstr ""
+"%(field)s de %(partner)s dépasse %(limit)s caractères, le maximum que le WMS"
+" accepte."
+
+#. module: ezyflow_bridge
+#. odoo-python
+#: code:addons/ezyflow_bridge/models/product_product.py:0
+#: code:addons/ezyflow_bridge/models/product_template.py:0
+msgid ""
+"%(field)s of %(product)s is longer than %(limit)s characters, the most the "
+"WMS accepts."
+msgstr ""
+"%(field)s de %(product)s dépasse %(limit)s caractères, le maximum que le WMS"
+" accepte."
+
+#. module: ezyflow_bridge
+#. odoo-python
+#: code:addons/ezyflow_bridge/models/product_product.py:0
+msgid ""
+"%(field)s of %(product)s, %(value)s, has a character the WMS refuses: only "
+"%(alphabet)s are accepted."
+msgstr ""
+"%(field)s de %(product)s, %(value)s, contient un caractère que le WMS refuse"
+" : seuls %(alphabet)s sont acceptés."
+
+#. module: ezyflow_bridge
+#. odoo-python
+#: code:addons/ezyflow_bridge/models/product_product.py:0
+msgid ""
+"%(field)s of %(product)s, %(value)s, has a character the WMS refuses: only "
+"letters and digits are accepted."
+msgstr ""
+"%(field)s de %(product)s, %(value)s, contient un caractère que le WMS refuse"
+" : seuls les lettres et les chiffres sont acceptés."
+
+#. module: ezyflow_bridge
+#. odoo-python
+#: code:addons/ezyflow_bridge/models/sale_order.py:0
+msgid ""
+"%(order)s cannot be confirmed: its delivery address %(partner)s has no "
+"%(field)s, and the WMS requires a phone and an email on the delivery "
+"address."
+msgstr ""
+"%(order)s ne peut pas être confirmée : son adresse de livraison %(partner)s "
+"n'a pas de %(field)s, et le WMS exige un téléphone et un e-mail sur "
+"l'adresse de livraison."
+
+#. module: ezyflow_bridge
+#. odoo-python
+#: code:addons/ezyflow_bridge/models/stock_picking.py:0
+msgid ""
+"%(picking)s is frozen: its WMS state is '%(state)s', so its lines belong to "
+"the WMS. Only the EzyFlow connector or an administrator may change them."
+msgstr ""
+"%(picking)s est gelé : son état WMS est « %(state)s », ses lignes "
+"appartiennent donc au WMS. Seul le connecteur EzyFlow ou un administrateur "
+"peut les modifier."
+
+#. module: ezyflow_bridge
+#. odoo-python
+#: code:addons/ezyflow_bridge/models/product_product.py:0
+msgid ""
+"%(product)s is sold as goods and has no internal reference; the WMS "
+"identifies products by it (%(field)s is required)."
+msgstr ""
+"%(product)s est vendu comme marchandise et n'a pas de référence interne ; le"
+" WMS identifie les produits par elle (%(field)s est obligatoire)."
+
+#. module: ezyflow_bridge
+#: model_terms:ir.ui.view,arch_db:ezyflow_bridge.view_order_form_ezyflow
+msgid ""
+":\n"
+"                    check the taxes and the fiscal position."
+msgstr ""
+" :\n"
+"                    vérifiez les taxes et la position fiscale."
+
+#. module: ezyflow_bridge
+#: model:ir.module.category,description:ezyflow_bridge.module_category_ezyflow
+msgid "Access rights of the EzyFlow connector."
+msgstr "Droits d'accès du connecteur EzyFlow."
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_config_settings__ezy_activity
+msgid "Activity"
+msgstr "Activité"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_company__ezy_apply_stock_reports
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_config_settings__ezy_apply_stock_reports
+msgid "Apply stock reports"
+msgstr "Appliquer les rapports de stock"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_res_company__ezy_apply_stock_reports
+#: model:ir.model.fields,help:ezyflow_bridge.field_res_config_settings__ezy_apply_stock_reports
+#: model_terms:ir.ui.view,arch_db:ezyflow_bridge.res_config_settings_view_form_ezyflow
+msgid ""
+"Apply the figures of a WMS stock report to the quantities on hand. Off, they"
+" are written as pending counts to review and apply from the physical "
+"inventory, and Odoo republishes nothing for the report. WMS movements are "
+"always applied."
+msgstr ""
+"Appliquer les chiffres d'un rapport de stock du WMS aux quantités en stock. "
+"Désactivé, ils sont écrits comme comptages en attente, à vérifier et "
+"appliquer depuis l'inventaire physique, et Odoo ne republie rien pour ce "
+"rapport. Les mouvements du WMS sont toujours appliqués."
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields.selection,name:ezyflow_bridge.selection__stock_picking_type__ezy_logistics_mode__auto
+msgid "Auto: offered when reserved"
+msgstr "Automatique : proposé dès la réservation"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_company__ezy_wms_barcode_length
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_config_settings__ezy_wms_barcode_length
+msgid "Barcode: at most 35 characters"
+msgstr "Code-barres : au plus 35 caractères"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_company__ezy_wms_barcode_alphabet
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_config_settings__ezy_wms_barcode_alphabet
+msgid "Barcode: letters and digits only"
+msgstr "Code-barres : lettres et chiffres seulement"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_sale_order__delivery_status
+msgid ""
+"Blue: Not Delivered/Started\n"
+"            Orange: Partially Delivered\n"
+"            Green: Fully Delivered"
+msgstr ""
+"Bleu : non livré/commencé\n"
+"            Orange : partiellement livré\n"
+"            Vert : entièrement livré"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields.selection,name:ezyflow_bridge.selection__sale_order__delivery_status__cancelled_by_logistics
+#: model:ir.model.fields.selection,name:ezyflow_bridge.selection__stock_picking__ezy_wms_state__cancelled_by_logistics
+msgid "Cancelled by logistics"
+msgstr "Annulé par la logistique"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_partner__ezy_channel
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_users__ezy_channel
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_sale_order__ezy_channel
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_stock_picking__ezy_channel
+msgid "Channel"
+msgstr "Canal"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_stock_picking_type__ezy_channels
+msgid "Channel allow-list"
+msgstr "Canaux autorisés"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_company__ezy_wms_city_length
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_config_settings__ezy_wms_city_length
+msgid "City: at most 35 characters"
+msgstr "Ville : au plus 35 caractères"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_stock_picking_type__ezy_channels
+msgid ""
+"Comma-separated channel codes (such as WEB,PRO,B2B; capital letters, digits,"
+" hyphens, underscores) this operation type may offer to the WMS. Empty: "
+"every channel. A transfer whose channel is not listed stays in Odoo."
+msgstr ""
+"Codes de canal séparés par des virgules (par exemple WEB,PRO,B2B ; lettres "
+"majuscules, chiffres, tirets, tirets bas) que ce type d'opération peut "
+"proposer au WMS. Vide : tous les canaux. Un transfert dont le canal n'est "
+"pas listé reste dans Odoo."
+
+#. module: ezyflow_bridge
+#: model:ir.model,name:ezyflow_bridge.model_res_company
+msgid "Companies"
+msgstr "Sociétés"
+
+#. module: ezyflow_bridge
+#: model:ir.model,name:ezyflow_bridge.model_res_company
+msgid "Company"
+msgstr "Société"
+
+#. module: ezyflow_bridge
+#: model:ir.model,name:ezyflow_bridge.model_res_config_settings
+msgid "Config Settings"
+msgstr "Paramètres de configuration"
+
+#. module: ezyflow_bridge
+#: model_terms:ir.ui.view,arch_db:ezyflow_bridge.res_config_settings_view_form_ezyflow
+msgid "Connector"
+msgstr "Connecteur"
+
+#. module: ezyflow_bridge
+#: model:ir.model,name:ezyflow_bridge.model_res_partner
+msgid "Contact"
+msgstr "Contact"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_delivery_carrier__ezy_has_relay_points
+msgid "Delivers to relay points"
+msgstr "Livre en points relais"
+
+#. module: ezyflow_bridge
+#: model:ir.model,name:ezyflow_bridge.model_delivery_carrier
+msgid "Delivery Method"
+msgstr "Mode de livraison"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_sale_order__delivery_status
+#: model_terms:ir.ui.view,arch_db:ezyflow_bridge.view_sales_order_filter_ezyflow
+msgid "Delivery Status"
+msgstr "Statut de livraison"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_company__ezy_wms_delivery_contact_required
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_config_settings__ezy_wms_delivery_contact_required
+msgid "Delivery address: phone and email required at confirmation"
+msgstr ""
+"Adresse de livraison : téléphone et e-mail obligatoires à la confirmation"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_ir_module_module__description_html
+msgid "Description HTML"
+msgstr "Description HTML"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_delivery_carrier__display_name
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_ezyflow_bridge_security__display_name
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_ezyflow_wakeup__display_name
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_ir_module_module__display_name
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_ir_sequence__display_name
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_mail_thread__display_name
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_product_product__display_name
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_product_template__display_name
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_company__display_name
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_config_settings__display_name
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_partner__display_name
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_sale_order__display_name
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_sale_order_line__display_name
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_stock_move__display_name
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_stock_move_line__display_name
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_stock_picking__display_name
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_stock_picking_type__display_name
+msgid "Display Name"
+msgstr "Nom affiché"
+
+#. module: ezyflow_bridge
+#: model_terms:ir.ui.view,arch_db:ezyflow_bridge.res_config_settings_view_form_ezyflow
+msgid "Documents"
+msgstr "Documents"
+
+#. module: ezyflow_bridge
+#: model:ir.model,name:ezyflow_bridge.model_mail_thread
+msgid "Email Thread"
+msgstr "Discussion par e-mail"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_company__ezy_wms_email_length
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_config_settings__ezy_wms_email_length
+msgid "Email: at most 140 characters"
+msgstr "E-mail : au plus 140 caractères"
+
+#. module: ezyflow_bridge
+#: model:ir.module.category,name:ezyflow_bridge.module_category_ezyflow
+#: model:res.groups.privilege,name:ezyflow_bridge.res_groups_privilege_ezyflow
+#: model_terms:ir.ui.view,arch_db:ezyflow_bridge.res_config_settings_view_form_ezyflow
+msgid "EzyFlow"
+msgstr "EzyFlow"
+
+#. module: ezyflow_bridge
+#: model:ir.module.module,shortdesc:base.module_ezyflow_bridge
+msgid "EzyFlow bridge"
+msgstr "EzyFlow bridge"
+
+#. module: ezyflow_bridge
+#: model:ir.actions.act_window,name:ezyflow_bridge.action_ezyflow_bridge_help
+#: model_terms:ir.ui.view,arch_db:ezyflow_bridge.ir_module_module_view_form_ezyflow_help
+#: model_terms:ir.ui.view,arch_db:ezyflow_bridge.res_config_settings_view_form_ezyflow
+msgid "EzyFlow bridge help"
+msgstr "Aide EzyFlow bridge"
+
+#. module: ezyflow_bridge
+#: model:ir.model,name:ezyflow_bridge.model_ezyflow_bridge_security
+msgid "EzyFlow bridge: per-series access rights"
+msgstr "EzyFlow bridge : droits d'accès par série"
+
+#. module: ezyflow_bridge
+#: model:res.groups,name:ezyflow_bridge.group_ezyflow_connector
+msgid "EzyFlow connector"
+msgstr "Connecteur EzyFlow"
+
+#. module: ezyflow_bridge
+#: model:ir.model,name:ezyflow_bridge.model_ezyflow_wakeup
+msgid "EzyFlow wake-up"
+msgstr "Réveil EzyFlow"
+
+#. module: ezyflow_bridge
+#: model:ir.module.module,summary:base.module_ezyflow_bridge
+msgid "Fields and behaviours the EzyFlow connector needs, nothing else"
+msgstr ""
+"Les champs et les comportements dont le connecteur EzyFlow a besoin, rien "
+"d'autre"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_sale_order__ezy_final_recipient_id
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_stock_picking__ezy_final_recipient_id
+msgid "Final recipient"
+msgstr "Destinataire final"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_stock_picking__ezy_is_frozen
+msgid "Frozen for the WMS"
+msgstr "Gelé pour le WMS"
+
+#. module: ezyflow_bridge
+#: model_terms:ir.ui.view,arch_db:ezyflow_bridge.res_config_settings_view_form_ezyflow
+msgid "Help"
+msgstr "Aide"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_stock_picking__ezy_hold
+msgid "Hold"
+msgstr "Bloqué"
+
+#. module: ezyflow_bridge
+#: model_terms:ir.ui.view,arch_db:ezyflow_bridge.res_config_settings_view_form_ezyflow
+msgid ""
+"How Odoo wakes the EzyFlow connector up when a transfer is ready for "
+"logistics. One set for the whole database, whichever company is selected."
+msgstr ""
+"Comment Odoo réveille le connecteur EzyFlow quand un transfert est prêt pour"
+" la logistique. Un seul jeu de valeurs pour toute la base de données, quelle"
+" que soit la société sélectionnée."
+
+#. module: ezyflow_bridge
+#: model_terms:ir.ui.view,arch_db:ezyflow_bridge.res_config_settings_view_form_ezyflow
+msgid ""
+"How to configure the bridge and what people meet on Odoo's screens, in one "
+"page."
+msgstr ""
+"Comment configurer le pont et ce que les utilisateurs rencontrent sur les "
+"écrans d'Odoo, en une page."
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_delivery_carrier__id
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_ezyflow_bridge_security__id
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_ezyflow_wakeup__id
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_ir_module_module__id
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_ir_sequence__id
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_mail_thread__id
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_product_product__id
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_product_template__id
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_company__id
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_config_settings__id
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_partner__id
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_sale_order__id
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_sale_order_line__id
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_stock_move__id
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_stock_move_line__id
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_stock_picking__id
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_stock_picking_type__id
+msgid "ID"
+msgstr "ID"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_company__ezy_wms_default_code_alphabet
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_config_settings__ezy_wms_default_code_alphabet
+msgid "Internal reference: A-Z 0-9 _ . - # only"
+msgstr "Référence interne : A-Z 0-9 _ . - # seulement"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_company__ezy_wms_default_code_length
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_config_settings__ezy_wms_default_code_length
+msgid "Internal reference: at most 16 characters"
+msgstr "Référence interne : au plus 16 caractères"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_company__ezy_wms_default_code_unique
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_config_settings__ezy_wms_default_code_unique
+msgid "Internal reference: one active product per reference"
+msgstr "Référence interne : un seul produit actif par référence"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_company__ezy_wms_default_code_required
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_config_settings__ezy_wms_default_code_required
+msgid "Internal reference: required for sellable goods"
+msgstr "Référence interne : obligatoire pour les marchandises vendables"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_stock_picking__ezy_hold
+msgid "Keeps this transfer out of the WMS whatever its operation type says."
+msgstr "Garde ce transfert hors du WMS quoi qu'en dise son type d'opération."
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_stock_picking__ezy_logistics_mode
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_stock_picking_type__ezy_logistics_mode
+msgid "Logistics mode"
+msgstr "Mode logistique"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields.selection,name:ezyflow_bridge.selection__stock_picking_type__ezy_logistics_mode__manual
+msgid "Manual: offered when a person says so"
+msgstr "Manuel : proposé quand une personne le décide"
+
+#. module: ezyflow_bridge
+#: model:ir.model,name:ezyflow_bridge.model_ir_module_module
+msgid "Module"
+msgstr "Module"
+
+#. module: ezyflow_bridge
+#: model:res.groups.privilege,placeholder:ezyflow_bridge.res_groups_privilege_ezyflow
+msgid "No"
+msgstr "Non"
+
+#. module: ezyflow_bridge
+#. odoo-python
+#: code:addons/ezyflow_bridge/models/contract.py:0
+msgid ""
+"Not a channel code on %(owner)s: %(codes)s. A channel code is 1 to 32 "
+"capital letters, digits, hyphens or underscores, such as WEB, PRO or B2B."
+msgstr ""
+"Code de canal invalide sur %(owner)s : %(codes)s. Un code de canal compte 1 "
+"à 32 lettres majuscules, chiffres, tirets ou tirets bas, par exemple WEB, "
+"PRO ou B2B."
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_stock_picking__ezy_is_frozen
+msgid ""
+"Odoo neither reserves nor unreserves a frozen transfer, and only the EzyFlow"
+" connector may change its lines."
+msgstr ""
+"Odoo ne réserve ni ne libère un transfert gelé, et seul le connecteur "
+"EzyFlow peut modifier ses lignes."
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields.selection,name:ezyflow_bridge.selection__stock_picking_type__ezy_logistics_mode__off
+msgid "Off: never offered"
+msgstr "Désactivé : jamais proposé"
+
+#. module: ezyflow_bridge
+#: model_terms:ir.ui.view,arch_db:ezyflow_bridge.view_picking_form_ezyflow
+msgid "Offer to logistics"
+msgstr "Proposer à la logistique"
+
+#. module: ezyflow_bridge
+#: model_terms:ir.ui.view,arch_db:ezyflow_bridge.res_config_settings_view_form_ezyflow
+msgid "Open the EzyFlow bridge help"
+msgstr "Ouvrir l'aide EzyFlow bridge"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_company__ezy_wms_partner_name_length
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_config_settings__ezy_wms_partner_name_length
+msgid "Partner name: at most 35 characters"
+msgstr "Nom du contact : au plus 35 caractères"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_company__ezy_wms_phone_length
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_config_settings__ezy_wms_phone_length
+msgid "Phone: at most 20 characters"
+msgstr "Téléphone : au plus 20 caractères"
+
+#. module: ezyflow_bridge
+#: model:ir.model,name:ezyflow_bridge.model_stock_picking_type
+msgid "Picking Type"
+msgstr "Type d'opération"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_company__ezy_wms_zip_length
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_config_settings__ezy_wms_zip_length
+msgid "Postcode: at most 9 characters"
+msgstr "Code postal : au plus 9 caractères"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields.selection,name:ezyflow_bridge.selection__sale_order__delivery_status__preparation_done
+#: model:ir.model.fields.selection,name:ezyflow_bridge.selection__stock_picking__ezy_wms_state__preparation_done
+msgid "Preparation done"
+msgstr "Préparation terminée"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields.selection,name:ezyflow_bridge.selection__sale_order__delivery_status__preparation_in_progress
+#: model:ir.model.fields.selection,name:ezyflow_bridge.selection__stock_picking__ezy_wms_state__preparation_in_progress
+msgid "Preparation in progress"
+msgstr "Préparation en cours"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields.selection,name:ezyflow_bridge.selection__sale_order__delivery_status__preparation_to_do
+#: model:ir.model.fields.selection,name:ezyflow_bridge.selection__stock_picking__ezy_wms_state__preparation_to_do
+msgid "Preparation to do"
+msgstr "Préparation à faire"
+
+#. module: ezyflow_bridge
+#: model:ir.model,name:ezyflow_bridge.model_product_template
+msgid "Product"
+msgstr "Produit"
+
+#. module: ezyflow_bridge
+#: model:ir.model,name:ezyflow_bridge.model_stock_move_line
+msgid "Product Moves (Stock Move Line)"
+msgstr "Mouvements de produit (ligne de mouvement de stock)"
+
+#. module: ezyflow_bridge
+#: model:ir.model,name:ezyflow_bridge.model_product_product
+msgid "Product Variant"
+msgstr "Variante de produit"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_company__ezy_wms_product_name_length
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_config_settings__ezy_wms_product_name_length
+msgid "Product name: at most 30 characters"
+msgstr "Nom du produit : au plus 30 caractères"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_company__ezy_proforma_report_id
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_config_settings__ezy_proforma_report_id
+msgid "Proforma report"
+msgstr "Rapport proforma"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields.selection,name:ezyflow_bridge.selection__sale_order__delivery_status__ready_for_logistics
+#: model:ir.model.fields.selection,name:ezyflow_bridge.selection__stock_picking__ezy_wms_state__ready_for_logistics
+msgid "Ready for logistics"
+msgstr "Prêt pour la logistique"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_res_company__ezy_wms_barcode_length
+#: model:ir.model.fields,help:ezyflow_bridge.field_res_config_settings__ezy_wms_barcode_length
+#: model_terms:ir.ui.view,arch_db:ezyflow_bridge.res_config_settings_view_form_ezyflow
+msgid "Refuse a barcode longer than 35 characters."
+msgstr "Refuser un code-barres de plus de 35 caractères."
+
+#. module: ezyflow_bridge
+#: model_terms:ir.ui.view,arch_db:ezyflow_bridge.res_config_settings_view_form_ezyflow
+msgid "Refuse a barcode with a character other than a letter or a digit."
+msgstr ""
+"Refuser un code-barres contenant autre chose qu'une lettre ou un chiffre."
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_res_company__ezy_wms_barcode_alphabet
+#: model:ir.model.fields,help:ezyflow_bridge.field_res_config_settings__ezy_wms_barcode_alphabet
+msgid ""
+"Refuse a barcode, when there is one, with a character other than a letter or"
+" a digit."
+msgstr ""
+"Refuser un code-barres, quand il y en a un, contenant autre chose qu'une "
+"lettre ou un chiffre."
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_res_company__ezy_wms_city_length
+#: model:ir.model.fields,help:ezyflow_bridge.field_res_config_settings__ezy_wms_city_length
+#: model_terms:ir.ui.view,arch_db:ezyflow_bridge.res_config_settings_view_form_ezyflow
+msgid "Refuse a city longer than 35 characters."
+msgstr "Refuser une ville de plus de 35 caractères."
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_res_company__ezy_wms_partner_name_length
+#: model:ir.model.fields,help:ezyflow_bridge.field_res_config_settings__ezy_wms_partner_name_length
+#: model_terms:ir.ui.view,arch_db:ezyflow_bridge.res_config_settings_view_form_ezyflow
+msgid "Refuse a contact or address name longer than 35 characters."
+msgstr "Refuser un nom de contact ou d'adresse de plus de 35 caractères."
+
+#. module: ezyflow_bridge
+#: model_terms:ir.ui.view,arch_db:ezyflow_bridge.res_config_settings_view_form_ezyflow
+msgid "Refuse a phone longer than 20 characters."
+msgstr "Refuser un téléphone de plus de 20 caractères."
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_res_company__ezy_wms_phone_length
+#: model:ir.model.fields,help:ezyflow_bridge.field_res_config_settings__ezy_wms_phone_length
+msgid "Refuse a phone number longer than 20 characters."
+msgstr "Refuser un numéro de téléphone de plus de 20 caractères."
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_res_company__ezy_wms_zip_length
+#: model:ir.model.fields,help:ezyflow_bridge.field_res_config_settings__ezy_wms_zip_length
+#: model_terms:ir.ui.view,arch_db:ezyflow_bridge.res_config_settings_view_form_ezyflow
+msgid "Refuse a postcode longer than 9 characters."
+msgstr "Refuser un code postal de plus de 9 caractères."
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_res_company__ezy_wms_product_name_length
+#: model:ir.model.fields,help:ezyflow_bridge.field_res_config_settings__ezy_wms_product_name_length
+#: model_terms:ir.ui.view,arch_db:ezyflow_bridge.res_config_settings_view_form_ezyflow
+msgid "Refuse a product name longer than 30 characters."
+msgstr "Refuser un nom de produit de plus de 30 caractères."
+
+#. module: ezyflow_bridge
+#: model_terms:ir.ui.view,arch_db:ezyflow_bridge.res_config_settings_view_form_ezyflow
+msgid ""
+"Refuse a receipt or delivery type in logistics mode whose next transfer "
+"reference would be longer than 20 characters, or use a character other than "
+"A-Z 0-9 _ - . # / and the backslash."
+msgstr ""
+"Refuser un type de réception ou de livraison en mode logistique dont la "
+"prochaine référence de transfert dépasserait 20 caractères, ou utiliserait "
+"un caractère autre que A-Z 0-9 _ - . # / et la barre oblique inverse."
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_res_company__ezy_wms_default_code_required
+#: model:ir.model.fields,help:ezyflow_bridge.field_res_config_settings__ezy_wms_default_code_required
+msgid ""
+"Refuse a sellable good (a product that can be sold and is goods) without "
+"internal reference: Reflex identifies products by it."
+msgstr ""
+"Refuser une marchandise vendable (un produit qui peut être vendu et qui est "
+"une marchandise) sans référence interne : Reflex identifie les produits par "
+"elle."
+
+#. module: ezyflow_bridge
+#: model_terms:ir.ui.view,arch_db:ezyflow_bridge.res_config_settings_view_form_ezyflow
+msgid "Refuse a sellable good without internal reference."
+msgstr "Refuser une marchandise vendable sans référence interne."
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_res_company__ezy_wms_street_length
+#: model:ir.model.fields,help:ezyflow_bridge.field_res_config_settings__ezy_wms_street_length
+#: model_terms:ir.ui.view,arch_db:ezyflow_bridge.res_config_settings_view_form_ezyflow
+msgid "Refuse a street or a street 2 longer than 35 characters."
+msgstr "Refuser une rue ou une rue 2 de plus de 35 caractères."
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_res_company__ezy_wms_email_length
+#: model:ir.model.fields,help:ezyflow_bridge.field_res_config_settings__ezy_wms_email_length
+#: model_terms:ir.ui.view,arch_db:ezyflow_bridge.res_config_settings_view_form_ezyflow
+msgid "Refuse an email longer than 140 characters."
+msgstr "Refuser un e-mail de plus de 140 caractères."
+
+#. module: ezyflow_bridge
+#: model_terms:ir.ui.view,arch_db:ezyflow_bridge.res_config_settings_view_form_ezyflow
+msgid ""
+"Refuse an internal reference another active product already holds, whatever "
+"its case."
+msgstr ""
+"Refuser une référence interne qu'un autre produit actif détient déjà, quelle"
+" que soit sa casse."
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_res_company__ezy_wms_default_code_unique
+#: model:ir.model.fields,help:ezyflow_bridge.field_res_config_settings__ezy_wms_default_code_unique
+msgid ""
+"Refuse an internal reference another active product of the company, or a "
+"product shared by every company, already holds, compared without regard to "
+"case: Reflex keeps one article per SKU and would merge the two."
+msgstr ""
+"Refuser une référence interne qu'un autre produit actif de la société, ou un"
+" produit partagé par toutes les sociétés, détient déjà, comparée sans tenir "
+"compte de la casse : Reflex ne garde qu'un article par SKU et fusionnerait "
+"les deux."
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_res_company__ezy_wms_default_code_length
+#: model:ir.model.fields,help:ezyflow_bridge.field_res_config_settings__ezy_wms_default_code_length
+msgid ""
+"Refuse an internal reference longer than 16 characters, the longest SKU "
+"Reflex stores."
+msgstr ""
+"Refuser une référence interne de plus de 16 caractères, le plus long SKU que"
+" Reflex stocke."
+
+#. module: ezyflow_bridge
+#: model_terms:ir.ui.view,arch_db:ezyflow_bridge.res_config_settings_view_form_ezyflow
+msgid "Refuse an internal reference longer than 16 characters."
+msgstr "Refuser une référence interne de plus de 16 caractères."
+
+#. module: ezyflow_bridge
+#: model_terms:ir.ui.view,arch_db:ezyflow_bridge.res_config_settings_view_form_ezyflow
+msgid ""
+"Refuse an internal reference with a character other than A-Z 0-9 _ . - #."
+msgstr ""
+"Refuser une référence interne contenant un caractère autre que A-Z 0-9 _ . -"
+" #."
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_res_company__ezy_wms_default_code_alphabet
+#: model:ir.model.fields,help:ezyflow_bridge.field_res_config_settings__ezy_wms_default_code_alphabet
+msgid ""
+"Refuse an internal reference with a character other than the capital letters"
+" A to Z, the digits 0 to 9 and _ . - #, the SKU alphabet of Reflex."
+msgstr ""
+"Refuser une référence interne contenant un caractère autre que les lettres "
+"majuscules A à Z, les chiffres 0 à 9 et _ . - #, l'alphabet SKU de Reflex."
+
+#. module: ezyflow_bridge
+#: model_terms:ir.ui.view,arch_db:ezyflow_bridge.res_config_settings_view_form_ezyflow
+msgid ""
+"Refuse to confirm a sales order whose delivery address has no phone or no "
+"email."
+msgstr ""
+"Refuser de confirmer une commande client dont l'adresse de livraison n'a pas"
+" de téléphone ou pas d'e-mail."
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_res_company__ezy_wms_delivery_contact_required
+#: model:ir.model.fields,help:ezyflow_bridge.field_res_config_settings__ezy_wms_delivery_contact_required
+msgid ""
+"Refuse to confirm a sales order whose delivery address has no phone or no "
+"email. Quotations, vendors and receipts are never checked."
+msgstr ""
+"Refuser de confirmer une commande client dont l'adresse de livraison n'a pas"
+" de téléphone ou pas d'e-mail. Les devis, les fournisseurs et les réceptions"
+" ne sont jamais vérifiés."
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_res_company__ezy_wms_picking_name
+#: model:ir.model.fields,help:ezyflow_bridge.field_res_config_settings__ezy_wms_picking_name
+msgid ""
+"Refuse to turn on the logistics mode of a receipt or delivery operation "
+"type, or to change its sequence while it is on, when the next reference its "
+"sequence would give is longer than 20 characters or has a character other "
+"than A-Z 0-9 _ - . # / \\."
+msgstr ""
+"Refuser d'activer le mode logistique d'un type d'opération de réception ou "
+"de livraison, ou de changer sa séquence tant qu'il est actif, quand la "
+"prochaine référence que sa séquence donnerait dépasse 20 caractères ou "
+"contient un caractère autre que A-Z 0-9 _ - . # / \\."
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields.selection,name:ezyflow_bridge.selection__sale_order__delivery_status__refused_by_logistics
+#: model:ir.model.fields.selection,name:ezyflow_bridge.selection__stock_picking__ezy_wms_state__refused_by_logistics
+msgid "Refused by logistics"
+msgstr "Refusé par la logistique"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_partner__ezy_relay_carrier_id
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_users__ezy_relay_carrier_id
+msgid "Relay carrier"
+msgstr "Transporteur relais"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_partner__ezy_relay_code
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_users__ezy_relay_code
+msgid "Relay code"
+msgstr "Code relais"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_sale_order__ezy_removed_lines
+msgid "Removed lines"
+msgstr "Lignes supprimées"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_product_product__ezy_sku_key
+msgid "SKU key"
+msgstr "Clé SKU"
+
+#. module: ezyflow_bridge
+#: model:ir.model,name:ezyflow_bridge.model_sale_order
+msgid "Sales Order"
+msgstr "Commande client"
+
+#. module: ezyflow_bridge
+#: model:ir.model,name:ezyflow_bridge.model_sale_order_line
+msgid "Sales Order Line"
+msgstr "Ligne de commande client"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields.selection,name:ezyflow_bridge.selection__sale_order__delivery_status__sent_to_logistics
+#: model:ir.model.fields.selection,name:ezyflow_bridge.selection__stock_picking__ezy_wms_state__sent_to_logistics
+msgid "Sent to logistics"
+msgstr "Envoyé à la logistique"
+
+#. module: ezyflow_bridge
+#: model:ir.model,name:ezyflow_bridge.model_ir_sequence
+msgid "Sequence"
+msgstr "Séquence"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_res_partner__ezy_relay_code
+#: model:ir.model.fields,help:ezyflow_bridge.field_res_users__ezy_relay_code
+msgid ""
+"Set when this partner is a relay point: the code the carrier knows it by. A "
+"relay point is the shipping address of a relay order."
+msgstr ""
+"Renseigné quand ce contact est un point relais : le code sous lequel le "
+"transporteur le connaît. Un point relais est l'adresse de livraison d'une "
+"commande en relais."
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields.selection,name:ezyflow_bridge.selection__sale_order__delivery_status__shipped
+#: model:ir.model.fields.selection,name:ezyflow_bridge.selection__stock_picking__ezy_wms_state__shipped
+msgid "Shipped"
+msgstr "Expédié"
+
+#. module: ezyflow_bridge
+#: model:ir.model,name:ezyflow_bridge.model_delivery_carrier
+msgid "Shipping Methods"
+msgstr "Modes d'expédition"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_product_product__ezy_shop_product_id
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_product_template__ezy_shop_product_id
+msgid "Shop product id"
+msgstr "Id produit boutique"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_sale_order__ezy_shop_total
+msgid "Shop total"
+msgstr "Total boutique"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_sale_order__ezy_total_differs
+msgid "Shop total differs"
+msgstr "Total boutique différent"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_product_product__ezy_shop_variant_id
+msgid "Shop variant id"
+msgstr "Id variante boutique"
+
+#. module: ezyflow_bridge
+#: model_terms:ir.ui.view,arch_db:ezyflow_bridge.res_config_settings_view_form_ezyflow
+msgid "Stock"
+msgstr "Stock"
+
+#. module: ezyflow_bridge
+#: model:ir.model,name:ezyflow_bridge.model_stock_move
+msgid "Stock Move"
+msgstr "Mouvement de stock"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_company__ezy_wms_street_length
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_config_settings__ezy_wms_street_length
+msgid "Street and street 2: at most 35 characters each"
+msgstr "Rue et rue 2 : au plus 35 caractères chacune"
+
+#. module: ezyflow_bridge
+#. odoo-python
+#: code:addons/ezyflow_bridge/models/stock_picking.py:0
+msgid ""
+"The WMS state is written by the EzyFlow connector. A person may only mark a "
+"transfer ready for logistics when its operation type is in manual mode, it "
+"is not held, and it is not an internal transfer."
+msgstr ""
+"L'état WMS est écrit par le connecteur EzyFlow. Une personne ne peut marquer"
+" un transfert prêt pour la logistique que si son type d'opération est en "
+"mode manuel, s'il n'est pas bloqué et s'il n'est pas un transfert interne."
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_res_config_settings__ezy_activity
+#: model_terms:ir.ui.view,arch_db:ezyflow_bridge.res_config_settings_view_form_ezyflow
+msgid "The activity this Odoo belongs to on the EzyFlow platform."
+msgstr "L'activité à laquelle cet Odoo appartient sur la plateforme EzyFlow."
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_res_partner__ezy_relay_carrier_id
+#: model:ir.model.fields,help:ezyflow_bridge.field_res_users__ezy_relay_carrier_id
+msgid "The carrier this relay point belongs to."
+msgstr "Le transporteur auquel ce point relais appartient."
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_delivery_carrier__ezy_carrier_code
+msgid "The code the WMS knows the carrier by."
+msgstr "Le code sous lequel le WMS connaît le transporteur."
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_res_config_settings__ezy_wakeup_url
+#: model_terms:ir.ui.view,arch_db:ezyflow_bridge.res_config_settings_view_form_ezyflow
+msgid "The connector's wake-up endpoint, https://<connector>/wake-up."
+msgstr ""
+"Le point d'entrée de réveil du connecteur, https://<connecteur>/wake-up."
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_stock_picking__ezy_final_recipient_id
+msgid ""
+"The customer who collects the parcel when the delivery address is a relay "
+"point; copied down from the sales order."
+msgstr ""
+"Le client qui retire le colis quand l'adresse de livraison est un point "
+"relais ; recopié depuis la commande client."
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_sale_order__ezy_final_recipient_id
+msgid ""
+"The customer who collects the parcel when the delivery address is a relay "
+"point; copied down to the order's transfers."
+msgstr ""
+"Le client qui retire le colis quand l'adresse de livraison est un point "
+"relais ; recopié sur les transferts de la commande."
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_product_product__ezy_shop_product_id
+#: model:ir.model.fields,help:ezyflow_bridge.field_product_template__ezy_shop_product_id
+msgid ""
+"The id this product has in the web shop. The connector uses it to find the "
+"Odoo record before falling back to the internal reference. One shop per Odoo"
+" product."
+msgstr ""
+"L'identifiant de ce produit dans la boutique en ligne. Le connecteur s'en "
+"sert pour retrouver l'enregistrement Odoo avant de se rabattre sur la "
+"référence interne. Une boutique par produit Odoo."
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_product_product__ezy_shop_variant_id
+msgid ""
+"The id this variant has in the web shop. The connector uses it to find the "
+"Odoo record before falling back to the internal reference. One shop per Odoo"
+" product."
+msgstr ""
+"L'identifiant de cette variante dans la boutique en ligne. Le connecteur "
+"s'en sert pour retrouver l'enregistrement Odoo avant de se rabattre sur la "
+"référence interne. Une boutique par produit Odoo."
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_product_product__ezy_sku_key
+msgid ""
+"The internal reference trimmed, its letters a-z upper-cased: what the WMS "
+"and the connector compare SKUs by."
+msgstr ""
+"La référence interne sans espaces de bord, ses lettres a-z en majuscules : "
+"ce par quoi le WMS et le connecteur comparent les SKU."
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_delivery_carrier__ezy_service_code
+msgid ""
+"The name the WMS knows this delivery method by; the key the EzyFlow "
+"connector resolves a shop's shipping choice against."
+msgstr ""
+"Le nom sous lequel le WMS connaît ce mode de livraison ; la clé à laquelle "
+"le connecteur EzyFlow rapporte le choix d'expédition d'une boutique."
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_sale_order__ezy_removed_lines
+msgid ""
+"The product lines deleted from this order while it was a quotation, one "
+"entry each (line, product, SKU, quantity, time of removal), so the "
+"connector's order source can surface the removal."
+msgstr ""
+"Les lignes de produit supprimées de cette commande quand elle était un "
+"devis, une entrée chacune (ligne, produit, SKU, quantité, heure de "
+"suppression), pour que la source de commandes du connecteur puisse signaler "
+"la suppression."
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_res_partner__ezy_channel
+#: model:ir.model.fields,help:ezyflow_bridge.field_res_users__ezy_channel
+msgid ""
+"The sales channel this partner buys through, a code such as WEB, PRO or B2B "
+"(capital letters, digits, hyphens, underscores); copied to its sales orders "
+"and their transfers."
+msgstr ""
+"Le canal de vente par lequel ce contact achète, un code tel que WEB, PRO ou "
+"B2B (lettres majuscules, chiffres, tirets, tirets bas) ; recopié sur ses "
+"commandes client et leurs transferts."
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_stock_picking__ezy_channel
+msgid ""
+"The sales channel, a code such as WEB, PRO or B2B, copied down from the "
+"sales order."
+msgstr ""
+"Le canal de vente, un code tel que WEB, PRO ou B2B, recopié depuis la "
+"commande client."
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_sale_order__ezy_channel
+msgid ""
+"The sales channel, a code such as WEB, PRO or B2B, copied from the delivery "
+"address when the order is created; copied down to the order's transfers."
+msgstr ""
+"Le canal de vente, un code tel que WEB, PRO ou B2B, recopié depuis l'adresse"
+" de livraison à la création de la commande ; recopié sur les transferts de "
+"la commande."
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_res_company__ezy_proforma_report_id
+#: model:ir.model.fields,help:ezyflow_bridge.field_res_config_settings__ezy_proforma_report_id
+msgid ""
+"The sales order report the connector renders as the Proforma of this "
+"company's orders and forwards to the WMS for shipment paperwork. Empty, "
+"Odoo's pro forma invoice."
+msgstr ""
+"Le rapport de commande client que le connecteur génère comme proforma des "
+"commandes de cette société et transmet au WMS pour les documents "
+"d'expédition. Vide, la facture pro forma d'Odoo."
+
+#. module: ezyflow_bridge
+#: model_terms:ir.ui.view,arch_db:ezyflow_bridge.res_config_settings_view_form_ezyflow
+msgid ""
+"The sales order report the connector renders as the proforma of this "
+"company's orders and forwards to the WMS for shipment paperwork. Empty, "
+"Odoo's pro forma invoice."
+msgstr ""
+"Le rapport de commande client que le connecteur génère comme proforma des "
+"commandes de cette société et transmet au WMS pour les documents "
+"d'expédition. Vide, la facture pro forma d'Odoo."
+
+#. module: ezyflow_bridge
+#: model_terms:ir.ui.view,arch_db:ezyflow_bridge.res_config_settings_view_form_ezyflow
+msgid "The same page is shown from Apps, on the EzyFlow bridge module."
+msgstr "La même page est affichée depuis Apps, sur le module EzyFlow bridge."
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_res_config_settings__ezy_wakeup_secret
+msgid ""
+"The secret the wake-ups are signed with, the value the publication's "
+"odoo_wakeup_secret points to."
+msgstr ""
+"Le secret avec lequel les réveils sont signés, la valeur vers laquelle "
+"pointe l'odoo_wakeup_secret de la publication."
+
+#. module: ezyflow_bridge
+#: model_terms:ir.ui.view,arch_db:ezyflow_bridge.res_config_settings_view_form_ezyflow
+msgid ""
+"The secret the wake-ups are signed with, the value the publication's "
+"odoo_wakeup_secret points to. Cleared, every wake-up is refused and the "
+"connector polls on its interval only."
+msgstr ""
+"Le secret avec lequel les réveils sont signés, la valeur vers laquelle "
+"pointe l'odoo_wakeup_secret de la publication. Effacé, chaque réveil est "
+"refusé et le connecteur n'interroge Odoo qu'à son intervalle."
+
+#. module: ezyflow_bridge
+#: model_terms:ir.ui.view,arch_db:ezyflow_bridge.view_order_form_ezyflow
+msgid "The shop collected"
+msgstr "La boutique a encaissé"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_sale_order__ezy_total_differs
+msgid ""
+"The shop total is set and differs from the order total beyond the currency's"
+" rounding: a tax or a fiscal position to check."
+msgstr ""
+"Le total boutique est renseigné et diffère du total de la commande au-delà "
+"de l'arrondi de la devise : une taxe ou une position fiscale à vérifier."
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_delivery_carrier__ezy_has_relay_points
+msgid ""
+"This carrier drops parcels at relay points for the customer to collect; the "
+"shipping address of its orders is the relay point and the final recipient is"
+" kept on the order."
+msgstr ""
+"Ce transporteur dépose les colis en points relais où le client les retire ; "
+"l'adresse de livraison de ses commandes est le point relais et le "
+"destinataire final est conservé sur la commande."
+
+#. module: ezyflow_bridge
+#: model_terms:ir.ui.view,arch_db:ezyflow_bridge.view_picking_form_ezyflow
+msgid ""
+"This transfer is in the hands of the WMS: Odoo neither reserves nor\n"
+"                    unreserves it, and only the EzyFlow connector may change its lines."
+msgstr ""
+"Ce transfert est entre les mains du WMS : Odoo ne le réserve ni ne le\n"
+"                    libère, et seul le connecteur EzyFlow peut modifier ses lignes."
+
+#. module: ezyflow_bridge
+#: model:ir.model,name:ezyflow_bridge.model_stock_picking
+msgid "Transfer"
+msgstr "Transfert"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_company__ezy_wms_picking_name
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_config_settings__ezy_wms_picking_name
+msgid "Transfer reference: at most 20 characters of A-Z 0-9 _ - . # / \\"
+msgstr ""
+"Référence de transfert : au plus 20 caractères parmi A-Z 0-9 _ - . # / \\"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_delivery_carrier__ezy_carrier_code
+msgid "WMS carrier code"
+msgstr "Code transporteur WMS"
+
+#. module: ezyflow_bridge
+#: model_terms:ir.ui.view,arch_db:ezyflow_bridge.res_config_settings_view_form_ezyflow
+msgid "WMS constraints"
+msgstr "Contraintes WMS"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_delivery_carrier__ezy_service_code
+msgid "WMS service code"
+msgstr "Code service WMS"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_stock_picking__ezy_wms_state
+#: model_terms:ir.ui.view,arch_db:ezyflow_bridge.view_picking_internal_search_ezyflow
+msgid "WMS state"
+msgstr "État WMS"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_config_settings__ezy_wakeup_url
+msgid "Wake-up URL"
+msgstr "URL de réveil"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_config_settings__ezy_wakeup_secret
+msgid "Wake-up secret"
+msgstr "Secret de réveil"
+
+#. module: ezyflow_bridge
+#: model_terms:ir.ui.view,arch_db:ezyflow_bridge.res_config_settings_view_form_ezyflow
+msgid ""
+"What a person saves or confirms is refused when the WMS would refuse it "
+"later. The connector user is never bound: an order from a shop lands as the "
+"shop sent it."
+msgstr ""
+"Ce qu'une personne enregistre ou confirme est refusé quand le WMS le "
+"refuserait plus tard. L'utilisateur connecteur n'est jamais contraint : une "
+"commande venue d'une boutique arrive telle que la boutique l'a envoyée."
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_sale_order__ezy_shop_total
+msgid ""
+"What the customer paid the shop for this order, in the order's currency, "
+"written by the connector when the order is created. A difference with the "
+"order total is shown on the form; the order is never refused for it. A total"
+" of zero reads as not set, so a fully discounted order never warns."
+msgstr ""
+"Ce que le client a payé à la boutique pour cette commande, dans la devise de"
+" la commande, écrit par le connecteur à la création de la commande. Une "
+"différence avec le total de la commande est affichée sur le formulaire ; la "
+"commande n'est jamais refusée pour autant. Un total de zéro vaut non "
+"renseigné, si bien qu'une commande entièrement remisée n'alerte jamais."
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_stock_picking__ezy_wms_state
+msgid ""
+"Where this transfer stands in the hand-off with the WMS. Odoo sets 'Ready "
+"for logistics' when the operation type offers the transfer; the EzyFlow "
+"connector writes every later value."
+msgstr ""
+"Où en est ce transfert dans la passation au WMS. Odoo écrit « Prêt pour la "
+"logistique » quand le type d'opération propose le transfert ; le connecteur "
+"EzyFlow écrit toutes les valeurs suivantes."
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_stock_picking__ezy_logistics_mode
+#: model:ir.model.fields,help:ezyflow_bridge.field_stock_picking_type__ezy_logistics_mode
+msgid ""
+"Whether the transfers of this operation type are offered to the WMS: never, "
+"as soon as they are reserved, or only when a person marks them ready for "
+"logistics. Internal transfers are never offered."
+msgstr ""
+"Si les transferts de ce type d'opération sont proposés au WMS : jamais, dès "
+"qu'ils sont réservés, ou seulement quand une personne les marque prêts pour "
+"la logistique. Les transferts internes ne sont jamais proposés."
+
+#. module: ezyflow_bridge
+#. odoo-python
+#: code:addons/ezyflow_bridge/models/product_product.py:0
+msgid "a product of another company"
+msgstr "un produit d'une autre société"
+
+#. module: ezyflow_bridge
+#: model_terms:ir.ui.view,arch_db:ezyflow_bridge.view_picking_type_form_ezyflow
+msgid "e.g. WEB,PRO (empty: every channel)"
+msgstr "ex. WEB,PRO (vide : tous les canaux)"
+
+#. module: ezyflow_bridge
+#: model_terms:ir.ui.view,arch_db:ezyflow_bridge.view_order_form_ezyflow
+msgid "for this order while its total here is"
+msgstr "pour cette commande alors que son total ici est de"

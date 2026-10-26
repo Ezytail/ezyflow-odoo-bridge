@@ -2,6 +2,7 @@
 from . import (
     contract,
     delivery_carrier,
+    ir_module_module,
     ir_sequence,
     mail_thread,
     product_product,

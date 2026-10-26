@@ -229,3 +229,27 @@ because Odoo 20 merged the two models. The loader calls
 `odoo.tools.convert.convert_file`, which Odoo does not document as public API: the
 bridge test on each series is what proves it still works when a series is added.
 `pre-commit` runs pylint-odoo, flake8 and isort on this folder.
+
+English and French (ADR 0031). Every string a person sees goes through Odoo's
+translation mechanism (`string=`, `help=`, selection labels, view text,
+`env._()` in Python) and has its French line in `i18n/fr.po`, in the words of
+the glossary's `_French_` lines (CONTEXT.md); the bridge test `test_i18n.py`
+fails on a term without one, on an empty one and on a stale one, so the pot
+and the po move together. The help page is translated as a sibling file,
+`static/description/index.fr.html`, kept to the English page's shape (same
+headings, same tables and rows); `models/ir_module_module.py` serves it to a
+French person. The committed pot is the union of the exports of every
+supported series (a core model Odoo 20 renamed is a term of its own; the
+README, exported by Odoo 20 as the module description, stays English as a
+developer document). To regenerate it after adding a string, with the module
+installed on a database of each series:
+
+```
+odoo i18n export -c <conf> -d <db> -l pot -o /tmp/pot<series>.pot ezyflow_bridge
+msgcat --use-first /tmp/pot19.pot /tmp/pot20.pot -o i18n/ezyflow_bridge.pot
+msgmerge --update --no-fuzzy-matching --backup=none i18n/fr.po i18n/ezyflow_bridge.pot
+```
+
+then fill the new `msgstr` lines by hand; never paste an export over the
+committed `fr.po`. The module name **EzyFlow bridge** is a name and is never
+translated.
