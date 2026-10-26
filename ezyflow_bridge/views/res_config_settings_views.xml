@@ -1,25 +1,73 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
+    <!--
+        The EzyFlow page of the Settings (ADR 0017): one setting per WMS
+        constraint, each a switch of the current company. Written to the
+        settings form both series share (ADR 0015): an <app> inside the base
+        form, its <block> and <setting> elements.
+    -->
     <record id="res_config_settings_view_form_ezyflow" model="ir.ui.view">
         <field name="name">res.config.settings.view.form.ezyflow</field>
         <field name="model">res.config.settings</field>
-        <field name="inherit_id" ref="stock.res_config_settings_view_form" />
+        <field name="priority" eval="95" />
+        <field name="inherit_id" ref="base.res_config_settings_view_form" />
         <field name="arch" type="xml">
-            <xpath expr="//block[@name='operations_setting_container']" position="after">
-                <block title="EzyFlow" name="ezyflow_setting_container">
-                    <setting
-                        id="ezy_check_product_constraints"
-                        help="Refuse product names over 30 characters, internal references over 17, and sellable goods without internal reference or barcode."
+            <xpath expr="//form" position="inside">
+                <app
+                    data-string="EzyFlow"
+                    string="EzyFlow"
+                    name="ezyflow_bridge"
+                    logo="/ezyflow_bridge/static/description/icon.png"
+                >
+                    <block
+                        title="WMS constraints"
+                        name="ezy_wms_constraints"
+                        help="What a person saves or confirms is refused when Reflex would refuse it later. The connector user is never bound: an order from a shop lands as the shop sent it."
                     >
-                        <field name="ezy_check_product_constraints" />
-                    </setting>
-                    <setting
-                        id="ezy_check_partner_constraints"
-                        help="Refuse partner names over 50 characters and streets over 35."
-                    >
-                        <field name="ezy_check_partner_constraints" />
-                    </setting>
-                </block>
+                        <setting id="ezy_wms_default_code_length" help="Refuse an internal reference longer than 16 characters.">
+                            <field name="ezy_wms_default_code_length" />
+                        </setting>
+                        <setting id="ezy_wms_default_code_alphabet" help="Refuse an internal reference with a character other than A-Z 0-9 _ . - #.">
+                            <field name="ezy_wms_default_code_alphabet" />
+                        </setting>
+                        <setting id="ezy_wms_default_code_required" help="Refuse a sellable good without internal reference.">
+                            <field name="ezy_wms_default_code_required" />
+                        </setting>
+                        <setting id="ezy_wms_product_name_length" help="Refuse a product name longer than 30 characters.">
+                            <field name="ezy_wms_product_name_length" />
+                        </setting>
+                        <setting id="ezy_wms_barcode_alphabet" help="Refuse a barcode with a character other than a letter or a digit.">
+                            <field name="ezy_wms_barcode_alphabet" />
+                        </setting>
+                        <setting id="ezy_wms_barcode_length" help="Refuse a barcode longer than 35 characters.">
+                            <field name="ezy_wms_barcode_length" />
+                        </setting>
+                        <setting id="ezy_wms_partner_name_length" help="Refuse a contact or address name longer than 35 characters.">
+                            <field name="ezy_wms_partner_name_length" />
+                        </setting>
+                        <setting id="ezy_wms_street_length" help="Refuse a street or a street 2 longer than 35 characters.">
+                            <field name="ezy_wms_street_length" />
+                        </setting>
+                        <setting id="ezy_wms_city_length" help="Refuse a city longer than 35 characters.">
+                            <field name="ezy_wms_city_length" />
+                        </setting>
+                        <setting id="ezy_wms_zip_length" help="Refuse a postcode longer than 9 characters.">
+                            <field name="ezy_wms_zip_length" />
+                        </setting>
+                        <setting id="ezy_wms_phone_length" help="Refuse a phone longer than 20 characters.">
+                            <field name="ezy_wms_phone_length" />
+                        </setting>
+                        <setting id="ezy_wms_email_length" help="Refuse an email longer than 140 characters.">
+                            <field name="ezy_wms_email_length" />
+                        </setting>
+                        <setting id="ezy_wms_delivery_contact_required" help="Refuse to confirm a sales order whose delivery address has no phone or no email.">
+                            <field name="ezy_wms_delivery_contact_required" />
+                        </setting>
+                        <setting id="ezy_wms_picking_name" help="Refuse a receipt or delivery type in logistics mode whose next transfer reference would be longer than 20 characters, or use a character other than A-Z 0-9 _ - . # / and the backslash.">
+                            <field name="ezy_wms_picking_name" />
+                        </setting>
+                    </block>
+                </app>
             </xpath>
         </field>
     </record>

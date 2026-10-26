@@ -50,12 +50,15 @@ List" does not repair it. Since 3.3.1 the post-install hook sets the type, and
   (`ezy_wms_state`, eight values, one field, no state on the moves, ADR 0003),
   the hold (`ezy_hold`) and the channel (`ezy_channel`, copied down from the
   sales order). Partner and sales order: the channel, copied from the delivery
-  address when the order is created. Company: `ezy_check_product_constraints`
-  and `ezy_check_partner_constraints`, on by default (Inventory settings).
+  address when the order is created. Company: one switch per WMS constraint
+  (`ezy_wms_*`, fourteen of them, ADR 0017), on by default, on the EzyFlow page
+  of the Settings (below).
 - The shop identity (`ezy_shop_product_id` on the product template, `ezy_shop_variant_id` on the
   variant): the id the product has in the web shop, indexed, not copied on duplicate, shown on
   the product forms.
 - The behaviours behind those fields, listed below.
+- The **EzyFlow** page of the Settings, with its own icon
+  (`static/description/icon.png`).
 - Odoo tests for every behaviour, tagged `post_install`, run in the
   connector's Testcontainers job on every supported Odoo series.
 
@@ -83,19 +86,69 @@ Fields and behaviours land slice by slice; see `docs/slices/` in the repository.
 7. Visibility. The WMS state is read-only in the transfer form and list; the
    sales order's delivery status shows the WMS values (refused wins, then
    cancelled, then the transfer touched last).
-8. Length constraints. Product name 30, internal reference 17 and required
-   for sellable goods; partner name 50, street and street 2 35. Each behind
-   its company toggle. The barcode is optional since 3.4.0: the WMS
-   identifies a product by its internal reference and scans the barcode
-   when there is one. On a template
-   create the variant half of the check runs once the create is complete:
-   Odoo generates and validates the variant before it writes the template's
-   internal reference and barcode onto it, so a sellable product created with
-   its whole identity, from the product form or by the connector, was refused
-   (corrected in 3.1.0). The connector adds attribute values to a template
-   under the context key `ezy_defer_wms_identity`, which skips the variant
-   check for that write (Odoo generates the new variant without identity),
-   and writes the identity in its next call, where the check runs.
+8. WMS constraints (ADR 0017, per-rule switches since 3.5.0). When a person
+   saves or confirms a record, the bridge refuses the values Reflex would
+   refuse later. The figures are Reflex's own (ezyflow-reflex's declared rules
+   and the widths of its REST API), fixed per bridge release; each has its own
+   company switch, on by default:
+
+   | Switch | Constraint |
+   | --- | --- |
+   | `ezy_wms_default_code_length` | internal reference at most 16 characters |
+   | `ezy_wms_default_code_alphabet` | internal reference limited to `A-Z 0-9 _ . - #` |
+   | `ezy_wms_default_code_required` | internal reference required for sellable goods |
+   | `ezy_wms_product_name_length` | product name at most 30 characters |
+   | `ezy_wms_barcode_alphabet` | barcode, when present, letters and digits only |
+   | `ezy_wms_barcode_length` | barcode at most 35 characters |
+   | `ezy_wms_partner_name_length` | partner name at most 35 characters |
+   | `ezy_wms_street_length` | street and street 2 at most 35 characters each |
+   | `ezy_wms_city_length` | city at most 35 characters |
+   | `ezy_wms_zip_length` | postcode at most 9 characters |
+   | `ezy_wms_phone_length` | phone at most 20 characters |
+   | `ezy_wms_email_length` | email at most 140 characters |
+   | `ezy_wms_delivery_contact_required` | phone and email on the delivery address when a sales order is confirmed |
+   | `ezy_wms_picking_name` | next transfer reference of a receipt or delivery type in logistics mode at most 20 characters of `A-Z 0-9 _ - . # / \` |
+
+   Every message names the record, the field and the figure. The delivery
+   contact is checked by an override of the sales order confirmation, never on
+   the partner: quotations, vendors and receipts need neither. Every
+   confirmation that is not the connector's is bound, a website or portal
+   order confirmed after its payment included: a shop selling on Odoo's own
+   website makes the phone and the email mandatory at checkout. The transfer
+   reference is checked on a receipt or delivery type in logistics mode when a
+   field that names its next reference is written (the logistics mode, the
+   operation type, the sequence, the sequence code, the company) and when its
+   sequence is edited (prefix, suffix, padding, next number; core stock
+   rewrites the prefix when a warehouse's short code changes). The next name
+   the sequence would produce, predicted without drawing it for today's date,
+   is the example the message gives; a prefix with a year in it is judged on
+   the current year. The barcode is optional (since 3.4.0): the WMS identifies
+   a product by its internal reference and scans the barcode when there is
+   one.
+
+   A record of a company is judged by that company's switches; a record shared
+   by every company (a contact or a product with no company) by the switches of
+   the company the writer is working in.
+
+   The constraints bind people only. The connector user (a member of the
+   EzyFlow connector group) is exempt, so an order or a product from a shop
+   lands as the shop sent it and Reflex's declared rules judge it on the way to
+   the warehouse; administrators and code run as superuser stay bound, unlike
+   the write guard of behaviour 6. Each figure is checked when its own field is
+   written, so a record already above a figure tightened in 3.5.0 (internal
+   reference 17 to 16, partner name 50 to 35), or one the connector wrote, is
+   refused only the next time a person writes that field.
+
+   On a template create the variant half of the check runs once the create is
+   complete: Odoo generates and validates the variant before it writes the
+   template's internal reference and barcode onto it, so a sellable product
+   created with its whole identity from the product form was refused
+   (corrected in 3.1.0). The context key `ezy_defer_wms_identity` still skips
+   the product constraints for the write that carries it (Odoo generates a
+   variant without identity when attribute values are added); the next write
+   runs them. It lifts no partner, order or operation type constraint. Any
+   caller may set it, over RPC included: the constraints keep data clean for
+   the WMS, they are not a security boundary.
 9. Wake-up. A transfer entering ready for logistics, a product or an order
    changing posts a small signed notification to the connector from a
    post-commit hook (ADR 0006; `models/wakeup.py`).
@@ -105,6 +158,18 @@ Fields and behaviours land slice by slice; see `docs/slices/` in the repository.
     environment that flushes the transaction, which does not always carry the
     connector's `tracking_disable`, so the bridge disables it for the connector
     group itself (`models/mail_thread.py`, on `mail.thread` itself, gated by Odoo's cached group check: ADR 0011 addendum).
+
+## Settings
+
+**Settings > EzyFlow** is the bridge's own page (an `<app>` of the settings
+form, the same markup on Odoo 19 and 20, ADR 0015). Its **WMS constraints**
+block shows one setting per switch of behaviour 8, for the current company. A
+tenant whose WMS is not Reflex turns off what it does not need; the figures
+themselves are not editable (ADR 0017). Until 3.4.0 the bridge had two switches
+in the Inventory settings, `ezy_check_product_constraints` and
+`ezy_check_partner_constraints`; the 3.5.0 migration carries their values onto
+the switches they covered (internal reference length and requirement, product
+name; partner name, street) and leaves every other switch on.
 
 ## Conventions
 

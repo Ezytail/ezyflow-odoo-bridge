@@ -50,8 +50,15 @@ class EzyflowBridgeCase(TransactionCase):
             }
         )
         cls.env["stock.quant"]._update_available_quantity(cls.product, cls.stock_location, 100)
+        # A phone and an email: a person confirms the test orders, and the WMS
+        # constraints require both on the delivery address (behaviour 8).
         cls.customer = cls.env["res.partner"].create(
-            {"name": "Web customer", "ezy_channel": "WEB"}
+            {
+                "name": "Web customer",
+                "ezy_channel": "WEB",
+                "phone": "+33100000000",
+                "email": "web.customer@example.test",
+            }
         )
 
     def confirm_order(self, partner=None, product=None, quantity=5, **values):

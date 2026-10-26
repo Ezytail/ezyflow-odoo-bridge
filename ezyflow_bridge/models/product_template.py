@@ -2,7 +2,7 @@
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
-PRODUCT_NAME_LIMIT = 30
+from .wms_constraints import DEFER_KEY, PRODUCT_NAME_LIMIT, binds, deferred
 
 
 class ProductTemplate(models.Model):
@@ -21,43 +21,47 @@ class ProductTemplate(models.Model):
         # Odoo's template create generates the variants and validates them before
         # it writes the template's default_code and barcode onto its single
         # variant, so the variant half of behaviour 8 would refuse a sellable
-        # template created with its whole identity. The check waits for the end
-        # of the create and then runs on the variants as they are. Odoo offers no
-        # hook between the variant generation and the related write, so an
-        # override of create is the only place; the context key covers every
-        # variant created inside this call, and the explicit check at the end
-        # covers the variants of these templates.
-        templates = super(
-            ProductTemplate, self.with_context(ezy_defer_wms_identity=True)
-        ).create(vals_list)
-        templates.with_context(
-            ezy_defer_wms_identity=False
-        ).product_variant_ids._check_ezy_wms_identity()
+        # template created with its whole identity. The checks wait for the end
+        # of the create and then run on the templates and their variants as they
+        # are. Odoo offers no hook between the variant generation and the related
+        # write, so an override of create is the only place; the context key
+        # covers every record created inside this call, and the explicit checks
+        # at the end cover these templates and their variants.
+        templates = super(ProductTemplate, self.with_context(**{DEFER_KEY: True})).create(
+            vals_list
+        )
+        checked = templates.with_context(**{DEFER_KEY: False})
+        checked._check_ezy_name()
+        checked.product_variant_ids._ezy_check_identity()
         return templates.with_env(self.env)
 
-    @api.constrains("name", "sale_ok", "type")
-    def _check_ezy_wms_identity(self):
-        # Behaviour 8. The internal reference lives on the variant, so the
-        # variant carries that half of the check; a template that becomes
-        # sellable goods re-checks its variants.
+    @api.constrains("name")
+    def _check_ezy_name(self):
+        # Behaviour 8 (ADR 0017). The internal reference and the barcode live on
+        # the variant, which carries that half of the checks.
+        if deferred(self.env):
+            return
         for template in self:
-            if not template._ezy_checks_products():
-                continue
-            if template.name and len(template.name) > PRODUCT_NAME_LIMIT:
+            company = template.company_id or self.env.company
+            if (
+                template.name
+                and len(template.name) > PRODUCT_NAME_LIMIT
+                and binds(self.env, company, "ezy_wms_product_name_length")
+            ):
                 raise ValidationError(
                     self.env._(
-                        "The name of %(product)s is longer than %(limit)s characters, "
+                        "%(field)s of %(product)s is longer than %(limit)s characters, "
                         "the most the WMS accepts.",
+                        field=template._fields["name"].get_description(self.env)["string"],
                         product=template.display_name,
                         limit=PRODUCT_NAME_LIMIT,
                     )
                 )
-            template.product_variant_ids._check_ezy_wms_identity()
 
-    def _ezy_checks_products(self):
-        self.ensure_one()
-        company = self.company_id or self.env.company
-        return company.ezy_check_product_constraints
+    @api.constrains("sale_ok", "type")
+    def _check_ezy_sellable_identity(self):
+        # A template that becomes sellable goods re-checks its variants' reference.
+        self.product_variant_ids._check_ezy_default_code_required()
 
     def _ezy_is_sellable_goods(self):
         self.ensure_one()

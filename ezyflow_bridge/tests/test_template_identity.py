@@ -48,10 +48,7 @@ class TestTemplateIdentity(EzyflowBridgeCase):
         with self.assertRaisesRegex(ValidationError, "internal reference"):
             self.new_template(self.env, False, "3000000000949")
 
-    def test_the_connector_adds_a_value_under_the_deferral_and_then_the_identity(self):
-        # Adding a value generates a variant without identity inside the write;
-        # the connector defers the check for that write and the identity write
-        # that follows runs it. Without the deferral the write is refused.
+    def tee_with_one_colour(self):
         colour = self.env["product.attribute"].create(
             {"name": "Colour", "value_ids": [(0, 0, {"name": "Red"}), (0, 0, {"name": "Blue"})]}
         )
@@ -70,14 +67,18 @@ class TestTemplateIdentity(EzyflowBridgeCase):
             }
         )
         line = template.attribute_line_ids
+        add_blue = {"attribute_line_ids": [(1, line.id, {"value_ids": [(4, blue.id)]})]}
+        return template, add_blue
+
+    def test_the_connector_adds_a_value_and_then_the_identity(self):
+        # Adding a value generates a variant without identity inside the write.
+        # The connector user is not bound by the WMS constraints (ADR 0017), so
+        # the write lands and the identity write that follows completes it.
+        template, add_blue = self.tee_with_one_colour()
         connector = template.with_env(self.env(user=self.connector_user))
 
-        with self.assertRaisesRegex(ValidationError, "internal reference"):
-            connector.write({"attribute_line_ids": [(1, line.id, {"value_ids": [(4, blue.id)]})]})
+        connector.write(add_blue)
 
-        connector.with_context(ezy_defer_wms_identity=True).write(
-            {"attribute_line_ids": [(1, line.id, {"value_ids": [(4, blue.id)]})]}
-        )
         generated = template.product_variant_ids.filtered(lambda v: not v.default_code)
         self.assertEqual(len(generated), 1)
         self.assertTrue(template.sale_ok)
@@ -85,3 +86,23 @@ class TestTemplateIdentity(EzyflowBridgeCase):
             {"default_code": "TEE-BLUE", "barcode": "3000000000932"}
         )
         self.assertEqual(generated.barcode, "3000000000932")
+
+    def test_a_person_adds_a_value_under_the_deferral_and_then_the_identity(self):
+        # A person is bound: the generated variant has no internal reference, so
+        # the write is refused, unless the deferral key skips the check for that
+        # write; the identity write that follows runs it.
+        template, add_blue = self.tee_with_one_colour()
+        person = template.with_env(self.env(user=self.admin_user))
+
+        with self.assertRaisesRegex(ValidationError, "internal reference"):
+            person.write(add_blue)
+
+        person.with_context(ezy_defer_wms_identity=True).write(add_blue)
+        generated = template.product_variant_ids.filtered(lambda v: not v.default_code)
+        self.assertEqual(len(generated), 1)
+        with self.assertRaisesRegex(ValidationError, "A-Z 0-9"):
+            generated.with_env(self.env(user=self.admin_user)).write({"default_code": "tee-blue"})
+        generated.with_env(self.env(user=self.admin_user)).write(
+            {"default_code": "TEE-BLUE", "barcode": "3000000000932"}
+        )
+        self.assertEqual(generated.default_code, "TEE-BLUE")

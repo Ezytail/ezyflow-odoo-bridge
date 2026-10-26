@@ -95,7 +95,9 @@ class TestOffer(EzyflowBridgeCase):
 
     def test_a_picking_without_channel_is_offered_only_by_an_empty_allow_list(self):
         self.out_type.write({"ezy_logistics_mode": "auto", "ezy_channels": "WEB"})
-        anonymous = self.env["res.partner"].create({"name": "No channel"})
+        anonymous = self.env["res.partner"].create(
+            {"name": "No channel", "phone": "+33100000001", "email": "anonymous@example.test"}
+        )
         picking = self.confirm_order(partner=anonymous)
         picking.action_assign()
         self.assertFalse(picking.ezy_wms_state)

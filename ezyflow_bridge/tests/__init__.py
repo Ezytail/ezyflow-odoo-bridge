@@ -19,4 +19,5 @@ from . import (
     test_shop_identity,
     test_template_identity,
     test_wakeup,
+    test_wms_settings,
 )

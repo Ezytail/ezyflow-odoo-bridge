@@ -2,6 +2,7 @@
 from . import (
     contract,
     delivery_carrier,
+    ir_sequence,
     mail_thread,
     product_product,
     product_template,
@@ -16,4 +17,5 @@ from . import (
     stock_picking,
     stock_picking_type,
     wakeup,
+    wms_constraints,
 )

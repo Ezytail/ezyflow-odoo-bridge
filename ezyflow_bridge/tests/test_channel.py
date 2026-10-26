@@ -21,7 +21,9 @@ class TestChannel(EzyflowBridgeCase):
         self.assertEqual(picking.ezy_channel, "PRO")
 
     def test_a_partner_without_channel_leaves_the_order_channel_alone(self):
-        anonymous = self.env["res.partner"].create({"name": "No channel"})
+        anonymous = self.env["res.partner"].create(
+            {"name": "No channel", "phone": "+33100000001", "email": "anonymous@example.test"}
+        )
 
         self.assertFalse(self.confirm_order(partner=anonymous).ezy_channel)
         explicit = self.confirm_order(partner=anonymous, ezy_channel="SPECIAL")

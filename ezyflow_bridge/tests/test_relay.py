@@ -26,6 +26,8 @@ class TestRelay(EzyflowBridgeCase):
         relay = self.env["res.partner"].create(
             {
                 "name": "Tabac du Centre",
+                "phone": "+33100000002",
+                "email": "tabac@example.test",
                 "ezy_relay_code": "R123",
                 "ezy_relay_carrier_id": carrier.id,
             }

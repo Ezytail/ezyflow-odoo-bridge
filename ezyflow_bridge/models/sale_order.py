@@ -3,8 +3,10 @@ import base64
 import logging
 
 from odoo import api, fields, models
+from odoo.exceptions import ValidationError
 
 from .contract import CHANNELS, WMS_STATES
+from .wms_constraints import binds
 
 _logger = logging.getLogger(__name__)
 
@@ -14,7 +16,8 @@ DEFAULT_PROFORMA_REPORT = "sale.report_saleorder_pro_forma"
 
 class SaleOrder(models.Model):
     """Channel copy-down (behaviour 3), the WMS values on the delivery status
-    (behaviour 7), the proforma rendering and the removed lines (S8)."""
+    (behaviour 7), the delivery contact WMS constraint (behaviour 8), the
+    proforma rendering and the removed lines (S8)."""
 
     _inherit = "sale.order"
 
@@ -71,6 +74,37 @@ class SaleOrder(models.Model):
                 latest = max(in_hand_off, key=lambda picking: (picking.write_date, picking.id))
                 order.delivery_status = latest.ezy_wms_state
         return result
+
+    def action_confirm(self):
+        # Behaviour 8 (ADR 0017): the WMS needs a phone and an email on the
+        # delivery address of a confirmed order. Checked here, on the person's
+        # confirmation, and never on res.partner: a quotation, a vendor or a
+        # receipt needs neither. Core offers no switch for it (ADR 0011).
+        for order in self:
+            if order.state in ("draft", "sent"):
+                order._ezy_check_delivery_contact()
+        return super().action_confirm()
+
+    def _ezy_check_delivery_contact(self):
+        self.ensure_one()
+        if not binds(self.env, self.company_id, "ezy_wms_delivery_contact_required"):
+            return
+        address = self.partner_shipping_id
+        missing = [name for name in ("phone", "email") if not address[name]]
+        if missing:
+            raise ValidationError(
+                self.env._(
+                    "%(order)s cannot be confirmed: its delivery address %(partner)s "
+                    "has no %(field)s, and the WMS requires a phone and an email on "
+                    "the delivery address.",
+                    order=self.display_name,
+                    field=", ".join(
+                        address._fields[name].get_description(self.env)["string"]
+                        for name in missing
+                    ),
+                    partner=address.display_name,
+                )
+            )
 
     def ezy_render_proforma(self):
         """The Proforma: the PDF the connector fetches for a validated order and

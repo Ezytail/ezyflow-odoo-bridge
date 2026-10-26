@@ -2,10 +2,27 @@
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
-DEFAULT_CODE_LIMIT = 17
+from .wms_constraints import (
+    BARCODE_LIMIT,
+    BARCODE_PATTERN,
+    DEFAULT_CODE_ALPHABET,
+    DEFAULT_CODE_LIMIT,
+    DEFAULT_CODE_PATTERN,
+    binds,
+    deferred,
+)
 
 
 class ProductProduct(models.Model):
+    """The variant half of the product WMS constraints (behaviour 8, ADR 0017):
+    Reflex identifies a product by its internal reference, at most 16
+    characters of its SKU alphabet, and scans the barcode when there is one.
+    Each figure is checked when its own field is written, so a record already
+    above a tightened figure is refused only when a person next writes that
+    field. A template being created checks its variants once it is complete;
+    the deferral key skips the checks of a write in which Odoo generates a
+    variant without identity, and the next write runs them."""
+
     _inherit = "product.product"
 
     ezy_shop_variant_id = fields.Char(
@@ -16,39 +33,109 @@ class ProductProduct(models.Model):
         "Odoo record before falling back to the internal reference. One shop per Odoo product.",
     )
 
+    @api.constrains("default_code")
+    def _check_ezy_default_code(self):
+        if deferred(self.env):
+            return
+        for product in self:
+            product._ezy_check_default_code()
+
     # name and product_tmpl_id are always in the creation values, so the check
     # runs for a variant created without a reference at all.
     @api.constrains("name", "product_tmpl_id", "default_code", "sale_ok", "type")
-    def _check_ezy_wms_identity(self):
-        # Behaviour 8: the WMS identifies a product by its internal reference and
-        # stores at most 17 characters of it. The barcode is optional (3.4.0): a
-        # product without one is sold and shipped by its reference.
-        # A template being created checks its variants once it is complete; the
-        # connector asks for the same deferral when it adds attribute values to a
-        # template (Odoo generates the new variant without identity in that
-        # write) and writes the identity in its next call, which runs the check.
-        if self.env.context.get("ezy_defer_wms_identity"):
+    def _check_ezy_default_code_required(self):
+        if deferred(self.env):
             return
         for product in self:
-            template = product.product_tmpl_id
-            if not template._ezy_checks_products():
-                continue
-            if product.default_code and len(product.default_code) > DEFAULT_CODE_LIMIT:
-                raise ValidationError(
-                    self.env._(
-                        "The internal reference of %(product)s is longer than %(limit)s "
-                        "characters, the most the WMS accepts.",
-                        product=product.display_name,
-                        limit=DEFAULT_CODE_LIMIT,
-                    )
+            product._ezy_check_default_code_required()
+
+    @api.constrains("barcode")
+    def _check_ezy_barcode(self):
+        if deferred(self.env):
+            return
+        for product in self:
+            product._ezy_check_barcode()
+
+    def _ezy_check_identity(self):
+        """Every variant constraint at once: the end of a template create."""
+        for product in self:
+            product._ezy_check_default_code()
+            product._ezy_check_default_code_required()
+            product._ezy_check_barcode()
+
+    def _ezy_company(self):
+        return self.product_tmpl_id.company_id or self.env.company
+
+    def _ezy_check_default_code(self):
+        self.ensure_one()
+        code = self.default_code
+        if not code:
+            return
+        company = self._ezy_company()
+        if len(code) > DEFAULT_CODE_LIMIT and binds(
+            self.env, company, "ezy_wms_default_code_length"
+        ):
+            raise ValidationError(self._ezy_too_long("default_code", DEFAULT_CODE_LIMIT))
+        if not DEFAULT_CODE_PATTERN.fullmatch(code) and binds(
+            self.env, company, "ezy_wms_default_code_alphabet"
+        ):
+            raise ValidationError(
+                self.env._(
+                    "%(field)s of %(product)s, %(value)s, has a character the WMS "
+                    "refuses: only %(alphabet)s are accepted.",
+                    field=self._ezy_label("default_code"),
+                    product=self.display_name,
+                    value=code,
+                    alphabet=DEFAULT_CODE_ALPHABET,
                 )
-            if not template._ezy_is_sellable_goods():
-                continue
-            if not product.default_code:
-                raise ValidationError(
-                    self.env._(
-                        "%(product)s is sold as goods and has no internal reference; "
-                        "the WMS identifies products by it.",
-                        product=product.display_name,
-                    )
+            )
+
+    def _ezy_check_default_code_required(self):
+        self.ensure_one()
+        if (
+            not self.default_code
+            and self.product_tmpl_id._ezy_is_sellable_goods()
+            and binds(self.env, self._ezy_company(), "ezy_wms_default_code_required")
+        ):
+            raise ValidationError(
+                self.env._(
+                    "%(product)s is sold as goods and has no internal reference; "
+                    "the WMS identifies products by it (%(field)s is required).",
+                    product=self.display_name,
+                    field=self._ezy_label("default_code"),
                 )
+            )
+
+    def _ezy_check_barcode(self):
+        self.ensure_one()
+        barcode = self.barcode
+        if not barcode:
+            return
+        company = self._ezy_company()
+        if len(barcode) > BARCODE_LIMIT and binds(self.env, company, "ezy_wms_barcode_length"):
+            raise ValidationError(self._ezy_too_long("barcode", BARCODE_LIMIT))
+        if not BARCODE_PATTERN.fullmatch(barcode) and binds(
+            self.env, company, "ezy_wms_barcode_alphabet"
+        ):
+            raise ValidationError(
+                self.env._(
+                    "%(field)s of %(product)s, %(value)s, has a character the WMS "
+                    "refuses: only letters and digits are accepted.",
+                    field=self._ezy_label("barcode"),
+                    product=self.display_name,
+                    value=barcode,
+                )
+            )
+
+    def _ezy_label(self, field_name):
+        return self._fields[field_name].get_description(self.env)["string"]
+
+    def _ezy_too_long(self, field_name, limit):
+        self.ensure_one()
+        return self.env._(
+            "%(field)s of %(product)s is longer than %(limit)s characters, "
+            "the most the WMS accepts.",
+            field=self._ezy_label(field_name),
+            product=self.display_name,
+            limit=limit,
+        )
