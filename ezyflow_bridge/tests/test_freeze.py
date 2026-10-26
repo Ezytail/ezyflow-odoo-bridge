@@ -22,6 +22,31 @@ class TestFreeze(EzyflowBridgeCase):
         self.assertEqual(picking.move_ids.quantity, 5)
         return picking
 
+    def assert_reserved(self, expected, message=None):
+        """The stock's reservation of the product, as the quants hold it, is the
+        open detailed operations' and equals expected."""
+        quants = self.env["stock.quant"].search(
+            [
+                ("product_id", "=", self.product.id),
+                ("location_id", "child_of", self.stock_location.id),
+            ]
+        )
+        lines = self.env["stock.move.line"].search(
+            [
+                ("product_id", "=", self.product.id),
+                ("location_id", "child_of", self.stock_location.id),
+                ("state", "not in", ("done", "cancel")),
+            ]
+        )
+        self.assertEqual(sum(lines.mapped("quantity_product_uom")), expected, message)
+        self.assertEqual(sum(quants.mapped("reserved_quantity")), expected, message)
+
+    def prepare_as_connector(self, picking, quantity):
+        """What the fulfilment rounds write on a frozen delivery (S4)."""
+        picking.with_user(self.connector_user).write(
+            {"move_ids": [(1, picking.move_ids.id, {"quantity": quantity, "picked": True})]}
+        )
+
     def test_a_frozen_delivery_is_not_unreserved(self):
         for state in FROZEN_WMS_STATES:
             picking = self.reserved_delivery()
@@ -32,7 +57,96 @@ class TestFreeze(EzyflowBridgeCase):
 
             self.assertEqual(picking.move_ids.quantity, 5, state)
             self.assertEqual(picking.state, "assigned", state)
-            self.assertTrue(picking.move_ids._should_bypass_reservation(), state)
+        self.assert_reserved(5 * len(FROZEN_WMS_STATES), "the quants keep the reservation")
+
+    def test_a_frozen_delivery_validated_by_the_connector_gives_its_reservation_back(self):
+        # The leak found in recette on 2026-10-21: the stock stayed reserved by
+        # the quantities the connector validated, so no new delivery reserved.
+        open_delivery = self.reserved_delivery()
+        for state in FROZEN_WMS_STATES:
+            picking = self.reserved_delivery()
+            self.set_wms_state(picking, state)
+            self.prepare_as_connector(picking, 5)
+
+            picking.with_user(self.connector_user).with_context(
+                skip_backorder=True
+            ).button_validate()
+
+            self.assertEqual(picking.state, "done", state)
+            self.assert_reserved(5, state)
+        self.assertEqual(open_delivery.state, "assigned")
+
+    def test_a_partly_prepared_frozen_delivery_gives_its_whole_reservation_back(self):
+        picking = self.reserved_delivery()
+        self.set_wms_state(picking, "preparation_in_progress")
+
+        self.prepare_as_connector(picking, 2)
+        self.assert_reserved(2, "the prepared quantity is the reservation")
+        picking.with_user(self.connector_user).with_context(
+            skip_backorder=True, picking_ids_not_to_backorder=picking.ids
+        ).button_validate()
+
+        self.assertEqual(picking.state, "done")
+        self.assertEqual(picking.move_ids.quantity, 2)
+        self.assert_reserved(0)
+
+    def test_a_cancelled_frozen_delivery_gives_its_reservation_back(self):
+        for state in FROZEN_WMS_STATES:
+            by_a_person = self.reserved_delivery()
+            self.set_wms_state(by_a_person, state)
+            by_a_person.with_user(self.warehouse_user).action_cancel()
+            # The Order.Cancelled flow (S5): release, then cancel.
+            by_the_connector = self.reserved_delivery()
+            self.set_wms_state(by_the_connector, state)
+            by_the_connector.with_user(self.connector_user).do_unreserve()
+            by_the_connector.with_user(self.connector_user).action_cancel()
+
+            self.assertEqual(by_a_person.state, "cancel", state)
+            self.assertEqual(by_the_connector.state, "cancel", state)
+            self.assert_reserved(0, state)
+
+    def test_a_frozen_delivery_holding_a_done_move_keeps_its_reservation_when_refused(self):
+        # Core refuses to cancel a done move: the release of the open move,
+        # made just before core's check, goes back with the refusal.
+        other = self.env["product.product"].create(
+            {
+                "name": "Other good",
+                "is_storable": True,
+                "default_code": "GOOD-2",
+                "barcode": "3000000000024",
+            }
+        )
+        self.env["stock.quant"]._update_available_quantity(other, self.stock_location, 10)
+        picking = self.reserved_delivery()
+        self.set_wms_state(picking, "preparation_in_progress")
+        picking.with_user(self.connector_user).write(
+            {
+                "move_ids": [
+                    Command.create(
+                        {
+                            "product_id": other.id,
+                            "product_uom_qty": 2,
+                            "quantity": 2,
+                            "picked": True,
+                            "location_id": picking.location_id.id,
+                            "location_dest_id": picking.location_dest_id.id,
+                        }
+                    )
+                ]
+            }
+        )
+        done_move = picking.move_ids.filtered(lambda move: move.product_id == other)
+        # Without cancel_backorder core moves the open move to a backorder.
+        done_move._action_done(cancel_backorder=True)
+        open_move = picking.move_ids - done_move
+        self.assertEqual(done_move.state, "done")
+
+        with self.assertRaises(UserError):
+            picking.with_user(self.warehouse_user).action_cancel()
+
+        self.assertEqual(open_move.state, "assigned")
+        self.assertEqual(open_move.quantity, 5)
+        self.assert_reserved(5)
 
     def test_a_frozen_delivery_is_not_reserved(self):
         for state in FROZEN_WMS_STATES:

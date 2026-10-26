@@ -3,6 +3,41 @@
 The bridge's contract version (series-less, ADR 0015). The connector expects the
 same major and minor (`src/Odoo.Service/Odoo/BridgeContract.cs`).
 
+## 3.8.2
+
+A frozen transfer gives its reservation back when it is validated or cancelled
+(recette, 2026-10-21).
+
+- Behaviour 5 no longer makes a frozen transfer's moves bypass reservation
+  (`_should_bypass_reservation`). Odoo reads that answer on both sides of its
+  quant bookkeeping, so the quantities a frozen transfer had reserved stayed
+  reserved on the quants when the connector resized its lines and validated it:
+  the stock was reserved by goods already shipped, and new deliveries of the
+  product stayed waiting. The freeze still stops Odoo deciding to reserve or
+  unreserve (`_action_assign`, `_do_unreserve`, `_trigger_assign`,
+  `action_assign`, `do_unreserve`). Validating more than Odoo holds now frees
+  the unpicked reservations of other transfers, as Odoo does for any transfer
+  (`_free_reservation` unlinks their lines without going through
+  `_do_unreserve`): a delivery already offered to the WMS, or frozen, can lose
+  its reservation that way and show as waiting until stock comes back; the WMS
+  keeps the order it was sent.
+- A cancelled frozen transfer releases its reservation (`_action_cancel` on the
+  move), whether a person cancels it or the connector does on `Order.Cancelled`:
+  Odoo's release goes through `_do_unreserve`, which the freeze skips.
+- No new field, no new right, no migration.
+
+Before going live on 3.8.2:
+
+- Quants inflated by an earlier version are realigned with the open detailed
+  operations by Odoo's own quant clean-up (`stock.quant._quant_tasks`). It runs
+  with the daily scheduled action **Procurement: run scheduler**, when a person
+  opens **Inventory > Operations > Physical Inventory**, or on demand from the
+  menu of the same name, **Inventory > Operations > Procurement: run
+  scheduler** (developer mode). Upgrade the bridge first: on an older bridge
+  the next validation leaks again. The scheduler reserves the waiting
+  deliveries before it cleans the quants, so after a clean-up check the
+  availability of the waiting deliveries or run the scheduler once more.
+
 ## 3.8.1
 
 The write guard covers the unit on Odoo 20 (issue #52).

@@ -22,7 +22,12 @@ GUARDED_MOVE_FIELDS = frozenset(
 
 class StockMove(models.Model):
     """The reservation freeze (behaviour 5) and the offer on assignment
-    (behaviour 1), both read through the move's picking (ADR 0003)."""
+    (behaviour 1), both read through the move's picking (ADR 0003).
+
+    The freeze stops the decisions to reserve or unreserve, never the quants'
+    bookkeeping: a frozen move does not bypass reservation, so the quants give
+    back what its lines reserved when they are validated, resized or unlinked
+    (3.8.2: bypassing it left the validated quantities reserved)."""
 
     _inherit = "stock.move"
 
@@ -33,17 +38,24 @@ class StockMove(models.Model):
         reserved.picking_id._ezy_offer_on_assignment()
         return result
 
+    def _action_cancel(self):
+        # A cancelled move gives its reservation back, frozen or not: nobody
+        # works on it any more. Core releases it through _do_unreserve, which
+        # the freeze skips, and offers no switch for it (ADR 0011), so the
+        # frozen moves' lines go here, all of them as core's would, before core
+        # marks the moves cancelled (a cancelled line cannot be unlinked) and as
+        # the superuser, so that the write guard (behaviour 6) leaves a person's
+        # cancellation alone. When core refuses the cancellation (a done move),
+        # the release goes back with it.
+        cancelling = self._ezy_frozen().filtered(lambda move: move.state not in ("done", "cancel"))
+        cancelling.move_line_ids.sudo().unlink()
+        return super()._action_cancel()
+
     def _do_unreserve(self):
         return super(StockMove, self._ezy_not_frozen())._do_unreserve()
 
     def _trigger_assign(self):
         return super(StockMove, self._ezy_not_frozen())._trigger_assign()
-
-    def _should_bypass_reservation(self, forced_location=False):
-        self.ensure_one()
-        if self.picking_id.ezy_is_frozen:
-            return True
-        return super()._should_bypass_reservation(forced_location=forced_location)
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -60,5 +72,8 @@ class StockMove(models.Model):
         self.picking_id._ezy_check_lines_may_change()
         return super().unlink()
 
+    def _ezy_frozen(self):
+        return self.filtered(lambda move: move.picking_id.ezy_is_frozen)
+
     def _ezy_not_frozen(self):
-        return self.filtered(lambda move: not move.picking_id.ezy_is_frozen)
+        return self - self._ezy_frozen()

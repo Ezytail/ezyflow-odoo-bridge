@@ -89,9 +89,14 @@ Fields and behaviours land slice by slice; see `docs/slices/` in the repository.
    order; Odoo sets ready, the connector writes the rest.
 5. Freeze. A transfer in sent, preparation to do, in progress, done, refused
    or cancelled by logistics is neither reserved nor unreserved by Odoo
-   (`_action_assign`, `_do_unreserve`, `_trigger_assign` and
-   `_should_bypass_reservation` on the move; `action_assign` and
-   `do_unreserve` on the transfer). Ready and shipped are not frozen.
+   (`_action_assign`, `_do_unreserve` and `_trigger_assign` on the move;
+   `action_assign` and `do_unreserve` on the transfer). Ready and shipped are
+   not frozen. The freeze stops Odoo's decisions, not its bookkeeping: what the
+   lines reserved is kept on the quants while the connector resizes them and
+   given back when the transfer is validated, and a cancelled transfer
+   releases its reservation (`_action_cancel` on the move). Until 3.8.2 the
+   moves bypassed reservation, so a validated frozen transfer left its
+   quantities reserved on the quants; CHANGELOG 3.8.2 says how to realign them.
 6. Write guard. Only the connector user and administrators may change the
    lines of a frozen transfer (moves, detailed operations, quantities); the
    error names the state. Header changes and cancellation stay with people, so
