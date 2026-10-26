@@ -5,7 +5,7 @@ import logging
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
-from .contract import CHANNELS, WMS_STATES
+from .contract import WMS_STATES, check_channel_codes
 from .wms_constraints import binds
 
 _logger = logging.getLogger(__name__)
@@ -21,15 +21,15 @@ class SaleOrder(models.Model):
 
     _inherit = "sale.order"
 
-    ezy_channel = fields.Selection(
-        CHANNELS,
+    ezy_channel = fields.Char(
         string="Channel",
         compute="_compute_ezy_channel",
         store=True,
         readonly=False,
         precompute=True,
-        help="The sales channel, copied from the delivery address when the order is "
-        "created; copied down to the order's transfers.",
+        help="The sales channel, a code such as WEB, PRO or B2B, copied from the "
+        "delivery address when the order is created; copied down to the order's "
+        "transfers.",
     )
     ezy_final_recipient_id = fields.Many2one(
         "res.partner",
@@ -79,6 +79,11 @@ class SaleOrder(models.Model):
                 if order.currency_id
                 else order.ezy_shop_total != order.amount_total
             )
+
+    @api.constrains("ezy_channel")
+    def _check_ezy_channel(self):
+        for record in self.filtered("ezy_channel"):
+            check_channel_codes(self.env, [record.ezy_channel], record.display_name)
 
     @api.depends("partner_shipping_id.ezy_channel")
     def _compute_ezy_channel(self):

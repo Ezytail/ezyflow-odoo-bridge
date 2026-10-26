@@ -24,6 +24,28 @@ release that changes the bridge.
 | 3.8.2 | v0.8.1 (2026-10-23) | v0.8.1 |
 | 3.8.3 | v0.8.2 (2026-10-23) | v0.8.2 |
 | 3.9.0 | not released yet | — |
+| 3.10.0 | not released yet | — |
+
+## 3.10.0
+
+The channel is a free code instead of one of six fixed values (issue #78).
+
+- `ezy_channel` on the partner, the sales order and the transfer is a text
+  field instead of a selection of WEB, PRO, MARKETPLACE, DISTRIBUTEUR,
+  REASSORT and SPECIAL. A channel code is 1 to 32 capital letters, digits,
+  hyphens or underscores (`^[A-Z0-9_-]{1,32}$`, `CHANNEL_CODE` in
+  `models/contract.py`); no comma, because the allow-list is comma-separated.
+  The field carries no size, because Odoo 19 cuts a text field to its size
+  before a constraint sees it; the pattern holds the length.
+- A code outside that shape is refused with a message naming it, on the three
+  fields and on each code of an operation type's channel allow-list
+  (`ezy_channels`). The bridge never rewrites what a person typed: `b2b` is
+  refused, not upper-cased, and the allow-list compares codes exactly when it
+  decides an offer (behaviour 1); WEB has no special status.
+- Behaviour 3 (copy-down) is unchanged and copies any well-formed code.
+- No new right. No migration: a selection is stored in a plain `varchar`
+  column, the text field keeps that column, and every stored value is one of
+  the six codes, which all match the pattern.
 
 ## 3.9.0
 

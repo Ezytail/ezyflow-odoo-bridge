@@ -2,7 +2,7 @@
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
-from .contract import CHANNELS
+from .contract import check_channel_codes
 from .wms_constraints import (
     CITY_LIMIT,
     EMAIL_LIMIT,
@@ -28,11 +28,11 @@ PARTNER_LIMITS = {
 class ResPartner(models.Model):
     _inherit = "res.partner"
 
-    ezy_channel = fields.Selection(
-        CHANNELS,
+    ezy_channel = fields.Char(
         string="Channel",
-        help="The sales channel this partner buys through; copied to its sales "
-        "orders and their transfers.",
+        help="The sales channel this partner buys through, a code such as WEB, PRO "
+        "or B2B (capital letters, digits, hyphens, underscores); copied to its "
+        "sales orders and their transfers.",
     )
     ezy_relay_code = fields.Char(
         string="Relay code",
@@ -46,6 +46,11 @@ class ResPartner(models.Model):
         ondelete="set null",
         help="The carrier this relay point belongs to.",
     )
+
+    @api.constrains("ezy_channel")
+    def _check_ezy_channel(self):
+        for record in self.filtered("ezy_channel"):
+            check_channel_codes(self.env, [record.ezy_channel], record.display_name)
 
     # Behaviour 8 (ADR 0017): every partner, customer, vendor or address, as a
     # person writes it; the connector user writes what the shop sent. One

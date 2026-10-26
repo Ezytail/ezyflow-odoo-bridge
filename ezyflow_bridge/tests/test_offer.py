@@ -107,9 +107,17 @@ class TestOffer(EzyflowBridgeCase):
         picking.action_assign()
         self.assertEqual(picking.ezy_wms_state, "ready_for_logistics")
 
-    def test_an_unknown_channel_code_is_refused(self):
-        with self.assertRaises(ValidationError):
-            self.out_type.ezy_channels = "WEB,SHOP"
+    def test_a_malformed_channel_code_is_refused(self):
+        for allow_list in ("WEB,shop", "A,B C", "WEB," + "A" * 33):
+            with self.subTest(allow_list=allow_list), self.assertRaises(ValidationError):
+                self.out_type.ezy_channels = allow_list
+
+    def test_a_well_formed_channel_code_is_accepted_though_unlisted(self):
+        self.out_type.ezy_channels = "WEB, B2B,SHOP-FR"
+        self.assertEqual(self.out_type.ezy_channels, "WEB, B2B,SHOP-FR")
+
+        self.customer.ezy_channel = "SHOP-FR"
+        self.assertEqual(self.customer.ezy_channel, "SHOP-FR")
 
     def test_a_held_delivery_is_not_offered_until_the_hold_is_cleared(self):
         self.out_type.ezy_logistics_mode = "auto"

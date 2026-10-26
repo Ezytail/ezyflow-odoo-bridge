@@ -1,4 +1,5 @@
 # Part of the EzyFlow connector for Odoo. See LICENSE in the repository root.
+from odoo.exceptions import ValidationError
 from odoo.tests import tagged
 
 from .common import EzyflowBridgeCase
@@ -35,3 +36,16 @@ class TestChannel(EzyflowBridgeCase):
         picking.sale_id.ezy_channel = "MARKETPLACE"
 
         self.assertEqual(picking.ezy_channel, "MARKETPLACE")
+
+    def test_any_well_formed_code_copies_down(self):
+        self.customer.ezy_channel = "B2B"
+
+        picking = self.confirm_order()
+
+        self.assertEqual(picking.sale_id.ezy_channel, "B2B")
+        self.assertEqual(picking.ezy_channel, "B2B")
+
+    def test_a_lower_case_code_is_refused_not_rewritten(self):
+        with self.assertRaises(ValidationError):
+            self.customer.ezy_channel = "b2b"
+        self.assertEqual(self.customer.ezy_channel, "WEB")

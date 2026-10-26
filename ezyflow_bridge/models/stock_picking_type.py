@@ -2,7 +2,7 @@
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
-from .contract import CHANNELS, LOGISTICS_MODES
+from .contract import LOGISTICS_MODES, check_channel_codes
 from .wms_constraints import (
     PICKING_NAME_ALPHABET,
     PICKING_NAME_LIMIT,
@@ -37,27 +37,21 @@ class StockPickingType(models.Model):
     )
     ezy_channels = fields.Char(
         string="Channel allow-list",
-        help="Comma-separated channel codes (WEB, PRO, MARKETPLACE, DISTRIBUTEUR, "
-        "REASSORT, SPECIAL) this operation type may offer to the WMS. Empty: every "
-        "channel. A transfer whose channel is not listed stays in Odoo.",
+        help="Comma-separated channel codes (such as WEB,PRO,B2B; capital letters, "
+        "digits, hyphens, underscores) this operation type may offer to the WMS. "
+        "Empty: every channel. A transfer whose channel is not listed stays in Odoo.",
     )
 
     @api.constrains("ezy_channels")
     def _check_ezy_channels(self):
-        known = {code for code, _label in CHANNELS}
+        # Each code as a person typed it, so a lower-case code is refused like
+        # on the channel field; the comparison in _ezy_offers_channel stays
+        # case-tolerant.
         for picking_type in self:
-            allow_list = picking_type._ezy_channel_allow_list()
-            unknown = [code for code in allow_list if code not in known]
-            if unknown:
-                raise ValidationError(
-                    self.env._(
-                        "Unknown channel %(codes)s in the allow-list of %(name)s. "
-                        "Known channels: %(known)s.",
-                        codes=", ".join(unknown),
-                        name=picking_type.display_name,
-                        known=", ".join(code for code, _label in CHANNELS),
-                    )
-                )
+            codes = [code.strip() for code in (picking_type.ezy_channels or "").split(",")]
+            check_channel_codes(
+                self.env, [code for code in codes if code], picking_type.display_name
+            )
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -115,8 +109,11 @@ class StockPickingType(models.Model):
     def _ezy_channel_allow_list(self):
         """The allow-list as a list of codes; empty when every channel is allowed."""
         self.ensure_one()
+        # Compared exactly: the constraint refuses a code outside the shape, so
+        # no stored allow-list holds a lower-case entry (before 3.10.0 the
+        # selection did the same). ADR 0029.
         codes = (self.ezy_channels or "").split(",")
-        return [code.strip().upper() for code in codes if code.strip()]
+        return [code.strip() for code in codes if code.strip()]
 
     def _ezy_offers_channel(self, channel):
         """Whether a transfer of this channel may be offered (behaviour 1)."""

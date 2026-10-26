@@ -44,7 +44,11 @@ List" does not repair it. Since 3.3.1 the post-install hook sets the type, and
 - Three system parameters, shipped empty: `ezyflow.activity` (the activity),
   `ezyflow.wakeup_url` and `ezyflow.wakeup_secret`, set from the
   Connector block of the EzyFlow settings page (below).
-- The contract: closed sets in `models/contract.py`, on four models.
+- The contract: closed sets and the channel code in `models/contract.py`, on
+  four models. A channel is a code, not a fixed list: 1 to 32 capital letters,
+  digits, hyphens or underscores (`^[A-Z0-9_-]{1,32}$`), such as WEB, PRO or
+  B2B, since 3.10.0. The bridge refuses a code outside that shape, wherever it
+  is typed, and never upper-cases it.
   Operation type: the logistics mode
   (`ezy_logistics_mode`: off, auto, manual) and the channel allow-list
   (`ezy_channels`, comma-separated channel codes, empty for every channel),
@@ -83,7 +87,8 @@ List" does not repair it. Since 3.3.1 the post-install hook sets the type, and
    channel. Manual mode waits for a person (the *Offer to logistics* button);
    off never offers; internal transfers are never offered.
 2. Hold. A held transfer is never offered, whatever the mode.
-3. Channel copy-down: delivery address, sales order, transfer.
+3. Channel copy-down: delivery address, sales order, transfer. Any well-formed
+   code is copied down, WEB as any other.
 4. WMS state. One selection field on the transfer, eight values in hand-off
    order; Odoo sets ready, the connector writes the rest.
 5. Freeze. A transfer in sent, preparation to do, in progress, done, refused

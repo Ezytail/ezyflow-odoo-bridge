@@ -2,7 +2,7 @@
 from odoo import api, fields, models
 from odoo.exceptions import UserError
 
-from .contract import CHANNELS, FROZEN_WMS_STATES, WMS_STATES
+from .contract import FROZEN_WMS_STATES, WMS_STATES, check_channel_codes
 
 
 class StockPicking(models.Model):
@@ -27,13 +27,13 @@ class StockPicking(models.Model):
         copy=False,
         help="Keeps this transfer out of the WMS whatever its operation type says.",
     )
-    ezy_channel = fields.Selection(
-        CHANNELS,
+    ezy_channel = fields.Char(
         string="Channel",
         compute="_compute_ezy_channel",
         store=True,
         readonly=False,
-        help="The sales channel, copied down from the sales order.",
+        help="The sales channel, a code such as WEB, PRO or B2B, copied down from "
+        "the sales order.",
     )
     ezy_final_recipient_id = fields.Many2one(
         "res.partner",
@@ -51,6 +51,11 @@ class StockPicking(models.Model):
         help="Odoo neither reserves nor unreserves a frozen transfer, and only the "
         "EzyFlow connector may change its lines.",
     )
+
+    @api.constrains("ezy_channel")
+    def _check_ezy_channel(self):
+        for record in self.filtered("ezy_channel"):
+            check_channel_codes(self.env, [record.ezy_channel], record.display_name)
 
     @api.depends("sale_id.ezy_channel")
     def _compute_ezy_channel(self):
