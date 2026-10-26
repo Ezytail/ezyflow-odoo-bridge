@@ -21,17 +21,49 @@
 
     <h3>1. Install and upgrade</h3>
     <p>
-        Each release of the connector comes with a zip of this module. Unzip it into a directory on
-        Odoo's addons path (the <code>ezyflow_bridge</code> folder sits at the zip's root), restart
-        Odoo, open <strong>Apps</strong>, choose <strong>Update Apps List</strong> and install
-        <strong>EzyFlow bridge</strong>. The same zip installs on Odoo 19 and Odoo 20.
+        The bridge is published in a public repository on GitHub,
+        <code>Ezytail/ezyflow-odoo-bridge</code>. Each version of the bridge is a tag of that
+        repository and a release on its <strong>Releases</strong> page, with a zip of this module, a
+        <code>SHA256SUMS</code> file to check the zip against, and release notes. The same module
+        installs on Odoo 19 and Odoo 20. Pick one of three routes:
+    </p>
+    <ul>
+        <li>
+            <strong>A zip.</strong> Download the zip of the release from the Releases page and unzip
+            it into a directory on Odoo's addons path (the <code>ezyflow_bridge</code> folder sits at
+            the zip's root).
+        </li>
+        <li>
+            <strong>A git checkout.</strong> Clone the repository, pin it at the tag of the release,
+            and put the repository's root on Odoo's addons path.
+        </li>
+        <li>
+            <strong>Odoo.sh.</strong> Add the repository as a submodule of your project, on the branch
+            named after your series, <code>19.0</code> or <code>20.0</code>.
+        </li>
+    </ul>
+    <p>
+        Then restart Odoo, open <strong>Apps</strong>, choose <strong>Update Apps List</strong> and
+        install <strong>EzyFlow bridge</strong>.
     </p>
     <p>
-        To upgrade, replace the folder with the one of the new release and either run Odoo once with
+        To upgrade, back up the database first. Replace the folder with the one of the new release
+        (or move the pin to the new tag), then either run Odoo once with
         <code>-u ezyflow_bridge</code> or open the module in <strong>Apps</strong> and press
-        <strong>Upgrade</strong>. The EzyFlow team tells you which release of the bridge their
-        connector expects: a connector facing a bridge of another major version refuses to work with
-        it, and one facing another minor version works and warns them.
+        <strong>Upgrade</strong>. Restart Odoo afterwards, so that the changed Python code is loaded:
+        the Upgrade button reads the new files but does not restart Odoo. The release notes of each
+        version say whether the upgrade is required or optional, whether it carries a migration,
+        whether a restart is needed, and what to check after it. Read them before you upgrade.
+    </p>
+    <p>
+        Three versions matter. The installed version is shown in <strong>Apps</strong>, on the
+        module. The oldest version the connector accepts, and the version it was built with, are
+        shown in the EzyFlow portal, and the EzyFlow team tells you both. The latest version is the
+        newest release on the Releases page. A bridge older than the oldest version the connector
+        accepts is refused: the connector does not work with it and says so in the portal, naming
+        the installed version and the two others. A bridge of another major version is refused
+        too. A bridge newer than the one the connector was built with, within the same
+        major version, works: upgrade the bridge first, the connector follows.
     </p>
     <p>
         On Odoo 20, a module installed from the command line on an existing database

@@ -1,32 +1,46 @@
 # Changelog of the EzyFlow bridge
 
-The bridge's contract version (series-less). The connector expects the
-same major and minor (`src/Odoo.Service/Odoo/BridgeContract.cs`).
+The bridge's contract version (series-less). The connector declares the
+version it was built with and a floor, the oldest version it serves
+(`BridgeContract.cs` in the connector): a different major or a bridge below the
+floor is refused, a bridge from the floor to the built version is served with
+each capability it lacks switched off, a newer bridge of the same major is
+served. A major removes or reverses, a minor only adds, a patch is internal.
 
-## Pairing
+The release notes of a version on the public repository,
+`Ezytail/ezyflow-odoo-bridge`, are its entry below. From 3.12.1 on, an entry
+names no ADR, slice or issue, and ends with a **For the administrator:**
+paragraph: whether the upgrade is required or optional, whether it carries a
+migration, whether Odoo must be restarted, and what to check after the
+upgrade. Older entries are history and stay as they were written.
 
-Each service release is built against one bridge version and ships it as
-`ezyflow_bridge-<service version>.zip`. The table pairs them: read
-from `BridgeContract.ExpectedVersionText` and the manifest at each tag. No
-service release was built against a bridge before 3.3.1. Add a row with every
-release that changes the bridge.
+Which bridge version each service release was built with, the pairing, is kept
+in the connector repository and no longer in this
+file.
 
-| Bridge | First service release built against it | Service releases |
-| --- | --- | --- |
-| 3.3.1 | v0.1.0 (2026-10-14) | v0.1.0 |
-| 3.4.0 | v0.2.0 (2026-10-14) | v0.2.0 |
-| 3.5.0 | v0.3.0 (2026-10-15) | v0.3.0 |
-| 3.6.0 | v0.4.0 (2026-10-15) | v0.4.0 |
-| 3.7.0 | v0.5.0 (2026-10-16) | v0.5.0 |
-| 3.7.1 | v0.5.1 (2026-10-19) | v0.5.1 |
-| 3.8.0 | v0.6.0 (2026-10-20) | v0.6.0 |
-| 3.8.1 | v0.7.0 (2026-10-20) | v0.7.0, v0.7.1, v0.7.2, v0.8.0 |
-| 3.8.2 | v0.8.1 (2026-10-23) | v0.8.1 |
-| 3.8.3 | v0.8.2 (2026-10-23) | v0.8.2 |
-| 3.9.0 | not released yet | — |
-| 3.10.0 | not released yet | — |
-| 3.11.0 | v0.13.0 (2026-10-24) | v0.13.0 |
-| 3.12.0 | not released yet | — |
+## 3.12.1
+
+The Install and upgrade section of the help page rewritten for the public
+repository and the compatibility range.
+
+- `static/description/index.html` and `index.fr.html`: where the module comes
+  from (the public repository `Ezytail/ezyflow-odoo-bridge` and its Releases
+  page), the three install routes (a zip on the addons path, a git checkout
+  pinned at a tag, an Odoo.sh submodule on the branch named after the series),
+  the upgrade steps (back up the database, replace the folder, upgrade, restart
+  Odoo), the three versions an administrator meets (installed, the oldest the
+  connector accepts and the one it was built with, latest), and the rule: a
+  bridge below the oldest accepted version or of another major is refused, a
+  newer minor works.
+- `__manifest__.py`: the module's website is the public repository,
+  https://github.com/Ezytail/ezyflow-odoo-bridge, the link Apps shows.
+- The pairing table of service releases leaves this file.
+- No new field, no new right, no migration. A patch: nothing the connector
+  reads changes.
+
+**For the administrator:** Optional. No migration. A restart is not needed for
+this version. After the upgrade, open the help page from Apps and check the
+Install and upgrade section reads the new text.
 
 ## 3.12.0
 

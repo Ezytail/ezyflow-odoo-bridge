@@ -23,19 +23,51 @@
 
     <h3>1. Installer et mettre à niveau</h3>
     <p>
-        Chaque version du connecteur est livrée avec une archive zip de ce module. Décompressez-la
-        dans un répertoire du chemin des modules d'Odoo (le dossier <code>ezyflow_bridge</code> se
-        trouve à la racine de l'archive), redémarrez Odoo, ouvrez <strong>Apps</strong>, choisissez
-        <strong>Mettre à jour la liste des Apps</strong> et installez <strong>EzyFlow bridge</strong>.
-        La même archive s'installe sur Odoo 19 et sur Odoo 20.
+        Le module est publié dans un dépôt public sur GitHub,
+        <code>Ezytail/ezyflow-odoo-bridge</code>. Chaque version du module est un tag de ce dépôt et
+        une publication de sa page <strong>Releases</strong>, avec une archive zip de ce module, un
+        fichier <code>SHA256SUMS</code> pour vérifier l'archive, et des notes de version. Le même
+        module s'installe sur Odoo 19 et sur Odoo 20. Choisissez l'une des trois voies :
+    </p>
+    <ul>
+        <li>
+            <strong>Une archive zip.</strong> Téléchargez l'archive de la version depuis la page
+            Releases et décompressez-la dans un répertoire du chemin des modules d'Odoo (le dossier
+            <code>ezyflow_bridge</code> se trouve à la racine de l'archive).
+        </li>
+        <li>
+            <strong>Un clone git.</strong> Clonez le dépôt, fixez-le sur le tag de la version, et
+            placez la racine du dépôt dans le chemin des modules d'Odoo.
+        </li>
+        <li>
+            <strong>Odoo.sh.</strong> Ajoutez le dépôt comme sous-module de votre projet, sur la
+            branche qui porte le nom de votre série, <code>19.0</code> ou <code>20.0</code>.
+        </li>
+    </ul>
+    <p>
+        Redémarrez ensuite Odoo, ouvrez <strong>Apps</strong>, choisissez <strong>Mettre à jour la
+        liste des Apps</strong> et installez <strong>EzyFlow bridge</strong>.
     </p>
     <p>
-        Pour mettre à niveau, remplacez le dossier par celui de la nouvelle version, puis lancez Odoo
-        une fois avec <code>-u ezyflow_bridge</code> ou ouvrez le module dans <strong>Apps</strong> et
-        appuyez sur <strong>Mettre à niveau</strong>. L'équipe EzyFlow vous indique quelle version du
-        module son connecteur attend : un connecteur face à un module d'une autre version majeure
-        refuse de fonctionner avec lui, et un connecteur face à une autre version mineure fonctionne
-        et l'en avertit.
+        Pour mettre à niveau, sauvegardez d'abord la base de données. Remplacez le dossier par celui
+        de la nouvelle version (ou déplacez le clone sur le nouveau tag), puis lancez Odoo une fois
+        avec <code>-u ezyflow_bridge</code> ou ouvrez le module dans <strong>Apps</strong> et appuyez
+        sur <strong>Mettre à niveau</strong>. Redémarrez ensuite Odoo, pour que le code Python modifié
+        soit chargé : le bouton Mettre à niveau lit les nouveaux fichiers mais ne redémarre pas Odoo.
+        Les notes de chaque version indiquent si la mise à niveau est obligatoire ou facultative, si
+        elle comporte une migration, si un redémarrage est nécessaire, et quoi vérifier ensuite.
+        Lisez-les avant de mettre à niveau.
+    </p>
+    <p>
+        Trois versions comptent. La version installée est affichée dans <strong>Apps</strong>, sur le
+        module. La plus ancienne version acceptée par le connecteur, et la version avec laquelle il a
+        été construit, sont affichées dans le portail EzyFlow, et l'équipe EzyFlow vous les indique.
+        La dernière version est la publication la plus récente de la page Releases. Un module plus
+        ancien que la plus ancienne version acceptée par le connecteur est refusé : le connecteur ne
+        fonctionne pas avec lui et l'indique dans le portail, en nommant la version installée et les
+        deux autres. Un module d'une autre version majeure est refusé aussi. Un module
+        plus récent que celui avec lequel le connecteur a été construit, dans la même version
+        majeure, fonctionne : mettez d'abord le module à niveau, le connecteur suit.
     </p>
     <p>
         Sur Odoo 20, un module installé en ligne de commande sur une base existante

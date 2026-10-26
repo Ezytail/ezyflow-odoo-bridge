@@ -2,8 +2,13 @@
 
 The Odoo addon (Odoo 19 and 20, one source tree) the EzyFlow connector depends
 on: the fields and behaviours the connector needs and nothing else. It lives in the
-connector's repository and is versioned and tagged with the service image; the
-Odoo side installs the tagged version the image was built against.
+connector's repository and is released with the service image; each bridge
+version is also published to the public repository `Ezytail/ezyflow-odoo-bridge`
+(a tag and a release per version, the branches `19.0` and `20.0`), where the
+Odoo side gets it (ADR 0033). The connector serves a bridge from its floor up,
+within one major: a minor only adds, never removes or renames, and a change to
+this folder bumps the manifest version and adds a CHANGELOG entry ending with
+its **For the administrator:** paragraph.
 
 This README is the developer's document. The Odoo administrator's document is
 the bridge help page (ADR 0030), `static/description/index.html`, shown in
@@ -233,7 +238,7 @@ bridge test on each series is what proves it still works when a series is added.
 English and French (ADR 0031). Every string a person sees goes through Odoo's
 translation mechanism (`string=`, `help=`, selection labels, view text,
 `env._()` in Python) and has its French line in `i18n/fr.po`, in the words of
-the glossary's `_French_` lines (CONTEXT.md); the bridge test `test_i18n.py`
+the `_French_` lines of the connector's glossary; the bridge test `test_i18n.py`
 fails on a term without one, on an empty one and on a stale one, so the pot
 and the po move together. The help page is translated as a sibling file,
 `static/description/index.fr.html`, kept to the English page's shape (same
