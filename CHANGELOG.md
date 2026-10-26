@@ -3,6 +3,15 @@
 The bridge's contract version (series-less, ADR 0015). The connector expects the
 same major and minor (`src/Odoo.Service/Odoo/BridgeContract.cs`).
 
+## 3.8.1
+
+The write guard covers the unit on Odoo 20 (issue #52).
+
+- Behaviour 6 refuses a person's change of unit on the moves and move lines of
+  a frozen transfer on Odoo 20 too. Odoo 20 renamed the unit `uom_id` (Odoo 19:
+  `product_uom` on the move, `product_uom_id` on the move line), and the guard
+  listed only the Odoo 19 names. No new field, no new right, no migration.
+
 ## 3.8.0
 
 Every bridge setting lives on the EzyFlow settings page (ADR 0020).

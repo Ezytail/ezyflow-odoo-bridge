@@ -5,8 +5,18 @@ from odoo import api, models
 # Housekeeping Odoo writes on behalf of a person working the transfer header
 # (dates, partner, state, picked) stays allowed: cancelling a transfer must
 # still reach the WMS as a cancellation (S2, S8).
+# The unit is product_uom on Odoo 19 and uom_id on Odoo 20 (ADR 0015): both
+# names are listed, a series never sends the other one.
 GUARDED_MOVE_FIELDS = frozenset(
-    {"product_uom_qty", "quantity", "product_id", "product_uom", "move_line_ids", "lot_ids"}
+    {
+        "product_uom_qty",
+        "quantity",
+        "product_id",
+        "product_uom",
+        "uom_id",
+        "move_line_ids",
+        "lot_ids",
+    }
 )
 
 

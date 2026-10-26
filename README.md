@@ -14,7 +14,7 @@ support@ezytail.com.
 - **Installed**: the version of the module on your database. Odoo shows it in
   Apps, on the EzyFlow bridge row.
 - **Oldest accepted**: not stated for this release. The connector refuses an older bridge.
-- **Built with**: bridge 3.8.0 (EzyFlow connector v0.6.0).
+- **Built with**: bridge 3.8.1 (EzyFlow connector v0.7.0).
   The connector was tested against this bridge.
 - **Latest**: the newest release of this repository.
 
@@ -36,7 +36,7 @@ from the Releases page, check it against `SHA256SUMS`, and unzip it into a
 folder of your addons path. The folder `ezyflow_bridge` appears there.
 
 **b. Git clone or pin.** Clone this repository, or pin it at a tag such as
-`v3.8.0`, and put the repository root on your addons path (the folder
+`v3.8.1`, and put the repository root on your addons path (the folder
 that contains `ezyflow_bridge`). The `19.0` and `20.0` branches both follow the
 latest release.
 

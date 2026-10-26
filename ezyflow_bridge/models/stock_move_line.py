@@ -1,12 +1,14 @@
 # Part of the EzyFlow connector for Odoo. See LICENSE in the repository root.
 from odoo import api, models
 
-# See GUARDED_MOVE_FIELDS: the line content the WMS owns on a frozen transfer.
+# See GUARDED_MOVE_FIELDS: the line content the WMS owns on a frozen transfer,
+# the unit under both series' names (product_uom_id on 19, uom_id on 20).
 GUARDED_LINE_FIELDS = frozenset(
     {
         "quantity",
         "product_id",
         "product_uom_id",
+        "uom_id",
         "lot_id",
         "lot_name",
         "package_id",

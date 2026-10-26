@@ -110,6 +110,27 @@ class TestFreeze(EzyflowBridgeCase):
             )
         self.assertEqual(picking.move_ids.product_uom_qty, 5)
 
+    def test_a_person_cannot_change_the_unit_of_a_frozen_delivery(self):
+        # Odoo 19 names the unit product_uom (move) and product_uom_id (line),
+        # Odoo 20 uom_id on both (issue #52). Writing the current unit is enough:
+        # the guard refuses on the field, before Odoo compares values.
+        picking = self.reserved_delivery()
+        self.set_wms_state(picking, "sent_to_logistics")
+        move = picking.move_ids.with_user(self.warehouse_user)
+        line = picking.move_line_ids.with_user(self.warehouse_user)
+        move_unit = "uom_id" if "uom_id" in move._fields else "product_uom"
+        line_unit = "uom_id" if "uom_id" in line._fields else "product_uom_id"
+
+        with self.assertRaisesRegex(UserError, "Sent to logistics"):
+            move.write({move_unit: move[move_unit].id})
+        with self.assertRaisesRegex(UserError, "Sent to logistics"):
+            line.write({line_unit: line[line_unit].id})
+
+        picking.move_ids.with_user(self.connector_user).write({move_unit: move[move_unit].id})
+        picking.move_line_ids.with_user(self.connector_user).write(
+            {line_unit: line[line_unit].id}
+        )
+
     def test_the_connector_and_an_administrator_can_change_the_lines(self):
         picking = self.reserved_delivery()
         self.set_wms_state(picking, "preparation_done")
