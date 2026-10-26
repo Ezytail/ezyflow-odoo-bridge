@@ -18,6 +18,9 @@ class ResConfigSettings(models.TransientModel):
     ezy_wms_default_code_alphabet = fields.Boolean(
         related="company_id.ezy_wms_default_code_alphabet", readonly=False
     )
+    ezy_wms_default_code_unique = fields.Boolean(
+        related="company_id.ezy_wms_default_code_unique", readonly=False
+    )
     ezy_wms_default_code_required = fields.Boolean(
         related="company_id.ezy_wms_default_code_required", readonly=False
     )

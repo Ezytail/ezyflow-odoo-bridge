@@ -57,6 +57,14 @@ List" does not repair it. Since 3.3.1 the post-install hook sets the type, and
 - The shop identity (`ezy_shop_product_id` on the product template, `ezy_shop_variant_id` on the
   variant): the id the product has in the web shop, indexed, not copied on duplicate, shown on
   the product forms.
+- The SKU key (`ezy_sku_key` on the variant, since 3.7.0): the internal reference
+  trimmed, its letters a-z upper-cased, every other character kept, stored and
+  indexed. Two SKUs are the same when their keys are (CONTEXT.md, "SKU"): the
+  duplicate check of behaviour 8 and the connector's SKU lookups match on it
+  exactly instead of scanning the products with `ILIKE`. Only a-z fold because
+  the connector computes the same key and Python and .NET disagree on Unicode
+  case. It is computed for every product when the module is installed or
+  upgraded to 3.7.0.
 - The behaviours behind those fields, listed below.
 - The **EzyFlow** page of the Settings, with its own icon
   (`static/description/icon.png`).
@@ -97,6 +105,7 @@ Fields and behaviours land slice by slice; see `docs/slices/` in the repository.
    | --- | --- |
    | `ezy_wms_default_code_length` | internal reference at most 16 characters |
    | `ezy_wms_default_code_alphabet` | internal reference limited to `A-Z 0-9 _ . - #` |
+   | `ezy_wms_default_code_unique` | internal reference held by one active product, whatever its case (since 3.7.0) |
    | `ezy_wms_default_code_required` | internal reference required for sellable goods |
    | `ezy_wms_product_name_length` | product name at most 30 characters |
    | `ezy_wms_barcode_alphabet` | barcode, when present, letters and digits only |
@@ -126,6 +135,19 @@ Fields and behaviours land slice by slice; see `docs/slices/` in the repository.
    the current year. The barcode is optional (since 3.4.0): the WMS identifies
    a product by its internal reference and scans the barcode when there is
    one.
+
+   Reflex keeps one article per internal reference and merges two products
+   sent under the same one instead of refusing them, so an internal reference
+   already held by another active product of the company, or by a product
+   shared by every company, is refused, compared by its SKU key (above). The
+   check runs when the internal reference, the active flag or the template's
+   company is written: unarchiving a product or moving it into another company
+   cannot create the duplicate either. Archived products do not count, so a
+   replacement can take the reference of the product it replaces. The message
+   names the product holding the reference only to a person allowed to read
+   it; a product of a company they cannot see is named as such. A duplicate
+   barcode needs no switch: Odoo itself refuses a barcode another active
+   product or packaging of the company holds, for every user.
 
    A record of a company is judged by that company's switches; a record shared
    by every company (a contact or a product with no company) by the switches of

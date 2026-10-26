@@ -1,7 +1,7 @@
 # Part of the EzyFlow connector for Odoo. See LICENSE in the repository root.
 from odoo import Command
 from odoo.exceptions import ValidationError
-from odoo.tests import tagged
+from odoo.tests import new_test_user, tagged
 
 from ..models.wms_constraints import SWITCHES
 from .common import EzyflowBridgeCase
@@ -61,14 +61,124 @@ class TestWmsConstraints(EzyflowBridgeCase):
         self.assert_constraint(
             "ezy_wms_default_code_alphabet",
             self.write_good("default_code"),
-            over="Good-1",
+            over="Gadget-1",
             at="AZ09_.-#",
-            message=r"Internal Reference of .*Checked good.*Good-1.*A-Z 0-9 _ \. - #",
+            message=r"Internal Reference of .*Checked good.*Gadget-1.*A-Z 0-9 _ \. - #",
         )
 
     def test_internal_reference_alphabet_refuses_a_space(self):
         with self.assertRaisesRegex(ValidationError, "A-Z 0-9"):
             self.good.with_env(self.admin_env()).default_code = "GOOD 1"
+
+    def test_internal_reference_held_by_one_active_product(self):
+        self.assert_constraint(
+            "ezy_wms_default_code_unique",
+            self.write_good("default_code"),
+            over="GOOD-1",
+            at="CHECKED-3",
+            message=r"Internal Reference GOOD-1 of .*Checked good.* already used by "
+            r".*Sellable good.* one product per reference",
+        )
+
+    def test_internal_reference_held_by_one_product_whatever_its_case(self):
+        self.company.ezy_wms_default_code_alphabet = False
+
+        with self.assertRaisesRegex(ValidationError, "already used by"):
+            self.good.with_env(self.admin_env()).default_code = "good-1"
+
+    def test_internal_reference_is_matched_literally_not_as_a_pattern(self):
+        self.company.ezy_wms_default_code_alphabet = False
+        self.good.with_env(self.admin_env()).default_code = "GOOD_1"
+        self.product.with_env(self.admin_env()).default_code = "GOOD%"
+
+        self.assertEqual(self.good.default_code, "GOOD_1")
+
+    def test_the_sku_key_is_trimmed_with_only_a_to_z_upper_cased(self):
+        self.company.ezy_wms_default_code_alphabet = False
+        self.company.ezy_wms_default_code_required = False
+        self.good.default_code = "café-1"
+        self.assertEqual(self.good.ezy_sku_key, "CAFé-1")
+
+        self.good.default_code = False
+        self.assertFalse(self.good.ezy_sku_key)
+
+    def test_a_product_created_with_a_held_internal_reference_is_refused(self):
+        Product = self.env["product.product"].with_env(self.admin_env())
+        with self.assertRaisesRegex(ValidationError, "already used by"), self.env.cr.savepoint():
+            Product.create({"name": "Twin", "default_code": "GOOD-1"})
+        with self.assertRaisesRegex(ValidationError, "already used by"), self.env.cr.savepoint():
+            self.env["product.template"].with_env(self.admin_env()).create(
+                {"name": "Twin", "type": "consu", "default_code": "GOOD-1"}
+            )
+        twin = {"name": "Twin", "default_code": "GOOD-1"}
+        self.assertTrue(Product.with_env(self.connector_env()).create(twin))
+
+    def test_an_archived_product_leaves_its_internal_reference_to_a_replacement(self):
+        self.product.with_env(self.admin_env()).action_archive()
+
+        self.good.with_env(self.admin_env()).default_code = "GOOD-1"
+
+        self.assertEqual(self.good.default_code, "GOOD-1")
+
+    def test_unarchiving_a_product_whose_internal_reference_is_held_is_refused(self):
+        self.product.with_env(self.admin_env()).action_archive()
+        self.good.with_env(self.admin_env()).default_code = "GOOD-1"
+
+        with self.assertRaisesRegex(ValidationError, "already used by"), self.env.cr.savepoint():
+            self.product.with_env(self.admin_env()).action_unarchive()
+        with self.assertRaisesRegex(ValidationError, "already used by"), self.env.cr.savepoint():
+            self.product.product_tmpl_id.with_env(self.admin_env()).action_unarchive()
+
+    def test_another_company_keeps_its_own_internal_references(self):
+        # Code run as superuser is bound: the duplicate check applies to it.
+        self.product.product_tmpl_id.company_id = self.company
+        other = self.env["res.company"].create({"name": "Other company"})
+        twin = self.env["product.product"].create(
+            {"name": "Twin", "default_code": "TWIN-1", "company_id": other.id}
+        )
+
+        twin.default_code = "GOOD-1"
+
+        self.assertEqual(twin.default_code, "GOOD-1")
+
+    def test_a_product_shared_by_every_company_holds_its_reference_in_each(self):
+        other = self.env["res.company"].create({"name": "Other company"})
+
+        with self.assertRaisesRegex(ValidationError, "already used by"):
+            self.env["product.product"].create(
+                {"name": "Twin", "default_code": "GOOD-1", "company_id": other.id}
+            )
+
+    def test_the_holder_of_another_company_is_not_named_to_a_person_who_cannot_see_it(self):
+        self.product.product_tmpl_id.company_id = self.company
+        other = self.env["res.company"].create({"name": "Other company"})
+        self.env["product.product"].create(
+            {"name": "Hidden twin", "default_code": "HIDDEN-1", "company_id": other.id}
+        )
+        person = new_test_user(
+            self.env,
+            login="ezy_one_company",
+            name="One-company person",
+            groups="base.group_user,product.group_product_manager",
+            company_id=self.company.id,
+            company_ids=[Command.set(self.company.ids)],
+        )
+        shared = self.env["product.product"].create({"name": "Shared", "default_code": "SHARED-1"})
+
+        with self.assertRaisesRegex(ValidationError, "used by a product of another company"):
+            shared.with_user(person).default_code = "HIDDEN-1"
+
+    def test_moving_a_product_into_a_company_that_holds_its_reference_is_refused(self):
+        self.product.product_tmpl_id.company_id = self.company
+        other = self.env["res.company"].create({"name": "Other company"})
+        twin = self.env["product.product"].create(
+            {"name": "Twin", "default_code": "GOOD-1", "company_id": other.id}
+        )
+
+        with self.assertRaisesRegex(ValidationError, "already used by"), self.env.cr.savepoint():
+            twin.product_tmpl_id.company_id = False
+        with self.assertRaisesRegex(ValidationError, "already used by"), self.env.cr.savepoint():
+            twin.product_tmpl_id.company_id = self.company
 
     def test_internal_reference_required_for_sellable_goods(self):
         self.assert_constraint(

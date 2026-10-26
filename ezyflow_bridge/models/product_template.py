@@ -58,6 +58,15 @@ class ProductTemplate(models.Model):
                     )
                 )
 
+    @api.constrains("company_id")
+    def _check_ezy_company_default_code(self):
+        # A template moved into another company, or shared by every company,
+        # re-checks that its variants' SKU is still held by them alone.
+        if deferred(self.env):
+            return
+        for product in self.product_variant_ids:
+            product._ezy_check_default_code_unique()
+
     @api.constrains("sale_ok", "type")
     def _check_ezy_sellable_identity(self):
         # A template that becomes sellable goods re-checks its variants' reference.

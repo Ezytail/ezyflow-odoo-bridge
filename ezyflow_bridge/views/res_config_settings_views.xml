@@ -31,6 +31,9 @@
                         <setting id="ezy_wms_default_code_alphabet" help="Refuse an internal reference with a character other than A-Z 0-9 _ . - #.">
                             <field name="ezy_wms_default_code_alphabet" />
                         </setting>
+                        <setting id="ezy_wms_default_code_unique" help="Refuse an internal reference another active product already holds, whatever its case.">
+                            <field name="ezy_wms_default_code_unique" />
+                        </setting>
                         <setting id="ezy_wms_default_code_required" help="Refuse a sellable good without internal reference.">
                             <field name="ezy_wms_default_code_required" />
                         </setting>

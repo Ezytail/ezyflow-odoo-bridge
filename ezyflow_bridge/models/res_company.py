@@ -30,6 +30,13 @@ class ResCompany(models.Model):
         help="Refuse an internal reference with a character other than the capital "
         "letters A to Z, the digits 0 to 9 and _ . - #, the SKU alphabet of Reflex.",
     )
+    ezy_wms_default_code_unique = fields.Boolean(
+        string="Internal reference: one active product per reference",
+        default=True,
+        help="Refuse an internal reference another active product of the company, "
+        "or a product shared by every company, already holds, compared without "
+        "regard to case: Reflex keeps one article per SKU and would merge the two.",
+    )
     ezy_wms_default_code_required = fields.Boolean(
         string="Internal reference: required for sellable goods",
         default=True,

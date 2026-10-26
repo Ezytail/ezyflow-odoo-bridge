@@ -39,6 +39,7 @@ PICKING_NAME_PATTERN = re.compile(r"[A-Z0-9_\-.#/\\]+")
 SWITCHES = (
     "ezy_wms_default_code_length",
     "ezy_wms_default_code_alphabet",
+    "ezy_wms_default_code_unique",
     "ezy_wms_default_code_required",
     "ezy_wms_product_name_length",
     "ezy_wms_barcode_alphabet",
@@ -52,6 +53,17 @@ SWITCHES = (
     "ezy_wms_delivery_contact_required",
     "ezy_wms_picking_name",
 )
+
+# Only the letters a-z fold: the connector computes the same key (Odoo.Core's
+# SkuOwner.Key), and Unicode case rules differ between Python and .NET.
+_SKU_UPPER = str.maketrans("abcdefghijklmnopqrstuvwxyz", "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+
+
+def sku_key(code):
+    """What two SKUs are compared by (CONTEXT.md, "SKU"): trimmed, the letters
+    a-z upper-cased, every other character as it is; False when blank."""
+    code = (code or "").strip()
+    return code.translate(_SKU_UPPER) if code else False
 
 
 def is_connector_user(env):

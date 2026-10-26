@@ -10,13 +10,15 @@ from .wms_constraints import (
     DEFAULT_CODE_PATTERN,
     binds,
     deferred,
+    sku_key,
 )
 
 
 class ProductProduct(models.Model):
     """The variant half of the product WMS constraints (behaviour 8, ADR 0017):
     Reflex identifies a product by its internal reference, at most 16
-    characters of its SKU alphabet, and scans the barcode when there is one.
+    characters of its SKU alphabet held by one active product, and scans the
+    barcode when there is one (Odoo itself keeps a barcode to one product).
     Each figure is checked when its own field is written, so a record already
     above a tightened figure is refused only when a person next writes that
     field. A template being created checks its variants once it is complete;
@@ -32,13 +34,41 @@ class ProductProduct(models.Model):
         help="The id this variant has in the web shop. The connector uses it to find the "
         "Odoo record before falling back to the internal reference. One shop per Odoo product.",
     )
+    # What two SKUs are compared by (CONTEXT.md, "SKU"): the duplicate check
+    # below and the connector's SKU lookups match on it exactly, through the
+    # index, instead of scanning the table with ILIKE.
+    ezy_sku_key = fields.Char(
+        string="SKU key",
+        compute="_compute_ezy_sku_key",
+        store=True,
+        index="btree_not_null",
+        help="The internal reference trimmed, its letters a-z upper-cased: what the WMS "
+        "and the connector compare SKUs by.",
+    )
 
+    @api.depends("default_code")
+    def _compute_ezy_sku_key(self):
+        for product in self:
+            product.ezy_sku_key = sku_key(product.default_code)
+
+    # The shape of a reference is judged before whether another product holds it.
     @api.constrains("default_code")
     def _check_ezy_default_code(self):
         if deferred(self.env):
             return
         for product in self:
             product._ezy_check_default_code()
+            product._ezy_check_default_code_unique()
+
+    # An unarchived product takes its reference back. The template's company is
+    # checked from the template: a variant write of company_id lands there
+    # through the delegation.
+    @api.constrains("active")
+    def _check_ezy_active_default_code(self):
+        if deferred(self.env):
+            return
+        for product in self:
+            product._ezy_check_default_code_unique()
 
     # name and product_tmpl_id are always in the creation values, so the check
     # runs for a variant created without a reference at all.
@@ -60,6 +90,7 @@ class ProductProduct(models.Model):
         """Every variant constraint at once: the end of a template create."""
         for product in self:
             product._ezy_check_default_code()
+            product._ezy_check_default_code_unique()
             product._ezy_check_default_code_required()
             product._ezy_check_barcode()
 
@@ -89,6 +120,47 @@ class ProductProduct(models.Model):
                     alphabet=DEFAULT_CODE_ALPHABET,
                 )
             )
+
+    def _ezy_check_default_code_unique(self):
+        """One active product per SKU within the company and the products it
+        shares with every company, compared without regard to case: Reflex
+        keeps one article per SKU and merges what it is sent twice. Archived
+        products do not count, so a replacement can take an archived SKU."""
+        self.ensure_one()
+        code = self.default_code
+        key = sku_key(code)
+        if not key or not self.active:
+            return
+        if not binds(self.env, self._ezy_company(), "ezy_wms_default_code_unique"):
+            return
+        domain = [
+            ("ezy_sku_key", "=", key),
+            ("id", "!=", self.id),
+            ("active", "=", True),
+        ]
+        if self.product_tmpl_id.company_id:
+            domain.append(("company_id", "in", (False, self.product_tmpl_id.company_id.id)))
+        holder = self.sudo().search(domain, order="id", limit=1)
+        if not holder:
+            return
+        # The search sees every company; the message names the holder only to
+        # a writer allowed to read it (a product shared by every company is
+        # checked against the products of each company). Odoo may run the
+        # constraint as superuser, so the writer's rights are asked for.
+        if holder.with_user(self.env.user).has_access("read"):
+            holder_name = holder.display_name
+        else:
+            holder_name = self.env._("a product of another company")
+        raise ValidationError(
+            self.env._(
+                "%(field)s %(value)s of %(product)s is already used by %(holder)s; "
+                "the WMS keeps one product per reference.",
+                field=self._ezy_label("default_code"),
+                value=code,
+                product=self.display_name,
+                holder=holder_name,
+            )
+        )
 
     def _ezy_check_default_code_required(self):
         self.ensure_one()
