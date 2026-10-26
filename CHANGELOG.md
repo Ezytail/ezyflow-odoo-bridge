@@ -3,6 +3,24 @@
 The bridge's contract version (series-less, ADR 0015). The connector expects the
 same major and minor (`src/Odoo.Service/Odoo/BridgeContract.cs`).
 
+## 3.7.1
+
+The connector validates past `stock_sms`'s one-time window (ADR 0019, issue #36).
+
+- Behaviour 11: when the connector user validates a delivery, the bridge records
+  `stock_sms`'s one-time "SMS confirmation" window as received for its company,
+  as the window's send button does, so the delivery closes on the first try
+  instead of retrying until a person dismisses the window. No new field, no
+  new right, no migration.
+- Whether a text goes out stays with the company's **SMS confirmation** setting
+  (Inventory settings), on for every company that existed when `stock_sms` was
+  installed. A company that does not want texts turns it off, as in plain Odoo.
+
+Before going live on 3.7.1: the 3.5.0 step about dismissing the window is no
+longer needed; check the **SMS confirmation** setting of each company instead.
+Where it is on, the first delivery the connector validates texts the customer
+and spends IAP credits, which is what the window warned about.
+
 ## 3.6.0
 
 Apply stock reports (ADR 0018).
@@ -62,8 +80,8 @@ Before going live on 3.5.0:
 - Delivery addresses now carry a phone, so Odoo's `stock_sms` shows its one-time
   "SMS confirmation" window on the first delivery a company validates, and the
   connector cannot close that delivery until a person dismisses it once
-  (Inventory, validate any delivery, then confirm or disable the SMS). Tracked
-  in issue #36.
+  (Inventory, validate any delivery, then confirm or disable the SMS). Not
+  needed from 3.7.1 on (ADR 0019).
 
 ## 3.4.0
 

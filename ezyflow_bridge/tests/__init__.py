@@ -17,6 +17,7 @@ from . import (
     test_relay,
     test_series_security,
     test_shop_identity,
+    test_sms_warning,
     test_stock_settings,
     test_template_identity,
     test_wakeup,

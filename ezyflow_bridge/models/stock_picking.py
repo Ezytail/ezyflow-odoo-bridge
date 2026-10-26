@@ -8,7 +8,8 @@ from .contract import CHANNELS, FROZEN_WMS_STATES, WMS_STATES
 class StockPicking(models.Model):
     """The WMS state lives on the picking (ADR 0003); the picking decides
     whether it is offered (behaviours 1 and 2), whether it is frozen
-    (behaviour 5) and who may touch its lines (behaviour 6)."""
+    (behaviour 5), who may touch its lines (behaviour 6) and lets the connector
+    validate past stock_sms's one-time window (behaviour 11)."""
 
     _inherit = "stock.picking"
 
@@ -110,6 +111,30 @@ class StockPicking(models.Model):
         if not movable:
             return True
         return super(StockPicking, movable).do_unreserve()
+
+    def _pre_action_done_hook(self):
+        # Behaviour 11 (ADR 0019): the connector validates past stock_sms's
+        # one-time window, as a person who chose to send the SMS would.
+        if self.env.user.has_group("ezyflow_bridge.group_ezyflow_connector"):
+            self._ezy_acknowledge_sms_warning()
+        return super()._pre_action_done_hook()
+
+    def _ezy_acknowledge_sms_warning(self):
+        """Records stock_sms's one-time warning as received for the companies
+        that would show it for these transfers, what the window's send button
+        writes. The condition is stock_sms's own (_check_warn_sms), which Odoo
+        skips under test. The company's SMS confirmation setting still decides
+        whether a text goes out. A no-op when stock_sms is not installed."""
+        if "has_received_warning_stock_sms" not in self.env["res.company"]._fields:
+            return
+        companies = self.filtered(
+            lambda picking: picking.picking_type_id.code == "outgoing"
+            and picking.partner_id.phone
+            and picking.company_id._get_text_validation("sms")
+        ).company_id
+        unwarned = companies.filtered(lambda company: not company.has_received_warning_stock_sms)
+        if unwarned:
+            unwarned.sudo().write({"has_received_warning_stock_sms": True})
 
     def action_ezy_offer_to_logistics(self):
         """The form button of behaviour 7: a person offers a transfer of a manual

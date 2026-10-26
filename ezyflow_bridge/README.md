@@ -181,6 +181,18 @@ Fields and behaviours land slice by slice; see `docs/slices/` in the repository.
     environment that flushes the transaction, which does not always carry the
     connector's `tracking_disable`, so the bridge disables it for the connector
     group itself (`models/mail_thread.py`, on `mail.thread` itself, gated by Odoo's cached group check: ADR 0011 addendum).
+11. SMS window (ADR 0019, added in 3.7.1). Odoo's `stock_sms` answers the
+    first validation of a delivery to a customer with a phone with a one-time
+    window until someone in the company acknowledges it, and the connector
+    cannot answer a window. When the connector user validates a transfer, the
+    bridge records the window as received for the companies that would show it
+    (a delivery to a customer with a phone, SMS confirmation on;
+    `has_received_warning_stock_sms`, what the window's send button writes)
+    before Odoo checks it (`_pre_action_done_hook` on the transfer). The
+    company's **SMS confirmation** setting in the Inventory settings still
+    decides whether a text goes out; people validating in a company that has
+    not received the window still see it. Does nothing without `stock_sms`.
+    The tests lift Odoo's test-mode skip of the window to see it.
 
 ## Settings
 
