@@ -37,8 +37,8 @@ class ProductTemplate(models.Model):
 
     @api.constrains("name", "sale_ok", "type")
     def _check_ezy_wms_identity(self):
-        # Behaviour 8. The internal reference and the barcode live on the variant,
-        # so the variant carries that half of the check; a template that becomes
+        # Behaviour 8. The internal reference lives on the variant, so the
+        # variant carries that half of the check; a template that becomes
         # sellable goods re-checks its variants.
         for template in self:
             if not template._ezy_checks_products():

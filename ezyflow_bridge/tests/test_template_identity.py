@@ -10,8 +10,8 @@ class TestTemplateIdentity(EzyflowBridgeCase):
     """Behaviour 8 on a template create: Odoo validates the generated variant
     before it writes the template's internal reference and barcode onto it,
     so the bridge checks the variants once the create is complete. A sellable
-    template created with its whole identity is accepted; one without barcode
-    is still refused."""
+    template created with its whole identity is accepted, and so is one
+    without barcode; one without internal reference is refused."""
 
     def new_template(self, env, code, barcode):
         return env["product.template"].create(
@@ -38,9 +38,15 @@ class TestTemplateIdentity(EzyflowBridgeCase):
 
         self.assertEqual(template.product_variant_ids.default_code, "MUG-CONN")
 
-    def test_a_sellable_template_without_barcode_is_refused(self):
-        with self.assertRaisesRegex(ValidationError, "barcode"):
-            self.new_template(self.env, "MUG-NONE", False)
+    def test_a_sellable_template_without_barcode_is_accepted(self):
+        template = self.new_template(self.env, "MUG-NOBC", False)
+
+        self.assertEqual(template.product_variant_ids.default_code, "MUG-NOBC")
+        self.assertFalse(template.product_variant_ids.barcode)
+
+    def test_a_sellable_template_without_internal_reference_is_refused(self):
+        with self.assertRaisesRegex(ValidationError, "internal reference"):
+            self.new_template(self.env, False, "3000000000949")
 
     def test_the_connector_adds_a_value_under_the_deferral_and_then_the_identity(self):
         # Adding a value generates a variant without identity inside the write;

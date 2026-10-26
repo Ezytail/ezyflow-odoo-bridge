@@ -18,10 +18,11 @@ class ProductProduct(models.Model):
 
     # name and product_tmpl_id are always in the creation values, so the check
     # runs for a variant created without a reference at all.
-    @api.constrains("name", "product_tmpl_id", "default_code", "barcode", "sale_ok", "type")
+    @api.constrains("name", "product_tmpl_id", "default_code", "sale_ok", "type")
     def _check_ezy_wms_identity(self):
         # Behaviour 8: the WMS identifies a product by its internal reference and
-        # its barcode, and stores at most 17 characters of the reference.
+        # stores at most 17 characters of it. The barcode is optional (3.4.0): a
+        # product without one is sold and shipped by its reference.
         # A template being created checks its variants once it is complete; the
         # connector asks for the same deferral when it adds attribute values to a
         # template (Odoo generates the new variant without identity in that
@@ -48,14 +49,6 @@ class ProductProduct(models.Model):
                     self.env._(
                         "%(product)s is sold as goods and has no internal reference; "
                         "the WMS identifies products by it.",
-                        product=product.display_name,
-                    )
-                )
-            if not product.barcode:
-                raise ValidationError(
-                    self.env._(
-                        "%(product)s is sold as goods and has no barcode; the WMS "
-                        "scans products by it.",
                         product=product.display_name,
                     )
                 )

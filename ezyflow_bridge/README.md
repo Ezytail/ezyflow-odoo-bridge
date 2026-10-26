@@ -84,8 +84,10 @@ Fields and behaviours land slice by slice; see `docs/slices/` in the repository.
    sales order's delivery status shows the WMS values (refused wins, then
    cancelled, then the transfer touched last).
 8. Length constraints. Product name 30, internal reference 17 and required
-   for sellable goods, barcode required for sellable goods; partner name 50,
-   street and street 2 35. Each behind its company toggle. On a template
+   for sellable goods; partner name 50, street and street 2 35. Each behind
+   its company toggle. The barcode is optional since 3.4.0: the WMS
+   identifies a product by its internal reference and scans the barcode
+   when there is one. On a template
    create the variant half of the check runs once the create is complete:
    Odoo generates and validates the variant before it writes the template's
    internal reference and barcode onto it, so a sellable product created with

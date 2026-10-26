@@ -11,7 +11,7 @@ class ResCompany(models.Model):
         string="Check product constraints for the WMS",
         default=True,
         help="Refuse a product name longer than 30 characters, an internal reference "
-        "longer than 17, and a sellable good without internal reference or barcode: "
+        "longer than 17, and a sellable good without internal reference: "
         "the limits the WMS accepts.",
     )
     ezy_check_partner_constraints = fields.Boolean(

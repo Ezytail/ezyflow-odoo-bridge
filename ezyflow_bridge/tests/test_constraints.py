@@ -22,12 +22,15 @@ class TestConstraints(EzyflowBridgeCase):
             }
         )
 
-    def test_a_sellable_good_needs_an_internal_reference_and_a_barcode(self):
+    def test_a_sellable_good_needs_an_internal_reference(self):
         with self.assertRaisesRegex(ValidationError, "internal reference"):
             self.new_product(default_code=False)
-        with self.assertRaisesRegex(ValidationError, "barcode"):
-            self.new_product(barcode=False)
         self.assertTrue(self.new_product())
+
+    def test_a_sellable_good_needs_no_barcode(self):
+        # The barcode is optional since 3.4.0: the WMS falls back to the
+        # internal reference.
+        self.assertTrue(self.new_product(barcode=False))
 
     def test_the_company_toggle_lifts_the_product_constraints(self):
         self.company.ezy_check_product_constraints = False
