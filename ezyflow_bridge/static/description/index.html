@@ -356,6 +356,19 @@
         availability is computed from the components'. Dimensions, weights and packaging are the
         WMS's: they are kept there, not on the Odoo product.
     </p>
+    <p>
+        <strong>Traceability and rotation date.</strong> The WMS is told how each product's units
+        are identified, from Odoo's own tracking: not at all, by lots, or by unique serial numbers.
+        A product tracked by lots or by serial numbers also names the date its stock rotates on: the
+        <strong>Rotation date type</strong> field in the Traceability group of the product form
+        (with Lots &amp; Serial Numbers on in the Inventory settings): manufacturing date,
+        best-before date (DDM), sell-by date (DLV) or use-by date (DLC). Empty means the receipt
+        date, first in first out. The WMS captures that date at reception and ships the oldest
+        first; Odoo's own stock carries no such date. An untracked product cannot have one: clear
+        the field before turning tracking off. A change reaches the WMS at the connector's next
+        pass over the products. Which WMS setting each combination gets is set up by the EzyFlow
+        team; until it is, the WMS keeps its default.
+    </p>
 
     <h3>4. Contacts</h3>
     <p>

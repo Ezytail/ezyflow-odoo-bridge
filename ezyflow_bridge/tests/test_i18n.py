@@ -126,6 +126,26 @@ class TestI18n(EzyflowBridgeCase):
             ).create(too_long)
         self.assertIn("is longer than 16 characters", str(english.exception))
 
+    def test_the_rotation_date_type_refusal_is_raised_in_the_language_of_the_person(self):
+        selection = self.env["product.template"]._fields["tracking"].get_values(self.env)
+        template = self.env["product.template"].create(
+            {
+                "name": "Untracked good",
+                "is_storable": True,
+                "sale_ok": False,
+                "tracking": "none" if "none" in selection else False,
+            }
+        )
+        for lang, expected in (
+            ("fr_FR", "Untracked good n'est suivi ni par lots ni par numéros de série"),
+            ("en_US", "Untracked good is not tracked by lots or by serial numbers"),
+        ):
+            with self.assertRaises(ValidationError) as refused:
+                template.with_user(self.admin_user).with_context(lang=lang).write(
+                    {"ezy_rotation_date_type": "use_by"}
+                )
+            self.assertIn(expected, str(refused.exception))
+
     def test_the_help_page_follows_the_language_for_the_bridge_row_only(self):
         self.assertEqual(len(self.module), 1)
         module = self.module

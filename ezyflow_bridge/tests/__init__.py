@@ -19,6 +19,7 @@ from . import (
     test_product_rights,
     test_proforma,
     test_relay,
+    test_rotation_date_type,
     test_series_security,
     test_shop_identity,
     test_shop_total,

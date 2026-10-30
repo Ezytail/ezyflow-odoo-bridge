@@ -8,6 +8,15 @@
             <xpath expr="//group[@name='group_general']" position="inside">
                 <field name="ezy_shop_product_id" />
             </xpath>
+            <!-- ADR 0034: under Odoo's Traceability group (stock, both series),
+                 shown only for a product tracked by lots or serial numbers. -->
+            <xpath expr="//group[@name='traceability']" position="inside">
+                <field name="tracking" invisible="1" />
+                <field
+                    name="ezy_rotation_date_type"
+                    invisible="tracking not in ('lot', 'serial')"
+                />
+            </xpath>
         </field>
     </record>
     <record id="product_normal_form_view_ezyflow" model="ir.ui.view">

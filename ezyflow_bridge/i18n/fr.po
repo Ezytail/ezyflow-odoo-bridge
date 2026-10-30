@@ -118,6 +118,17 @@ msgstr ""
 
 #. module: ezyflow_bridge
 #. odoo-python
+#: code:addons/ezyflow_bridge/models/product_template.py:0
+msgid ""
+"%(product)s is not tracked by lots or by serial numbers, so it cannot have a"
+" %(field)s. Clear the %(field)s before turning tracking off."
+msgstr ""
+"%(product)s n'est suivi ni par lots ni par numéros de série, il ne peut donc"
+" pas avoir de « %(field)s ». Videz « %(field)s » avant de désactiver le "
+"suivi."
+
+#. module: ezyflow_bridge
+#. odoo-python
 #: code:addons/ezyflow_bridge/models/product_product.py:0
 msgid ""
 "%(product)s is sold as goods and has no internal reference; the WMS "
@@ -182,6 +193,11 @@ msgstr "Code-barres : au plus 35 caractères"
 #: model:ir.model.fields,field_description:ezyflow_bridge.field_res_config_settings__ezy_wms_barcode_alphabet
 msgid "Barcode: letters and digits only"
 msgstr "Code-barres : lettres et chiffres seulement"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields.selection,name:ezyflow_bridge.selection__product_template__ezy_rotation_date_type__best_before
+msgid "Best-before date (DDM)"
+msgstr "Date de durabilité minimale (DDM)"
 
 #. module: ezyflow_bridge
 #: model:ir.model.fields,help:ezyflow_bridge.field_sale_order__delivery_status
@@ -462,6 +478,11 @@ msgstr "Mode logistique"
 #: model:ir.model.fields.selection,name:ezyflow_bridge.selection__stock_picking_type__ezy_logistics_mode__manual
 msgid "Manual: offered when a person says so"
 msgstr "Manuel : proposé quand une personne le décide"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields.selection,name:ezyflow_bridge.selection__product_template__ezy_rotation_date_type__manufacturing_date
+msgid "Manufacturing date"
+msgstr "Date de fabrication"
 
 #. module: ezyflow_bridge
 #: model:ir.model,name:ezyflow_bridge.model_ir_module_module
@@ -798,6 +819,12 @@ msgid "Removed lines"
 msgstr "Lignes supprimées"
 
 #. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_product_product__ezy_rotation_date_type
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_product_template__ezy_rotation_date_type
+msgid "Rotation date type"
+msgstr "Type de date de rotation"
+
+#. module: ezyflow_bridge
 #: model:ir.model.fields,field_description:ezyflow_bridge.field_product_product__ezy_sku_key
 msgid "SKU key"
 msgstr "Clé SKU"
@@ -811,6 +838,11 @@ msgstr "Commande client"
 #: model:ir.model,name:ezyflow_bridge.model_sale_order_line
 msgid "Sales Order Line"
 msgstr "Ligne de commande client"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields.selection,name:ezyflow_bridge.selection__product_template__ezy_rotation_date_type__sell_by
+msgid "Sell-by date (DLV)"
+msgstr "Date limite de vente (DLV)"
 
 #. module: ezyflow_bridge
 #: model:ir.model.fields.selection,name:ezyflow_bridge.selection__sale_order__delivery_status__sent_to_logistics
@@ -935,6 +967,21 @@ msgid ""
 msgstr ""
 "Le client qui retire le colis quand l'adresse de livraison est un point "
 "relais ; recopié sur les transferts de la commande."
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_product_product__ezy_rotation_date_type
+#: model:ir.model.fields,help:ezyflow_bridge.field_product_template__ezy_rotation_date_type
+msgid ""
+"The date the warehouse rotates this product's stock on: it captures that "
+"date at reception and ships the oldest first. Empty: the receipt date, first"
+" in first out. Only a product tracked by lots or by serial numbers can have "
+"one. Odoo's own stock carries no such date; the warehouse keeps it."
+msgstr ""
+"La date sur laquelle l'entrepôt fait tourner le stock de cet article : il la"
+" saisit à la réception et expédie les plus anciens en premier. Vide : la "
+"date de réception, premier entré, premier sorti. Seul un article suivi par "
+"lots ou par numéros de série peut en avoir une. Le stock d'Odoo ne porte pas"
+" cette date ; l'entrepôt la conserve."
 
 #. module: ezyflow_bridge
 #: model:ir.model.fields,help:ezyflow_bridge.field_product_product__ezy_shop_product_id
@@ -1113,6 +1160,11 @@ msgstr "Transfert"
 msgid "Transfer reference: at most 20 characters of A-Z 0-9 _ - . # / \\"
 msgstr ""
 "Référence de transfert : au plus 20 caractères parmi A-Z 0-9 _ - . # / \\"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields.selection,name:ezyflow_bridge.selection__product_template__ezy_rotation_date_type__use_by
+msgid "Use-by date (DLC)"
+msgstr "Date limite de consommation (DLC)"
 
 #. module: ezyflow_bridge
 #: model:ir.model.fields,field_description:ezyflow_bridge.field_delivery_carrier__ezy_carrier_code

@@ -16,6 +16,20 @@ class ProductTemplate(models.Model):
         "Odoo record before falling back to the internal reference. One shop per Odoo product.",
     )
 
+    ezy_rotation_date_type = fields.Selection(
+        selection=[
+            ("manufacturing_date", "Manufacturing date"),
+            ("best_before", "Best-before date (DDM)"),
+            ("sell_by", "Sell-by date (DLV)"),
+            ("use_by", "Use-by date (DLC)"),
+        ],
+        string="Rotation date type",
+        help="The date the warehouse rotates this product's stock on: it captures that date at "
+        "reception and ships the oldest first. Empty: the receipt date, first in first out. "
+        "Only a product tracked by lots or by serial numbers can have one. Odoo's own stock "
+        "carries no such date; the warehouse keeps it.",
+    )
+
     @api.model_create_multi
     def create(self, vals_list):
         # Odoo's template create generates the variants and validates them before
@@ -71,6 +85,23 @@ class ProductTemplate(models.Model):
     def _check_ezy_sellable_identity(self):
         # A template that becomes sellable goods re-checks its variants' reference.
         self.product_variant_ids._check_ezy_default_code_required()
+
+    @api.constrains("ezy_rotation_date_type", "tracking")
+    def _check_ezy_rotation_date_type(self):
+        # ADR 0034: only a traceable product names the date its stock rotates
+        # on. Odoo 19 says "none" for an untracked product, Odoo 20 says nothing.
+        for template in self:
+            if template.ezy_rotation_date_type and template.tracking not in ("lot", "serial"):
+                raise ValidationError(
+                    self.env._(
+                        "%(product)s is not tracked by lots or by serial numbers, so it cannot "
+                        "have a %(field)s. Clear the %(field)s before turning tracking off.",
+                        product=template.display_name,
+                        field=template._fields["ezy_rotation_date_type"].get_description(self.env)[
+                            "string"
+                        ],
+                    )
+                )
 
     def _ezy_is_sellable_goods(self):
         self.ensure_one()

@@ -18,6 +18,34 @@ Which bridge version each service release was built with, the pairing, is kept
 in the connector repository and no longer in this
 file.
 
+## 3.13.0
+
+The rotation date type on the product: the date a traceable product's stock
+rotates on in the warehouse, published by the connector with the product's
+traceability so the WMS treats each product by what it is.
+
+- `product.template.ezy_rotation_date_type`: a selection of manufacturing
+  date, best-before date (DDM), sell-by date (DLV) and use-by date (DLC);
+  empty means the receipt date, first in first out. Shown in the Traceability
+  group of the product form, only when the product is tracked by lots or by
+  serial numbers.
+- A constraint refuses a rotation date type on a product that is not tracked
+  by lots or by serial numbers, naming the product, whether the field is set
+  on an untracked product or tracking is turned off on a product that holds
+  one.
+- `i18n/fr.po`: the field, its values, its help and the refusal in French.
+- `static/description/index.html` and `index.fr.html`: the Products section
+  says what the field is for and when it shows.
+- No new right: the connector group already reads the product template. No
+  migration: an upgraded database holds empty fields, which the connector
+  publishes as no rotation date.
+
+**For the administrator:** Optional; upgrade to choose a rotation date type
+on traceable products. No migration. Restart Odoo after replacing the folder,
+then upgrade the module. After the upgrade, open a product tracked by lots,
+check the Rotation date type field shows in its Traceability group, and check
+it is absent on an untracked product.
+
 ## 3.12.1
 
 The Install and upgrade section of the help page rewritten for the public

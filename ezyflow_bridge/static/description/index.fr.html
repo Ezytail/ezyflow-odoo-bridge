@@ -387,6 +387,21 @@
         dimensions, les poids et les conditionnements appartiennent au WMS : ils y sont tenus, pas sur
         le produit Odoo.
     </p>
+    <p>
+        <strong>Traçabilité et date de rotation.</strong> Le WMS apprend comment les unités de
+        chaque produit sont identifiées, d'après le suivi d'Odoo : pas du tout, par lots ou par
+        numéros de série uniques. Un produit suivi par lots ou par numéros de série nomme aussi la
+        date sur laquelle son stock tourne : le champ <strong>Type de date de rotation</strong> du
+        groupe Traçabilité de la fiche produit (avec Lots &amp; Numéros de série activé dans les
+        paramètres de l'Inventaire) : date de fabrication, date de durabilité minimale (DDM), date
+        limite de vente (DLV) ou date limite de consommation (DLC). Vide signifie la date de
+        réception, premier entré, premier sorti. Le WMS saisit cette date à la réception et expédie
+        les plus anciens en premier ; le stock d'Odoo ne porte pas cette date. Un produit sans suivi
+        ne peut pas en avoir : videz le champ avant de désactiver le suivi. Une modification arrive
+        au WMS au prochain passage du connecteur sur les produits. Le réglage WMS de chaque
+        combinaison est mis en place par l'équipe EzyFlow ; en attendant, le WMS garde son réglage
+        par défaut.
+    </p>
 
     <h3>4. Contacts</h3>
     <p>

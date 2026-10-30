@@ -31,8 +31,13 @@ msgid ""
 "\n"
 "The Odoo addon (Odoo 19 and 20, one source tree) the EzyFlow connector depends\n"
 "on: the fields and behaviours the connector needs and nothing else. It lives in the\n"
-"connector's repository and is versioned and tagged with the service image; the\n"
-"Odoo side installs the tagged version the image was built against.\n"
+"connector's repository and is released with the service image; each bridge\n"
+"version is also published to the public repository `Ezytail/ezyflow-odoo-bridge`\n"
+"(a tag and a release per version, the branches `19.0` and `20.0`), where the\n"
+"Odoo side gets it (ADR 0033). The connector serves a bridge from its floor up,\n"
+"within one major: a minor only adds, never removes or renames, and a change to\n"
+"this folder bumps the manifest version and adds a CHANGELOG entry ending with\n"
+"its **For the administrator:** paragraph.\n"
 "\n"
 "This README is the developer's document. The Odoo administrator's document is\n"
 "the bridge help page (ADR 0030), `static/description/index.html`, shown in\n"
@@ -262,17 +267,20 @@ msgid ""
 "English and French (ADR 0031). Every string a person sees goes through Odoo's\n"
 "translation mechanism (`string=`, `help=`, selection labels, view text,\n"
 "`env._()` in Python) and has its French line in `i18n/fr.po`, in the words of\n"
-"the glossary's `_French_` lines (CONTEXT.md); the bridge test `test_i18n.py`\n"
+"the `_French_` lines of the connector's glossary; the bridge test `test_i18n.py`\n"
 "fails on a term without one, on an empty one and on a stale one, so the pot\n"
 "and the po move together. The help page is translated as a sibling file,\n"
 "`static/description/index.fr.html`, kept to the English page's shape (same\n"
 "headings, same tables and rows); `models/ir_module_module.py` serves it to a\n"
-"French person. To regenerate the pot after adding a string, with the module\n"
-"installed on a database of `odoo:19` (the series share the same terms; the\n"
-"test on `odoo:20` catches one it alone extracts):\n"
+"French person. The committed pot is the union of the exports of every\n"
+"supported series (a core model Odoo 20 renamed is a term of its own; the\n"
+"README, exported by Odoo 20 as the module description, stays English as a\n"
+"developer document). To regenerate it after adding a string, with the module\n"
+"installed on a database of each series:\n"
 "\n"
 "```\n"
-"odoo i18n export -c <conf> -d <db> -l pot -o i18n/ezyflow_bridge.pot ezyflow_bridge\n"
+"odoo i18n export -c <conf> -d <db> -l pot -o /tmp/pot<series>.pot ezyflow_bridge\n"
+"msgcat --use-first /tmp/pot19.pot /tmp/pot20.pot -o i18n/ezyflow_bridge.pot\n"
 "msgmerge --update --no-fuzzy-matching --backup=none i18n/fr.po i18n/ezyflow_bridge.pot\n"
 "```\n"
 "\n"
@@ -350,6 +358,14 @@ msgstr ""
 
 #. module: ezyflow_bridge
 #. odoo-python
+#: code:addons/ezyflow_bridge/models/product_template.py:0
+msgid ""
+"%(product)s is not tracked by lots or by serial numbers, so it cannot have a"
+" %(field)s. Clear the %(field)s before turning tracking off."
+msgstr ""
+
+#. module: ezyflow_bridge
+#. odoo-python
 #: code:addons/ezyflow_bridge/models/product_product.py:0
 msgid ""
 "%(product)s is sold as goods and has no internal reference; the WMS "
@@ -405,6 +421,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:ezyflow_bridge.field_res_company__ezy_wms_barcode_alphabet
 #: model:ir.model.fields,field_description:ezyflow_bridge.field_res_config_settings__ezy_wms_barcode_alphabet
 msgid "Barcode: letters and digits only"
+msgstr ""
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields.selection,name:ezyflow_bridge.selection__product_template__ezy_rotation_date_type__best_before
+msgid "Best-before date (DDM)"
 msgstr ""
 
 #. module: ezyflow_bridge
@@ -670,6 +691,11 @@ msgstr ""
 #. module: ezyflow_bridge
 #: model:ir.model.fields.selection,name:ezyflow_bridge.selection__stock_picking_type__ezy_logistics_mode__manual
 msgid "Manual: offered when a person says so"
+msgstr ""
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields.selection,name:ezyflow_bridge.selection__product_template__ezy_rotation_date_type__manufacturing_date
+msgid "Manufacturing date"
 msgstr ""
 
 #. module: ezyflow_bridge
@@ -972,6 +998,12 @@ msgid "Removed lines"
 msgstr ""
 
 #. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_product_product__ezy_rotation_date_type
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_product_template__ezy_rotation_date_type
+msgid "Rotation date type"
+msgstr ""
+
+#. module: ezyflow_bridge
 #: model:ir.model.fields,field_description:ezyflow_bridge.field_product_product__ezy_sku_key
 msgid "SKU key"
 msgstr ""
@@ -984,6 +1016,11 @@ msgstr ""
 #. module: ezyflow_bridge
 #: model:ir.model,name:ezyflow_bridge.model_sale_order_line
 msgid "Sales Order Line"
+msgstr ""
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields.selection,name:ezyflow_bridge.selection__product_template__ezy_rotation_date_type__sell_by
+msgid "Sell-by date (DLV)"
 msgstr ""
 
 #. module: ezyflow_bridge
@@ -1097,6 +1134,16 @@ msgstr ""
 msgid ""
 "The customer who collects the parcel when the delivery address is a relay "
 "point; copied down to the order's transfers."
+msgstr ""
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_product_product__ezy_rotation_date_type
+#: model:ir.model.fields,help:ezyflow_bridge.field_product_template__ezy_rotation_date_type
+msgid ""
+"The date the warehouse rotates this product's stock on: it captures that "
+"date at reception and ships the oldest first. Empty: the receipt date, first"
+" in first out. Only a product tracked by lots or by serial numbers can have "
+"one. Odoo's own stock carries no such date; the warehouse keeps it."
 msgstr ""
 
 #. module: ezyflow_bridge
@@ -1234,6 +1281,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:ezyflow_bridge.field_res_company__ezy_wms_picking_name
 #: model:ir.model.fields,field_description:ezyflow_bridge.field_res_config_settings__ezy_wms_picking_name
 msgid "Transfer reference: at most 20 characters of A-Z 0-9 _ - . # / \\"
+msgstr ""
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields.selection,name:ezyflow_bridge.selection__product_template__ezy_rotation_date_type__use_by
+msgid "Use-by date (DLC)"
 msgstr ""
 
 #. module: ezyflow_bridge
