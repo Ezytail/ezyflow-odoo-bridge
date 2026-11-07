@@ -52,16 +52,16 @@ class TestBridgeSettings(EzyflowBridgeCase):
         return etree.fromstring(views["views"]["form"]["arch"])
 
     def test_the_page_shows_a_connector_block_and_the_proforma_report(self):
-        [app] = self.page_arch().xpath("//app[@name='ezyflow_bridge']")
+        page = self.settings_page()
 
-        [connector] = app.xpath("block[@name='ezy_connector']")
-        self.assertEqual(connector.get("title"), "Connector")
+        connector = page.block("ezy_connector")
         self.assertEqual(
-            [setting.get("id") for setting in connector.xpath("setting")], list(WAKEUP_KEYS)
+            [title for name, title, _b in page.blocks() if name == "ezy_connector"], ["Connector"]
         )
-        [secret] = connector.xpath("setting/field[@name='ezy_wakeup_secret']")
+        self.assertEqual([sid for sid, _s in page.settings(connector)], list(WAKEUP_KEYS))
+        [secret] = connector.xpath(".//field[@name='ezy_wakeup_secret']")
         self.assertEqual(secret.get("password"), "True")
-        self.assertEqual(len(app.xpath("block/setting/field[@name='ezy_proforma_report_id']")), 1)
+        self.assertEqual(len(page.app.xpath(".//field[@name='ezy_proforma_report_id']")), 1)
 
     def test_the_page_fields_are_the_system_parameters(self):
         settings = self.env["res.config.settings"]

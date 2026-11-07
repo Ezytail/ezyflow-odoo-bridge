@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- The glue's views through the bridge's series loader (models/security.py):
+         the shared file on 17 and later, its odoo16/ twin on 16. -->
+    <function
+        model="ezyflow.bridge.security"
+        name="load_module_views"
+        eval="['ezyflow_bridge_legacy_glue', ['res_config_settings_views.xml'], ['res_config_settings_views.xml']]"
+    />
+</odoo>

@@ -26,7 +26,7 @@ class TestProductRights(EzyflowBridgeCase):
             {
                 "name": "Shirt",
                 "type": "consu",
-                "is_storable": True,
+                **self.storable(),
                 # Off sale while the generated variants have no identity (behaviour 8).
                 "sale_ok": False,
                 "attribute_line_ids": [

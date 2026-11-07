@@ -11,6 +11,7 @@ GUARDED_MOVE_FIELDS = frozenset(
     {
         "product_uom_qty",
         "quantity",
+        "quantity_done",
         "product_id",
         "product_uom",
         "uom_id",

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- The Odoo 16 twin of views/res_config_settings_views.xml (ADR 0015, ADR 0035): the same
+         views and xml ids, the modifiers in the attrs syntax 16 reads; loaded
+         by the series loader on 16 only. Change the shared file and this one
+         together (the twin test checks the xml ids). -->
+    <record id="res_config_settings_view_form_ezyflow" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.ezyflow</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="95" />
+        <field name="inherit_id" ref="base.res_config_settings_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('settings')]" position="inside">
+                <div class="app_settings_block" data-string="EzyFlow" string="EzyFlow" data-key="ezyflow_bridge">
+                    <!-- The bridge help page (ADR 0030), first: the one document for
+                         the administrator, shown here and from Apps. No setting. -->
+                    <h2>Help</h2>
+                    <div class="row mt16 o_settings_container" name="ezy_help">
+                        <div class="col-12 col-lg-6 o_setting_box" id="ezy_help">
+                            <div class="o_setting_right_pane"><div class="o_form_label">EzyFlow bridge help</div><div class="text-muted">The same page is shown from Apps, on the EzyFlow bridge module.</div><button
+                                name="%(action_ezyflow_bridge_help)d"
+                                type="action"
+                                string="Open the EzyFlow bridge help"
+                                class="btn-link"
+                                icon="oi-arrow-right"
+                            /></div>
+                        </div>
+                    </div>
+                    <h2>Connector</h2>
+                    <div class="row mt16 o_settings_container" name="ezy_connector">
+                        <div class="col-12 col-lg-6 o_setting_box" id="ezy_activity">
+                            <div class="o_setting_right_pane"><div class="text-muted">The activity this Odoo belongs to on the EzyFlow platform.</div><field name="ezy_activity" /></div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box" id="ezy_wakeup_url">
+                            <div class="o_setting_right_pane"><div class="text-muted">The connector's wake-up endpoint, the /wake-up route of the connector.</div><field name="ezy_wakeup_url" /></div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box" id="ezy_wakeup_secret">
+                            <div class="o_setting_right_pane"><div class="text-muted">The secret the wake-ups are signed with, the value the publication's odoo_wakeup_secret points to. Cleared, every wake-up is refused and the connector polls on its interval only.</div><field name="ezy_wakeup_secret" password="True" /></div>
+                        </div>
+                    </div>
+                    <h2>WMS constraints</h2>
+                    <div class="row mt16 o_settings_container" name="ezy_wms_constraints">
+                        <div class="col-12 col-lg-6 o_setting_box" id="ezy_wms_default_code_length">
+                            <div class="o_setting_left_pane"><field name="ezy_wms_default_code_length" /></div>
+                            <div class="o_setting_right_pane"><label for="ezy_wms_default_code_length" /><div class="text-muted">Refuse an internal reference longer than 16 characters.</div></div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box" id="ezy_wms_default_code_alphabet">
+                            <div class="o_setting_left_pane"><field name="ezy_wms_default_code_alphabet" /></div>
+                            <div class="o_setting_right_pane"><label for="ezy_wms_default_code_alphabet" /><div class="text-muted">Refuse an internal reference with a character other than A-Z 0-9 _ . - #.</div></div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box" id="ezy_wms_default_code_unique">
+                            <div class="o_setting_left_pane"><field name="ezy_wms_default_code_unique" /></div>
+                            <div class="o_setting_right_pane"><label for="ezy_wms_default_code_unique" /><div class="text-muted">Refuse an internal reference another active product already holds, whatever its case.</div></div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box" id="ezy_wms_default_code_required">
+                            <div class="o_setting_left_pane"><field name="ezy_wms_default_code_required" /></div>
+                            <div class="o_setting_right_pane"><label for="ezy_wms_default_code_required" /><div class="text-muted">Refuse a sellable good without internal reference.</div></div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box" id="ezy_wms_product_name_length">
+                            <div class="o_setting_left_pane"><field name="ezy_wms_product_name_length" /></div>
+                            <div class="o_setting_right_pane"><label for="ezy_wms_product_name_length" /><div class="text-muted">Refuse a product name longer than 30 characters.</div></div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box" id="ezy_wms_barcode_alphabet">
+                            <div class="o_setting_left_pane"><field name="ezy_wms_barcode_alphabet" /></div>
+                            <div class="o_setting_right_pane"><label for="ezy_wms_barcode_alphabet" /><div class="text-muted">Refuse a barcode with a character other than a letter or a digit.</div></div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box" id="ezy_wms_barcode_length">
+                            <div class="o_setting_left_pane"><field name="ezy_wms_barcode_length" /></div>
+                            <div class="o_setting_right_pane"><label for="ezy_wms_barcode_length" /><div class="text-muted">Refuse a barcode longer than 35 characters.</div></div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box" id="ezy_wms_partner_name_length">
+                            <div class="o_setting_left_pane"><field name="ezy_wms_partner_name_length" /></div>
+                            <div class="o_setting_right_pane"><label for="ezy_wms_partner_name_length" /><div class="text-muted">Refuse a contact or address name longer than 35 characters.</div></div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box" id="ezy_wms_street_length">
+                            <div class="o_setting_left_pane"><field name="ezy_wms_street_length" /></div>
+                            <div class="o_setting_right_pane"><label for="ezy_wms_street_length" /><div class="text-muted">Refuse a street or a street 2 longer than 35 characters.</div></div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box" id="ezy_wms_city_length">
+                            <div class="o_setting_left_pane"><field name="ezy_wms_city_length" /></div>
+                            <div class="o_setting_right_pane"><label for="ezy_wms_city_length" /><div class="text-muted">Refuse a city longer than 35 characters.</div></div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box" id="ezy_wms_zip_length">
+                            <div class="o_setting_left_pane"><field name="ezy_wms_zip_length" /></div>
+                            <div class="o_setting_right_pane"><label for="ezy_wms_zip_length" /><div class="text-muted">Refuse a postcode longer than 9 characters.</div></div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box" id="ezy_wms_phone_length">
+                            <div class="o_setting_left_pane"><field name="ezy_wms_phone_length" /></div>
+                            <div class="o_setting_right_pane"><label for="ezy_wms_phone_length" /><div class="text-muted">Refuse a phone longer than 20 characters.</div></div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box" id="ezy_wms_email_length">
+                            <div class="o_setting_left_pane"><field name="ezy_wms_email_length" /></div>
+                            <div class="o_setting_right_pane"><label for="ezy_wms_email_length" /><div class="text-muted">Refuse an email longer than 140 characters.</div></div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box" id="ezy_wms_delivery_contact_required">
+                            <div class="o_setting_left_pane"><field name="ezy_wms_delivery_contact_required" /></div>
+                            <div class="o_setting_right_pane"><label for="ezy_wms_delivery_contact_required" /><div class="text-muted">Refuse to confirm a sales order whose delivery address has no phone or no email.</div></div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box" id="ezy_wms_picking_name">
+                            <div class="o_setting_left_pane"><field name="ezy_wms_picking_name" /></div>
+                            <div class="o_setting_right_pane"><label for="ezy_wms_picking_name" /><div class="text-muted">Refuse a receipt or delivery type in logistics mode whose next transfer reference would be longer than 20 characters, or use a character other than A-Z 0-9 _ - . # / and the backslash.</div></div>
+                        </div>
+                    </div>
+                    <h2>Stock</h2>
+                    <div class="row mt16 o_settings_container" name="ezy_stock">
+                        <div class="col-12 col-lg-6 o_setting_box" id="ezy_apply_stock_reports">
+                            <div class="o_setting_left_pane"><field name="ezy_apply_stock_reports" /></div>
+                            <div class="o_setting_right_pane"><label for="ezy_apply_stock_reports" /><div class="text-muted">Apply the figures of a WMS stock report to the quantities on hand. Off, they are written as pending counts to review and apply from the physical inventory, and Odoo republishes nothing for the report. WMS movements are always applied.</div></div>
+                        </div>
+                    </div>
+                    <h2>Documents</h2>
+                    <div class="row mt16 o_settings_container" name="ezy_documents">
+                        <div class="col-12 col-lg-6 o_setting_box" id="ezy_proforma_report_id">
+                            <div class="o_setting_right_pane"><div class="text-muted">The sales order report the connector renders as the proforma of this company's orders and forwards to the WMS for shipment paperwork. Empty, Odoo's pro forma invoice.</div><field name="ezy_proforma_report_id" options="{'no_create': True, 'no_open': True}" /></div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

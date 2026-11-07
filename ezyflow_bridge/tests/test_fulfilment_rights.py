@@ -23,7 +23,7 @@ class TestFulfilmentRights(EzyflowBridgeCase):
         extra = self.env["product.product"].create(
             {
                 "name": "Extra",
-                "is_storable": True,
+                **self.storable(),
                 "default_code": "EXTRA",
                 "barcode": "EZYEXTRA",
             }
@@ -35,15 +35,15 @@ class TestFulfilmentRights(EzyflowBridgeCase):
         as_connector.write(
             {
                 "move_ids": [
-                    (1, picking.move_ids.id, {"quantity": 5, "picked": True}),
+                    (1, picking.move_ids.id, self.done(5)),
                     (
                         0,
                         0,
                         {
                             "product_id": extra.id,
+                            **self.move_name(),
                             "product_uom_qty": 2,
-                            "quantity": 2,
-                            "picked": True,
+                            **self.done(2),
                             "additional": True,
                             "location_id": picking.location_id.id,
                             "location_dest_id": picking.location_dest_id.id,

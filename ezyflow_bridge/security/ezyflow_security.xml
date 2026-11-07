@@ -6,23 +6,22 @@
         <field name="sequence">60</field>
     </record>
 
-    <record model="res.groups.privilege" id="res_groups_privilege_ezyflow">
-        <field name="name">EzyFlow</field>
-        <field name="category_id" ref="module_category_ezyflow" />
-    </record>
 
     <!--
         The connector user of a publication is a member of this group and nothing
         more. The group only implies the internal-user rights; each slice adds the
         implied functional groups it needs (ADR 0013, least privilege).
 
-        api_key_duration lets an administrator mint a ten-year API key through
-        Odoo's own API-key screen (ADR 0013): the connector user never gets
-        Settings rights and no custom code touches key generation.
+        The ten-year API key duration (ADR 0013) is written by the series
+        folders from 18 (api_key_duration exists from Odoo 17; a key carries
+        no expiry on 16): the connector user never gets Settings rights and no
+        custom code touches key generation.
     -->
     <record id="group_ezyflow_connector" model="res.groups">
         <field name="name">EzyFlow connector</field>
-        <field name="privilege_id" ref="res_groups_privilege_ezyflow" />
+        <!-- Where the group hangs in Settings is series-specific (ADR 0015):
+             Odoo 19 and 20 group by privilege, 18 by module category; each
+             series folder under security/ writes its own link on this group. -->
         <!-- S1: the connector reads transfers and operation types and writes the
              WMS state (a stock user's rights); it gets no manager right. S2 adds
              read access to sales orders, purchase orders and carriers through
@@ -57,7 +56,6 @@
              attribute lines and values (a product's variants). Never unlink:
              a variant leaves the catalogue by archiving. -->
         <field name="implied_ids" eval="[(4, ref('base.group_user')), (4, ref('stock.group_stock_user'))]" />
-        <field name="api_key_duration">3650</field>
         <field name="comment">
             Technical user a publication of the EzyFlow connector acts as. Holder of
             the long-dated API key the portal stores as the publication's secret.

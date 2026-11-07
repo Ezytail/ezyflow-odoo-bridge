@@ -2,10 +2,11 @@
 from odoo.exceptions import UserError, ValidationError
 from odoo.tests import tagged
 
-from .common import EzyflowBridgeCase
+from .common import EzyflowBridgeCase, bridge_owned
 
 
 @tagged("post_install", "-at_install")
+@bridge_owned("eligibility is the legacy module's, the mode reads off")
 class TestOffer(EzyflowBridgeCase):
     """Behaviours 1 (offer on assignment), 2 (hold) and the manual offer of 7."""
 

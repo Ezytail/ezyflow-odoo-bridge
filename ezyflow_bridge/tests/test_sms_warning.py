@@ -1,12 +1,24 @@
 # Part of the EzyFlow connector for Odoo. See LICENSE in the repository root.
+import threading
 from unittest.mock import patch
 
+from odoo import release
 from odoo.tests import tagged
 
-from .common import EzyflowBridgeCase
+from .common import EzyflowBridgeCase, bridge_owned
+
+# The company's SMS choice: a field of stock_sms on 18, a text-confirmation
+# selection from Odoo 19 (ADR 0015).
+SMS_FIELD = (
+    "stock_text_confirmation" if release.version_info[0] >= 19 else "stock_move_sms_validation"
+)
 
 
 @tagged("post_install", "-at_install")
+@bridge_owned(
+    "the enterprise line's validation sends its own confirmation text",
+    module="sale_stock_delivery_state",
+)
 class TestSmsWarning(EzyflowBridgeCase):
     """Behaviour 11 (ADR 0019): stock_sms answers the first validation of a
     delivery to a customer with a phone with a one-time window, until someone
@@ -24,9 +36,18 @@ class TestSmsWarning(EzyflowBridgeCase):
             "stock_sms is installed with stock and sms on every supported series",
         )
         self.company.write(
-            {"stock_text_confirmation": True, "has_received_warning_stock_sms": False}
+            {SMS_FIELD: True, "has_received_warning_stock_sms": False}
         )
-        self.startPatcher(patch("odoo.modules.module.current_test", None))
+        # stock_sms skips its window and its text under test: Odoo 19 reads
+        # odoo.modules.module.current_test, 18 the thread's testing flag and the
+        # registry's test mode. Both are lifted so the behaviour runs as live.
+        if release.version_info[0] >= 19:
+            self.startPatcher(patch("odoo.modules.module.current_test", None))
+        else:
+            self.startPatcher(patch.object(threading.current_thread(), "testing", False))
+            self.startPatcher(
+                patch.object(type(self.env.registry), "in_test_mode", lambda _self: False)
+            )
         self.sent = self.startPatcher(
             patch.object(type(self.env["stock.picking"]), "_message_sms_with_template")
         )
@@ -36,7 +57,7 @@ class TestSmsWarning(EzyflowBridgeCase):
         picking.action_assign()
         if wms_state:
             self.set_wms_state(picking, wms_state)
-        picking.move_ids.write({"quantity": 5, "picked": True})
+        picking.move_ids.write(self.done(5))
         return picking
 
     def validate_as_connector(self, picking):
@@ -53,7 +74,7 @@ class TestSmsWarning(EzyflowBridgeCase):
 
         self.assertEqual(picking.state, "done")
         self.assertTrue(self.company.has_received_warning_stock_sms)
-        self.assertTrue(self.company.stock_text_confirmation, "the company's choice stays")
+        self.assertTrue(self.company[SMS_FIELD], "the company's choice stays")
         self.sent.assert_called_once()
 
     def test_a_person_still_gets_the_window(self):
@@ -68,7 +89,7 @@ class TestSmsWarning(EzyflowBridgeCase):
         self.assertFalse(self.company.has_received_warning_stock_sms)
 
     def test_no_window_to_acknowledge_when_the_company_sends_no_sms(self):
-        self.company.stock_text_confirmation = False
+        self.company[SMS_FIELD] = False
         picking = self.prepared_delivery("preparation_to_do")
 
         self.validate_as_connector(picking)
@@ -93,7 +114,7 @@ class TestSmsWarning(EzyflowBridgeCase):
 
     def test_a_receipt_leaves_the_flag_alone(self):
         receipt = self.create_picking(self.in_type, self.supplier_location, self.stock_location)
-        receipt.move_ids.write({"quantity": 5, "picked": True})
+        receipt.move_ids.write(self.done(5))
 
         receipt.with_user(self.connector_user).button_validate()
 

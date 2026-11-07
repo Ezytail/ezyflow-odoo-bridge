@@ -17,13 +17,14 @@ lookup and is tracked as Odoo always did.
 """
 from odoo import models
 
+from .connector import is_connector_transaction
+
 
 class MailThread(models.AbstractModel):
     _inherit = "mail.thread"
 
     def _ezy_is_connector_transaction(self):
-        user = self.env.user
-        return bool(user) and user.has_group("ezyflow_bridge.group_ezyflow_connector")
+        return is_connector_transaction(self.env)
 
     def _compute_field_value(self, field):
         if not self.env.context.get("tracking_disable") and self._ezy_is_connector_transaction():

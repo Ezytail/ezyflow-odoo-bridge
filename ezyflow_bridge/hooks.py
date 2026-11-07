@@ -27,5 +27,10 @@ def make_visible_in_apps(env):
     row.write({"module_type": "official"})
 
 
-def post_init_hook(env):
-    make_visible_in_apps(env)
+def post_init_hook(env_or_cr, registry=None):
+    # Odoo 16 calls the hook with (cr, registry); 17 and later with the environment.
+    if registry is not None:
+        from odoo import SUPERUSER_ID, api  # noqa: PLC0415
+
+        env_or_cr = api.Environment(env_or_cr, SUPERUSER_ID, {})
+    make_visible_in_apps(env_or_cr)

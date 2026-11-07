@@ -48,17 +48,21 @@ class TestHelpPage(EzyflowBridgeCase):
         self.assertEqual(self.module.description_html, expected)
 
     def test_the_help_block_is_first_in_the_ezyflow_app_and_opens_the_action(self):
-        [app] = self.settings_arch().xpath("//app[@name='ezyflow_bridge']")
+        page = self.settings_page()
 
-        blocks = app.xpath("block")
-        self.assertEqual(blocks[0].get("name"), "ezy_help")
-        self.assertEqual(blocks[0].get("title"), "Help")
-        self.assertEqual(blocks[1].get("name"), "ezy_connector")
-        [button] = blocks[0].xpath("setting[@id='ezy_help']//button")
+        blocks = page.blocks()
+        self.assertEqual(blocks[0][0], "ezy_help")
+        self.assertEqual(blocks[0][1], "Help")
+        self.assertEqual(blocks[1][0], "ezy_connector")
+        [(setting_id, setting)] = page.settings(blocks[0][2])
+        self.assertEqual(setting_id, "ezy_help")
+        [button] = setting.xpath(".//button")
         self.assertEqual(button.get("type"), "action")
         self.assertEqual(button.get("name"), str(self.action.id))
         self.assertEqual(button.get("string"), "Open the EzyFlow bridge help")
-        self.assertFalse(blocks[0].xpath(".//field"), "the Help block adds no setting (ADR 0020)")
+        self.assertFalse(
+            blocks[0][2].xpath(".//field"), "the Help block adds no setting (ADR 0020)"
+        )
 
     def test_the_action_opens_the_bridge_module_alone_in_a_dialog_on_its_own_view(self):
         self.assertEqual(self.action.res_model, "ir.module.module")

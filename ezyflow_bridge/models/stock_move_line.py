@@ -2,10 +2,13 @@
 from odoo import api, models
 
 # See GUARDED_MOVE_FIELDS: the line content the WMS owns on a frozen transfer,
-# the unit under both series' names (product_uom_id on 19, uom_id on 20).
+# the unit under both series' names (product_uom_id on 19, uom_id on 20),
+# the quantity under 16's two names (qty_done, reserved_uom_qty).
 GUARDED_LINE_FIELDS = frozenset(
     {
         "quantity",
+        "qty_done",
+        "reserved_uom_qty",
         "product_id",
         "product_uom_id",
         "uom_id",

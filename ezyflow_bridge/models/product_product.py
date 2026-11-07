@@ -2,6 +2,7 @@
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
+from .compat import has_read_access
 from .wms_constraints import (
     BARCODE_LIMIT,
     BARCODE_PATTERN,
@@ -147,7 +148,7 @@ class ProductProduct(models.Model):
         # a writer allowed to read it (a product shared by every company is
         # checked against the products of each company). Odoo may run the
         # constraint as superuser, so the writer's rights are asked for.
-        if holder.with_user(self.env.user).has_access("read"):
+        if has_read_access(holder.with_user(self.env.user)):
             holder_name = holder.display_name
         else:
             holder_name = self.env._("a product of another company")

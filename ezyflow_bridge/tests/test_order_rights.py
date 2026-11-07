@@ -63,9 +63,10 @@ class TestOrderRights(EzyflowBridgeCase):
 
     def test_the_connector_cannot_write_an_order_a_person_typed(self):
         # No origin: not created from a shop, not the connector's to touch. The
-        # bridge's rule holds on Odoo 19; on Odoo 20 core sale_stock grants every
-        # stock user update on any sales order and permissions add up (ADR 0015),
-        # so there the rule documents the intent and the write goes through.
+        # bridge's rule holds on Odoo 18 and 19; on Odoo 20 core sale_stock grants
+        # every stock user update on any sales order and permissions add up
+        # (ADR 0015), so there the rule documents the intent and the write goes
+        # through.
         order = self.env["sale.order"].create(
             {
                 "partner_id": self.customer.id,
@@ -75,12 +76,37 @@ class TestOrderRights(EzyflowBridgeCase):
             }
         )
         order.with_user(self.connector_user).read(["state"])
-        if release.version_info[0] == 19:
+        if release.version_info[0] <= 19:
             with self.assertRaises(AccessError):
                 order.with_user(self.connector_user).write({"state": "cancel"})
         else:
             order.with_user(self.connector_user).write({"state": "cancel"})
             self.assertEqual(order.state, "cancel")
+
+    def test_below_19_the_connector_writes_an_origin_less_order_in_the_hand_off_only(self):
+        # Odoo 16 and 18 let a user post on a document it may write only, and core
+        # sale_stock posts on the order when the connector's validation adds a
+        # line: below 19 the rule admits the orders in the hand-off too. Outside
+        # the hand-off an origin-less order stays a person's on every series.
+        picking = self.confirm_order()
+        order = picking.sale_id
+        self.assertFalse(order.origin)
+        if release.version_info[0] == 20:
+            # Core sale_stock lets every stock user update any order on 20 and
+            # permissions add up (ADR 0015): the rule documents the intent there.
+            order.with_user(self.connector_user).write({"note": "outside the hand-off"})
+            return
+        with self.assertRaises(AccessError):
+            order.with_user(self.connector_user).write({"note": "outside the hand-off"})
+
+        self.set_wms_state(picking, "sent_to_logistics")
+
+        if release.version_info[0] < 19:
+            order.with_user(self.connector_user).write({"note": "in the hand-off"})
+            self.assertEqual(order.note, "<p>in the hand-off</p>")
+        else:
+            with self.assertRaises(AccessError):
+                order.with_user(self.connector_user).write({"note": "in the hand-off"})
 
     def test_the_connector_creates_a_delivery_method_and_writes_customs(self):
         product = (

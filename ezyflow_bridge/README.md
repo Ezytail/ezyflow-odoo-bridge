@@ -1,6 +1,6 @@
 # EzyFlow bridge
 
-The Odoo addon (Odoo 19 and 20, one source tree) the EzyFlow connector depends
+The Odoo addon (Odoo 16, 18, 19 and 20, one source tree) the EzyFlow connector depends
 on: the fields and behaviours the connector needs and nothing else. It lives in the
 connector's repository and is released with the service image; each bridge
 version is also published to the public repository `Ezytail/ezyflow-odoo-bridge`
@@ -30,7 +30,7 @@ meet on Odoo's screens. Nothing of it is repeated here.
   and their items, attributes and their values, and the attribute lines and
   values of templates (read, write, create). The stock flows add no right:
   the inventory user rights the group implies already read and write quants and
-  read bills of materials, and Odoo 19 and 20 apply an inventory adjustment
+  read bills of materials, and Odoo 16, 18, 19 and 20 apply an inventory adjustment
   without a manager right. Nothing is ever unlinked. Attributes
   and their values carry no company in Odoo: one created for one publication's
   company is visible to every company of the database.
@@ -220,16 +220,28 @@ meet on Odoo's screens. Nothing of it is repeated here.
     names (one for duties, one for import fees); they count in the total. Both
     fields are plain fields of the sales order: the connector's existing rights
     on sales orders cover them, read and write on the total, read on the flag.
+13. Rotation date type (added in 3.13.0). See the product section above.
+14. Count reference on every series (added in 3.14.0). The connector applies
+    a stock report or a movement through Odoo's inventory mode and names the
+    adjustment in the context (`inventory_name`); the move Odoo creates is the
+    trace a rerun finds, so a redelivered report is applied once. Odoo 18
+    loses that name twice, in the auto-apply inverse (the context is replaced)
+    and by suffixing the counting user's name; the bridge keeps the context
+    through the inverse and makes the connector's reference the move's whole
+    name, so the behaviour reads the same on 16, 18, 19 and 20.
 
 ## Conventions
 
-Odoo 19 and 20, written to the APIs both series share:
+Odoo 16, 18, 19 and 20, written to the APIs the series share:
 `models.Constraint` (never `_sql_constraints`), `Domain` from `odoo.fields`,
 `@api.model_create_multi`, series-less manifest version `x.y.z` (Odoo prepends
 its own series when it records the installed version). A branch on
 `odoo.release.version_info` is a last resort and carries a test on both series;
-the one branch so far is `models/security.py`, which loads `security/odoo19/`
-(ir.model.access rows and an ir.rule) or `security/odoo20/` (ir.access rows)
+the one branch so far is `models/security.py`, which loads `security/odoo18/`
+and `security/odoo19/` (ir.model.access rows and an ir.rule) or
+`security/odoo20/` (ir.access rows), each with the `res_groups.xml` that hangs
+the connector group where the series shows it (a privilege from 19, the module
+category on 18)
 because Odoo 20 merged the two models. The loader calls
 `odoo.tools.convert.convert_file`, which Odoo does not document as public API: the
 bridge test on each series is what proves it still works when a series is added.
@@ -258,3 +270,16 @@ msgmerge --update --no-fuzzy-matching --backup=none i18n/fr.po i18n/ezyflow_brid
 then fill the new `msgstr` lines by hand; never paste an export over the
 committed `fr.po`. The module name **EzyFlow bridge** is a name and is never
 translated.
+
+## The legacy glue (3.15.0)
+
+`odoo/ezyflow_bridge_legacy_glue` and `odoo/ezyflow_bridge_legacy_glue_cms`
+ship in the bridge's zip and on the mirror, at the bridge's version, and Odoo
+installs them on its own where the tenants' legacy logistics module (and the
+EzyFlow NG CMS bridge) is present (ADR 0035).
+The legacy module owns every mirrored value, eligibility and backorders; the
+bridge's fields mirror them so the connector reads and writes the bridge's
+fields only. On the move, the glue keeps the WMS state across a state change
+the legacy module would reset it on, and keeps the quants' bookkeeping the
+legacy module bypasses for a move in a logistics state (the 3.8.2 rule). Their
+tests run on the legacy images of `odoo/legacy-image`.

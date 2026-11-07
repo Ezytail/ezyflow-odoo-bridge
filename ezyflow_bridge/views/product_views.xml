@@ -8,8 +8,10 @@
             <xpath expr="//group[@name='group_general']" position="inside">
                 <field name="ezy_shop_product_id" />
             </xpath>
-            <!-- ADR 0034: under Odoo's Traceability group (stock, both series),
-                 shown only for a product tracked by lots or serial numbers. -->
+            <!-- ADR 0034: under Odoo's Traceability group (stock, 19 and 20),
+                 shown only for a product tracked by lots or serial numbers.
+                 Odoo 18 keeps that group hidden: views/odoo18/ moves the field
+                 next to the tracking choice there (ADR 0015, the series loader). -->
             <xpath expr="//group[@name='traceability']" position="inside">
                 <field name="tracking" invisible="1" />
                 <field

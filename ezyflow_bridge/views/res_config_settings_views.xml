@@ -53,7 +53,7 @@
                         <setting id="ezy_activity" help="The activity this Odoo belongs to on the EzyFlow platform.">
                             <field name="ezy_activity" />
                         </setting>
-                        <setting id="ezy_wakeup_url" help="The connector's wake-up endpoint, https://&lt;connector&gt;/wake-up.">
+                        <setting id="ezy_wakeup_url" help="The connector's wake-up endpoint, the /wake-up route of the connector.">
                             <field name="ezy_wakeup_url" />
                         </setting>
                         <setting id="ezy_wakeup_secret" help="The secret the wake-ups are signed with, the value the publication's odoo_wakeup_secret points to. Cleared, every wake-up is refused and the connector polls on its interval only.">

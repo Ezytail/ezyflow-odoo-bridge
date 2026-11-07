@@ -5,6 +5,7 @@ import logging
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
+from .compat import check_read_access
 from .contract import WMS_STATES, check_channel_codes
 from .wms_constraints import binds
 
@@ -50,6 +51,9 @@ class SaleOrder(models.Model):
         selection_add=WMS_STATES,
         ondelete={key: "set null" for key, _label in WMS_STATES},
     )
+    # The incoterm's code for the connector: Odoo 16 shows an incoterm by its
+    # name where 17 and later show its code (ADR 0015, the 16 delta reads this).
+    ezy_incoterm_code = fields.Char(related="incoterm.code", string="Incoterm code")
     ezy_shop_total = fields.Monetary(
         string="Shop total",
         currency_field="currency_id",
@@ -153,7 +157,7 @@ class SaleOrder(models.Model):
         the order gets the priced document. Returns the PDF in base64, or an
         empty string when nothing was rendered."""
         self.ensure_one()
-        self.check_access("read")
+        check_read_access(self)
         report = self.sudo().company_id.ezy_proforma_report_id
         report_ref = report or DEFAULT_PROFORMA_REPORT
         # The form offers sales order reports only, but RPC or an import writes

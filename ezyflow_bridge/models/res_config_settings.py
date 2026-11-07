@@ -22,7 +22,7 @@ class ResConfigSettings(models.TransientModel):
     ezy_wakeup_url = fields.Char(
         string="Wake-up URL",
         config_parameter="ezyflow.wakeup_url",
-        help="The connector's wake-up endpoint, https://<connector>/wake-up.",
+        help="The connector's wake-up endpoint, the /wake-up route of the connector.",
     )
     ezy_wakeup_secret = fields.Char(
         string="Wake-up secret",

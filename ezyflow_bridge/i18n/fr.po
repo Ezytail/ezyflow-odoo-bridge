@@ -884,6 +884,23 @@ msgid "Shop product id"
 msgstr "Id produit boutique"
 
 #. module: ezyflow_bridge
+#: model:ir.model,name:ezyflow_bridge.model_purchase_order
+msgid "Purchase Order"
+msgstr "Bon de commande"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_purchase_order__ezy_incoterm_code
+#: model:ir.model.fields,help:ezyflow_bridge.field_sale_order__ezy_incoterm_code
+msgid "Incoterm Standard Code"
+msgstr "Code standard de l'incoterm"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_purchase_order__ezy_incoterm_code
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_sale_order__ezy_incoterm_code
+msgid "Incoterm code"
+msgstr "Code de l'incoterm"
+
+#. module: ezyflow_bridge
 #: model:ir.model.fields,field_description:ezyflow_bridge.field_sale_order__ezy_shop_total
 msgid "Shop total"
 msgstr "Total boutique"
@@ -907,6 +924,16 @@ msgstr "Stock"
 #: model:ir.model,name:ezyflow_bridge.model_stock_move
 msgid "Stock Move"
 msgstr "Mouvement de stock"
+
+#. module: ezyflow_bridge
+#: model:ir.model,name:ezyflow_bridge.model_stock_quant
+msgid "Quants"
+msgstr "Quants"
+
+#. module: ezyflow_bridge
+#: model:ir.model,name:ezyflow_bridge.model_stock_quant
+msgid "Quant"
+msgstr "Quant"
 
 #. module: ezyflow_bridge
 #: model:ir.model.fields,field_description:ezyflow_bridge.field_res_company__ezy_wms_street_length
@@ -946,7 +973,7 @@ msgstr "Le code sous lequel le WMS connaît le transporteur."
 #. module: ezyflow_bridge
 #: model:ir.model.fields,help:ezyflow_bridge.field_res_config_settings__ezy_wakeup_url
 #: model_terms:ir.ui.view,arch_db:ezyflow_bridge.res_config_settings_view_form_ezyflow
-msgid "The connector's wake-up endpoint, https://<connector>/wake-up."
+msgid "The connector's wake-up endpoint, the /wake-up route of the connector."
 msgstr ""
 "Le point d'entrée de réveil du connecteur, https://<connecteur>/wake-up."
 

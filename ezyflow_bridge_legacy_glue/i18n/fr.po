@@ -1,0 +1,18 @@
+# Translation of EzyFlow bridge: legacy glue.
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Language: fr\n"
+"Plural-Forms: \n"
+
+#. module: ezyflow_bridge_legacy_glue
+#: code:addons/ezyflow_bridge_legacy_glue/models/channel.py:0
+msgid "Channel %(value)s is not one of the legacy logistics module's channels (%(channels)s)."
+msgstr "Le canal %(value)s n'est pas un des canaux de l'ancien module logistique (%(channels)s)."
+
+#. module: ezyflow_bridge_legacy_glue
+#: model_terms:ir.ui.view,arch_db:ezyflow_bridge_legacy_glue.res_config_settings_view_form_ezyflow_legacy_glue
+msgid "The legacy logistics module is installed: it decides which transfers are offered to the WMS, their channel, their hold and their backorders, and its WMS constraints apply. The EzyFlow logistics mode reads off on every operation type and the EzyFlow constraints below are switched off."
+msgstr "L'ancien module logistique est installé : il décide quels transferts sont proposés au WMS, leur canal, leur blocage et leurs reliquats, et ses contraintes WMS s'appliquent. Le mode logistique EzyFlow se lit « désactivé » sur chaque type d'opération et les contraintes EzyFlow ci-dessous sont désactivées."

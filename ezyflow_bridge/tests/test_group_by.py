@@ -3,10 +3,14 @@ from lxml import etree
 
 from odoo.tests import tagged
 
-from .common import EzyflowBridgeCase
+from .common import EzyflowBridgeCase, bridge_owned
 
 
 @tagged("post_install", "-at_install")
+@bridge_owned(
+    "the OCA delivery state and the legacy module own the order's delivery status",
+    module="sale_stock_delivery_state",
+)
 class TestGroupBy(EzyflowBridgeCase):
     """Behaviour 7: the Group By menus offer the WMS state and the delivery
     status, and grouping by them sorts the refused ones apart."""
@@ -38,15 +42,13 @@ class TestGroupBy(EzyflowBridgeCase):
         self.set_wms_state(refused, "refused_by_logistics")
         self.set_wms_state(offered, "sent_to_logistics")
 
-        transfers = self.env["stock.picking"]._read_group(
-            [("id", "in", (refused + offered).ids)], ["ezy_wms_state"], ["__count"]
+        transfers = self.count_by(
+            "stock.picking", [("id", "in", (refused + offered).ids)], "ezy_wms_state"
         )
-        self.assertEqual(
-            dict(transfers), {"refused_by_logistics": 1, "sent_to_logistics": 1}
-        )
-        orders = self.env["sale.order"]._read_group(
+        self.assertEqual(transfers, {"refused_by_logistics": 1, "sent_to_logistics": 1})
+        orders = self.count_by(
+            "sale.order",
             [("id", "in", (refused.sale_id + offered.sale_id).ids)],
-            ["delivery_status"],
-            ["__count"],
+            "delivery_status",
         )
-        self.assertEqual(dict(orders), {"refused_by_logistics": 1, "sent_to_logistics": 1})
+        self.assertEqual(orders, {"refused_by_logistics": 1, "sent_to_logistics": 1})

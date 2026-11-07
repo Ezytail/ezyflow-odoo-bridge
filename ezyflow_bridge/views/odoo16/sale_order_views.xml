@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- The Odoo 16 twin of views/sale_order_views.xml (ADR 0015, ADR 0035): the same
+         views and xml ids, the modifiers in the attrs syntax 16 reads; loaded
+         by the series loader on 16 only. Change the shared file and this one
+         together (the twin test checks the xml ids). -->
+    <record id="view_order_form_ezyflow" model="ir.ui.view">
+        <field name="name">sale.order.form.ezyflow</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='other_information']//field[@name='team_id']" position="after">
+                <field name="ezy_channel" />
+                <field name="ezy_final_recipient_id" />
+                <field name="ezy_shop_total" />
+                <field name="ezy_total_differs" invisible="1" />
+            </xpath>
+            <xpath expr="//sheet" position="before">
+                <div class="alert alert-warning" role="alert" attrs="{'invisible': [('ezy_total_differs', '=', False)]}">
+                    The shop collected
+                    <field name="ezy_shop_total" readonly="1" class="oe_inline" />
+                    for this order while its total here is
+                    <field name="amount_total" readonly="1" class="oe_inline" />:
+                    check the taxes and the fiscal position.
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_order_tree_ezyflow" model="ir.ui.view">
+        <field name="name">sale.order.list.ezyflow</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale_stock.view_order_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='delivery_status']" position="attributes">
+                <attribute name="decoration-danger">delivery_status in ('refused_by_logistics', 'cancelled_by_logistics')</attribute>
+                <attribute name="decoration-success">delivery_status in ('full', 'shipped')</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_sales_order_filter_ezyflow" model="ir.ui.view">
+        <field name="name">sale.order.search.ezyflow</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_sales_order_filter" />
+        <field name="arch" type="xml">
+            <filter name="order_month" position="after">
+                <filter string="Delivery Status" name="ezy_delivery_status" context="{'group_by': 'delivery_status'}" />
+            </filter>
+        </field>
+    </record>
+</odoo>

@@ -1,14 +1,15 @@
 # Part of the EzyFlow connector for Odoo. See LICENSE in the repository root.
-from odoo import Command
+from odoo import Command, release
 from odoo.exceptions import UserError
 from odoo.tests import tagged
 
 from odoo.addons.ezyflow_bridge.models.contract import FROZEN_WMS_STATES
 
-from .common import EzyflowBridgeCase
+from .common import EzyflowBridgeCase, bridge_owned
 
 
 @tagged("post_install", "-at_install")
+@bridge_owned("the legacy write guard stands in front of the bridge freeze for people")
 class TestFreeze(EzyflowBridgeCase):
     """Behaviour 5 (reservation freeze) and 6 (write guard)."""
 
@@ -19,7 +20,7 @@ class TestFreeze(EzyflowBridgeCase):
     def reserved_delivery(self):
         picking = self.confirm_order()
         picking.action_assign()
-        self.assertEqual(picking.move_ids.quantity, 5)
+        self.assertEqual(self.move_quantity(picking.move_ids), 5)
         return picking
 
     def assert_reserved(self, expected, message=None):
@@ -38,13 +39,13 @@ class TestFreeze(EzyflowBridgeCase):
                 ("state", "not in", ("done", "cancel")),
             ]
         )
-        self.assertEqual(sum(lines.mapped("quantity_product_uom")), expected, message)
+        self.assertEqual(sum(lines.mapped(self.line_reserved_field())), expected, message)
         self.assertEqual(sum(quants.mapped("reserved_quantity")), expected, message)
 
     def prepare_as_connector(self, picking, quantity):
         """What the fulfilment rounds write on a frozen delivery (S4)."""
         picking.with_user(self.connector_user).write(
-            {"move_ids": [(1, picking.move_ids.id, {"quantity": quantity, "picked": True})]}
+            {"move_ids": [(1, picking.move_ids.id, self.done(quantity))]}
         )
 
     def test_a_frozen_delivery_is_not_unreserved(self):
@@ -55,7 +56,7 @@ class TestFreeze(EzyflowBridgeCase):
             picking.do_unreserve()
             picking.move_ids._do_unreserve()
 
-            self.assertEqual(picking.move_ids.quantity, 5, state)
+            self.assertEqual(self.move_quantity(picking.move_ids), 5, state)
             self.assertEqual(picking.state, "assigned", state)
         self.assert_reserved(5 * len(FROZEN_WMS_STATES), "the quants keep the reservation")
 
@@ -81,13 +82,17 @@ class TestFreeze(EzyflowBridgeCase):
         self.set_wms_state(picking, "preparation_in_progress")
 
         self.prepare_as_connector(picking, 2)
-        self.assert_reserved(2, "the prepared quantity is the reservation")
+        # From 17 the prepared quantity is the reservation; 16 keeps the whole
+        # reservation next to the done quantity until the transfer closes.
+        self.assert_reserved(
+            2 if release.version_info[0] >= 17 else 5, "the prepared quantity is the reservation"
+        )
         picking.with_user(self.connector_user).with_context(
             skip_backorder=True, picking_ids_not_to_backorder=picking.ids
         ).button_validate()
 
         self.assertEqual(picking.state, "done")
-        self.assertEqual(picking.move_ids.quantity, 2)
+        self.assertEqual(self.move_quantity(picking.move_ids), 2)
         self.assert_reserved(0)
 
     def test_a_cancelled_frozen_delivery_gives_its_reservation_back(self):
@@ -111,7 +116,7 @@ class TestFreeze(EzyflowBridgeCase):
         other = self.env["product.product"].create(
             {
                 "name": "Other good",
-                "is_storable": True,
+                **self.storable(),
                 "default_code": "GOOD-2",
                 "barcode": "3000000000024",
             }
@@ -125,9 +130,9 @@ class TestFreeze(EzyflowBridgeCase):
                     Command.create(
                         {
                             "product_id": other.id,
+                            **self.move_name(),
                             "product_uom_qty": 2,
-                            "quantity": 2,
-                            "picked": True,
+                            **self.done(2),
                             "location_id": picking.location_id.id,
                             "location_dest_id": picking.location_dest_id.id,
                         }
@@ -145,7 +150,7 @@ class TestFreeze(EzyflowBridgeCase):
             picking.with_user(self.warehouse_user).action_cancel()
 
         self.assertEqual(open_move.state, "assigned")
-        self.assertEqual(open_move.quantity, 5)
+        self.assertEqual(self.move_quantity(open_move), 5)
         self.assert_reserved(5)
 
     def test_a_frozen_delivery_is_not_reserved(self):
@@ -156,7 +161,7 @@ class TestFreeze(EzyflowBridgeCase):
             picking.action_assign()
             picking.move_ids._action_assign()
 
-            self.assertEqual(picking.move_ids.quantity, 0, state)
+            self.assertEqual(self.move_quantity(picking.move_ids), 0, state)
             self.assertEqual(picking.state, "confirmed", state)
 
     def test_a_frozen_delivery_is_not_reserved_by_incoming_stock(self):
@@ -166,10 +171,12 @@ class TestFreeze(EzyflowBridgeCase):
         receipt = self.create_picking(
             self.in_type, self.supplier_location, self.stock_location, 100
         )
-        receipt.button_validate()
+        self.validate(receipt)
 
         self.assertEqual(receipt.state, "done")
-        self.assertEqual(picking.move_ids.quantity, 0, "a done receipt reserves elsewhere only")
+        self.assertEqual(
+            self.move_quantity(picking.move_ids), 0, "a done receipt reserves elsewhere only"
+        )
 
     def test_ready_and_shipped_are_not_frozen(self):
         for state in ("ready_for_logistics", "shipped"):
@@ -178,10 +185,10 @@ class TestFreeze(EzyflowBridgeCase):
             self.assertFalse(picking.ezy_is_frozen, state)
 
             picking.do_unreserve()
-            self.assertEqual(picking.move_ids.quantity, 0, state)
+            self.assertEqual(self.move_quantity(picking.move_ids), 0, state)
 
             picking.action_assign()
-            self.assertEqual(picking.move_ids.quantity, 5, state)
+            self.assertEqual(self.move_quantity(picking.move_ids), 5, state)
 
     def test_a_person_cannot_change_the_lines_of_a_frozen_delivery(self):
         picking = self.reserved_delivery()
@@ -192,9 +199,9 @@ class TestFreeze(EzyflowBridgeCase):
         with self.assertRaisesRegex(UserError, "Sent to logistics"):
             move.write({"product_uom_qty": 3})
         with self.assertRaisesRegex(UserError, "Sent to logistics"):
-            move.write({"quantity": 3})
+            move.write({self.move_quantity_field(): 3})
         with self.assertRaisesRegex(UserError, "Sent to logistics"):
-            line.write({"quantity": 3})
+            line.write({self.line_quantity_field(): 3})
         with self.assertRaisesRegex(UserError, "Sent to logistics"):
             line.unlink()
         with self.assertRaisesRegex(UserError, "Sent to logistics"):
@@ -204,7 +211,7 @@ class TestFreeze(EzyflowBridgeCase):
                     "product_id": self.product.id,
                     "location_id": self.stock_location.id,
                     "location_dest_id": picking.location_dest_id.id,
-                    "quantity": 1,
+                    self.line_quantity_field(): 1,
                 }
             )
         with self.assertRaisesRegex(UserError, "Sent to logistics"):
@@ -214,6 +221,7 @@ class TestFreeze(EzyflowBridgeCase):
                         Command.create(
                             {
                                 "product_id": self.product.id,
+                                **self.move_name(),
                                 "product_uom_qty": 1,
                                 "location_id": picking.location_id.id,
                                 "location_dest_id": picking.location_dest_id.id,
@@ -249,8 +257,8 @@ class TestFreeze(EzyflowBridgeCase):
         picking = self.reserved_delivery()
         self.set_wms_state(picking, "preparation_done")
 
-        picking.move_ids.with_user(self.connector_user).write({"quantity": 3})
-        self.assertEqual(picking.move_ids.quantity, 3)
+        picking.move_ids.with_user(self.connector_user).write({self.move_quantity_field(): 3})
+        self.assertEqual(self.move_quantity(picking.move_ids), 3)
 
         picking.move_ids.with_user(self.admin_user).write({"product_uom_qty": 4})
         self.assertEqual(picking.move_ids.product_uom_qty, 4)

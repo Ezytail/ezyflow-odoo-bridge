@@ -1,5 +1,7 @@
 # Part of the EzyFlow connector for Odoo. See LICENSE in the repository root.
 from . import (
+    compat,
+    connector,
     contract,
     delivery_carrier,
     ir_module_module,
@@ -7,6 +9,7 @@ from . import (
     mail_thread,
     product_product,
     product_template,
+    purchase_order,
     res_company,
     res_config_settings,
     res_partner,
@@ -17,6 +20,7 @@ from . import (
     stock_move_line,
     stock_picking,
     stock_picking_type,
+    stock_quant,
     wakeup,
     wms_constraints,
 )

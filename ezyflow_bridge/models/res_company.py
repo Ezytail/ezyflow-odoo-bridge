@@ -115,3 +115,13 @@ class ResCompany(models.Model):
         "reference its sequence would give is longer than 20 characters or has a "
         "character other than A-Z 0-9 _ - . # / \\.",
     )
+
+    def _ezy_sends_sms_on_delivery(self):
+        """Whether the company texts the customer at delivery validation: a
+        method from Odoo 19 (``_get_text_validation``), a field on 18
+        (``stock_move_sms_validation``, module stock_sms); False without
+        stock_sms (ADR 0015, no common API)."""
+        self.ensure_one()
+        if hasattr(self, "_get_text_validation"):
+            return bool(self._get_text_validation("sms"))
+        return bool(getattr(self, "stock_move_sms_validation", False))

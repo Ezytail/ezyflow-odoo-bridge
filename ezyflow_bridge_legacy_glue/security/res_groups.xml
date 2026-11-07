@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- The legacy module refuses any write on a move or a transfer in a
+         logistics substate unless the user holds its group; the connector
+         writes every hand-off state, quantity and validation (ADR 0035). -->
+    <record id="ezyflow_bridge.group_ezyflow_connector" model="res.groups">
+        <field
+            name="implied_ids"
+            eval="[(4, ref('logistics_improvements.can_change_logistics_states'))]"
+        />
+    </record>
+</odoo>

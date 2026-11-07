@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Last in the manifest: the views of the running series, the shared tree
+         on 17 and later or its views/odoo16/ twin on 16, then the views a
+         series places differently (ADR 0015, models/security.py). -->
+    <function model="ezyflow.bridge.security" name="load_series_views" />
+</odoo>

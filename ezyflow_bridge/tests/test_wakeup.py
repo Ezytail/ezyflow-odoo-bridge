@@ -7,10 +7,11 @@ from unittest.mock import patch
 from odoo.tests import tagged
 
 from ..models import wakeup
-from .common import EzyflowBridgeCase
+from .common import EzyflowBridgeCase, bridge_owned
 
 
 @tagged("post_install", "-at_install")
+@bridge_owned("the legacy module offers, the glue wakes the connector")
 class TestWakeup(EzyflowBridgeCase):
     """Behaviour 9 (ADR 0006): a transfer entering ready for logistics posts a
     signed wake-up once the transaction commits."""

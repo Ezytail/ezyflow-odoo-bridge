@@ -25,7 +25,7 @@
         <code>Ezytail/ezyflow-odoo-bridge</code>. Each version of the bridge is a tag of that
         repository and a release on its <strong>Releases</strong> page, with a zip of this module, a
         <code>SHA256SUMS</code> file to check the zip against, and release notes. The same module
-        installs on Odoo 19 and Odoo 20. Pick one of three routes:
+        installs on Odoo 16, Odoo 18, Odoo 19 and Odoo 20. Pick one of three routes:
     </p>
     <ul>
         <li>
@@ -253,6 +253,18 @@
         shared by every company of the database, so they are set once.
     </p>
 
+    <h3>8. The legacy logistics module</h3>
+    <p>
+        A database that still runs the legacy logistics module gets two more addons from the
+        same zip, installed by Odoo on its own: the legacy glue and, where the EzyFlow NG CMS
+        bridge is installed too, its shop-id companion. With them the legacy module keeps
+        deciding which transfers go to the WMS, their channel, their hold, their backorders and
+        the WMS constraints; the EzyFlow fields follow its values, both ways. The EzyFlow
+        logistics mode reads off on every operation type and this page says so in a notice;
+        the EzyFlow WMS constraints are switched off. The connector user receives the legacy
+        module's right to change logistics states. Nothing to configure, nothing to migrate:
+        uninstalling the glue and the legacy module later keeps every EzyFlow value in place.
+    </p>
     <h2>Run</h2>
 
     <h3>1. Transfers and the WMS</h3>

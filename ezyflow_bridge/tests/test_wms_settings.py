@@ -7,12 +7,13 @@ from odoo.tests import tagged
 from odoo.tools.misc import file_path
 
 from ..models.wms_constraints import SWITCHES
-from .common import EzyflowBridgeCase
+from .common import EzyflowBridgeCase, bridge_owned
 
 MIGRATION = "ezyflow_bridge/migrations/3.5.0/post-migrate.py"
 
 
 @tagged("post_install", "-at_install")
+@bridge_owned("the bridge switches are off at install")
 class TestWmsSettings(EzyflowBridgeCase):
     """The EzyFlow page of the Settings and the 3.5.0 migration (ADR 0017)."""
 
@@ -21,19 +22,18 @@ class TestWmsSettings(EzyflowBridgeCase):
         return etree.fromstring(views["views"]["form"]["arch"])
 
     def test_the_settings_show_an_ezyflow_app_with_one_setting_per_switch(self):
-        arch = self.settings_arch()
+        page = self.settings_page()
 
-        apps = arch.xpath("//app[@name='ezyflow_bridge']")
-        self.assertEqual(len(apps), 1)
-        self.assertEqual(apps[0].get("string"), "EzyFlow")
-        block = apps[0].xpath("block[@name='ezy_wms_constraints']")
-        self.assertEqual(len(block), 1)
-        self.assertEqual(block[0].get("title"), "WMS constraints")
+        self.assertEqual(len(page.apps), 1)
+        self.assertEqual(page.app.get("string"), "EzyFlow")
+        block = page.block("ezy_wms_constraints")
         self.assertEqual(
-            [setting.get("id") for setting in block[0].xpath("setting")], list(SWITCHES)
+            [title for name, title, _b in page.blocks() if name == "ezy_wms_constraints"],
+            ["WMS constraints"],
         )
+        self.assertEqual([sid for sid, _s in page.settings(block)], list(SWITCHES))
         for switch in SWITCHES:
-            self.assertEqual(len(block[0].xpath(f"setting/field[@name='{switch}']")), 1, switch)
+            self.assertEqual(len(block.xpath(f".//field[@name='{switch}']")), 1, switch)
 
     def test_the_inventory_settings_carry_no_ezyflow_block(self):
         arch = self.settings_arch()
@@ -68,6 +68,9 @@ class TestWmsSettings(EzyflowBridgeCase):
         self.assertLessEqual(covered, set(SWITCHES))
 
     def test_the_migration_carries_the_old_switches_onto_the_ones_they_cover(self):
+        self.skip_below_seventeen(
+            "the 3.5.0 migration ran on 19 and 20 only; the SQL helper it uses is 17 and later"
+        )
         # A 3.4.0 database: the two old columns, the product one turned off.
         cr = self.env.cr
         for old in self.migration.COVERED:
@@ -84,6 +87,9 @@ class TestWmsSettings(EzyflowBridgeCase):
         self.assertEqual({switch for switch in SWITCHES if not self.company[switch]}, off)
 
     def test_the_migration_leaves_every_switch_on_when_the_old_ones_were_on(self):
+        self.skip_below_seventeen(
+            "the 3.5.0 migration ran on 19 and 20 only; the SQL helper it uses is 17 and later"
+        )
         cr = self.env.cr
         for old in self.migration.COVERED:
             cr.execute(f"ALTER TABLE res_company ADD COLUMN IF NOT EXISTS {old} boolean")

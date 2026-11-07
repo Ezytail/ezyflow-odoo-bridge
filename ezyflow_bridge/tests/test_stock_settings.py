@@ -1,5 +1,4 @@
 # Part of the EzyFlow connector for Odoo. See LICENSE in the repository root.
-from lxml import etree
 
 from odoo.tests import tagged
 
@@ -29,16 +28,11 @@ class TestStockSettings(EzyflowBridgeCase):
         self.assertFalse(self.company.ezy_apply_stock_reports)
 
     def test_the_ezyflow_page_shows_the_setting_in_its_stock_block(self):
-        views = self.env["res.config.settings"].get_views([(False, "form")])
-        arch = etree.fromstring(views["views"]["form"]["arch"])
+        page = self.settings_page()
 
-        block = arch.xpath("//app[@name='ezyflow_bridge']/block[@name='ezy_stock']")
-        self.assertEqual(len(block), 1)
-        self.assertEqual(
-            [setting.get("id") for setting in block[0].xpath("setting")],
-            ["ezy_apply_stock_reports"],
-        )
-        self.assertEqual(len(block[0].xpath("setting/field[@name='ezy_apply_stock_reports']")), 1)
+        block = page.block("ezy_stock")
+        self.assertEqual([sid for sid, _s in page.settings(block)], ["ezy_apply_stock_reports"])
+        self.assertEqual(len(block.xpath(".//field[@name='ezy_apply_stock_reports']")), 1)
 
     def test_the_connector_user_reads_the_switch(self):
         # What the connector reads with every report, once the bridge's

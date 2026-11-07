@@ -2,10 +2,11 @@
 from odoo.exceptions import ValidationError
 from odoo.tests import tagged
 
-from .common import EzyflowBridgeCase
+from .common import EzyflowBridgeCase, bridge_owned
 
 
 @tagged("post_install", "-at_install")
+@bridge_owned("offers go through the legacy module, not the bridge button")
 class TestTemplateIdentity(EzyflowBridgeCase):
     """Behaviour 8 on a template create: Odoo validates the generated variant
     before it writes the template's internal reference and barcode onto it,
@@ -18,7 +19,7 @@ class TestTemplateIdentity(EzyflowBridgeCase):
             {
                 "name": "Mug",
                 "type": "consu",
-                "is_storable": True,
+                **self.storable(),
                 "sale_ok": True,
                 "default_code": code,
                 "barcode": barcode,
@@ -57,7 +58,7 @@ class TestTemplateIdentity(EzyflowBridgeCase):
             {
                 "name": "Tee",
                 "type": "consu",
-                "is_storable": True,
+                **self.storable(),
                 "sale_ok": True,
                 "default_code": "TEE-RED",
                 "barcode": "3000000000925",

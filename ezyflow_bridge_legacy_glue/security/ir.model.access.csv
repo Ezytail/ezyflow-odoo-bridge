@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_delivery_carrier_ezyflow_connector_glue,ezyflow connector writes a carrier's legacy names,delivery.model_delivery_carrier,ezyflow_bridge.group_ezyflow_connector,1,1,0,0

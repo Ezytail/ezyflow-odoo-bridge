@@ -4,10 +4,11 @@ from odoo.exceptions import ValidationError
 from odoo.tests import new_test_user, tagged
 
 from ..models.wms_constraints import SWITCHES
-from .common import EzyflowBridgeCase
+from .common import EzyflowBridgeCase, bridge_owned
 
 
 @tagged("post_install", "-at_install")
+@bridge_owned("the legacy module keeps the WMS constraints, the bridge switches are off")
 class TestWmsConstraints(EzyflowBridgeCase):
     """Behaviour 8 (ADR 0017): Reflex's figures, one company switch each. Every
     constraint is proved five ways: refused over the figure, accepted at the
@@ -159,7 +160,13 @@ class TestWmsConstraints(EzyflowBridgeCase):
             self.env,
             login="ezy_one_company",
             name="One-company person",
-            groups="base.group_user,product.group_product_manager",
+            # The product manager group is sales_team's on 16, product's from 17.
+            groups="base.group_user,"
+            + (
+                "product.group_product_manager"
+                if self.env.ref("product.group_product_manager", raise_if_not_found=False)
+                else "sales_team.group_sale_manager"
+            ),
             company_id=self.company.id,
             company_ids=[Command.set(self.company.ids)],
         )

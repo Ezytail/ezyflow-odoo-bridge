@@ -26,7 +26,7 @@ class TestRotationDateType(EzyflowBridgeCase):
 
     def _template(self, **values):
         return self.env["product.template"].create(
-            {"name": "Rotating good", "is_storable": True, "sale_ok": False, **values}
+            {"name": "Rotating good", **self.storable(), "sale_ok": False, **values}
         )
 
     def test_a_traceable_product_holds_a_rotation_date_type(self):

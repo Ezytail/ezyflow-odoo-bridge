@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- On a glued tenant the legacy logistics module decides which transfers
+         go to the WMS; the bridge's mode reads off and says why (ADR 0035). -->
+    <record id="res_config_settings_view_form_ezyflow_legacy_glue" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.ezyflow.legacy.glue</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="ezyflow_bridge.res_config_settings_view_form_ezyflow" />
+        <field name="arch" type="xml">
+            <xpath expr="//block[@name='ezy_connector']" position="before">
+                <div class="alert alert-info" role="alert">
+                    The legacy logistics module is installed: it decides which transfers are
+                    offered to the WMS, their channel, their hold and their backorders, and
+                    its WMS constraints apply. The EzyFlow logistics mode reads off on every
+                    operation type and the EzyFlow constraints below are switched off.
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

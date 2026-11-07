@@ -3,24 +3,23 @@
     "name": "EzyFlow bridge",
     "summary": "Fields and behaviours the EzyFlow connector needs, nothing else",
     # Series-less on purpose (ADR 0015): Odoo prepends its own series when it
-    # records the installed version, so one tree serves Odoo 19 and Odoo 20.
-    "version": "3.13.0",
+    # records the installed version, so one tree serves Odoo 16, 18, 19 and 20.
+    "version": "3.16.0",
     "category": "Supply Chain",
     "author": "Ezytail",
     "website": "https://github.com/Ezytail/ezyflow-odoo-bridge",
     "license": "LGPL-3",
-    "depends": ["stock", "sale_stock", "stock_delivery", "purchase_stock"],
+    # delivery carries the carrier on every series; 17 and later split the
+    # transfer's carrier fields into stock_delivery, which Odoo installs on its
+    # own next to sale_stock and delivery (auto_install), so one list serves
+    # 16, 18, 19 and 20 (ADR 0035).
+    "depends": ["stock", "sale_stock", "delivery", "purchase_stock"],
+    # The views are loaded by the series loader (views/series_views.xml, last):
+    # the shared tree on 17 and later, its views/odoo16/ twin on 16 (ADR 0015).
     "data": [
         "security/ezyflow_security.xml",
         "data/ir_config_parameter.xml",
-        "views/stock_picking_views.xml",
-        "views/stock_picking_type_views.xml",
-        "views/sale_order_views.xml",
-        "views/res_partner_views.xml",
-        "views/delivery_carrier_views.xml",
-        "views/ir_module_module_views.xml",
-        "views/res_config_settings_views.xml",
-        "views/product_views.xml",
+        "views/series_views.xml",
     ],
     # Odoo 20 only lists a typed module in Apps; a CLI install on an existing
     # database leaves the type empty (hooks.py). The 3.3.1 migration repairs

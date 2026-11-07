@@ -1,5 +1,5 @@
 # Part of the EzyFlow connector for Odoo. See LICENSE in the repository root.
-from odoo import api, fields, models
+from odoo import api, fields, models, release
 from odoo.exceptions import UserError
 
 from .contract import FROZEN_WMS_STATES, WMS_STATES, check_channel_codes
@@ -117,6 +117,20 @@ class StockPicking(models.Model):
             return True
         return super(StockPicking, movable).do_unreserve()
 
+    def button_validate(self):
+        # Odoo 17 and later validate a transfer's reserved quantities as done
+        # when nothing was written; 16 answers its immediate-transfer wizard.
+        # The connector validates the same way on every series (ADR 0015): on
+        # 16 its validation takes the reservation as done where no done
+        # quantity is written, what the wizard's confirmation does.
+        if release.version_info[0] < 17 and self._ezy_is_connector_transaction():
+            for picking in self:
+                moves = picking.move_ids.filtered(
+                    lambda move: move.state not in ("done", "cancel") and not move.quantity_done
+                )
+                moves._set_quantities_to_reservation()
+        return super().button_validate()
+
     def _pre_action_done_hook(self):
         # Behaviour 11 (ADR 0019): the connector validates past stock_sms's
         # one-time window, as a person who chose to send the SMS would.
@@ -135,11 +149,21 @@ class StockPicking(models.Model):
         companies = self.filtered(
             lambda picking: picking.picking_type_id.code == "outgoing"
             and picking.partner_id.phone
-            and picking.company_id._get_text_validation("sms")
+            and picking.company_id._ezy_sends_sms_on_delivery()
         ).company_id
         unwarned = companies.filtered(lambda company: not company.has_received_warning_stock_sms)
         if unwarned:
             unwarned.sudo().write({"has_received_warning_stock_sms": True})
+
+    def message_subscribe(self, partner_ids=None, subtype_ids=None):
+        """Odoo 18's button_validate subscribes the validating user outside any
+        context key; the connector user follows nothing (ADR 0012, behaviour
+        10), so its own partner is dropped from a subscription it triggers."""
+        if partner_ids and self._ezy_is_connector_transaction():
+            partner_ids = [pid for pid in partner_ids if pid != self.env.user.partner_id.id]
+            if not partner_ids:
+                return True
+        return super().message_subscribe(partner_ids=partner_ids, subtype_ids=subtype_ids)
 
     def action_ezy_offer_to_logistics(self):
         """The form button of behaviour 7: a person offers a transfer of a manual

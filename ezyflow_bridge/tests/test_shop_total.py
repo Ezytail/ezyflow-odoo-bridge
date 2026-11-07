@@ -1,8 +1,11 @@
 # Part of the EzyFlow connector for Odoo. See LICENSE in the repository root.
-from odoo import Command
+from odoo import Command, release
 from odoo.tests import tagged
 
 from .common import EzyflowBridgeCase
+
+# tax_id below 19, tax_ids from 19 (ADR 0015).
+TAX_FIELD = "tax_ids" if release.version_info[0] >= 19 else "tax_id"
 
 
 @tagged("post_install", "-at_install")
@@ -28,7 +31,8 @@ class TestShopTotal(EzyflowBridgeCase):
                                 "product_id": self.product.id,
                                 "product_uom_qty": 2,
                                 "price_unit": 10.0,
-                                "tax_ids": [Command.clear()],
+                                # tax_id below 19, tax_ids from 19 (ADR 0015).
+                                TAX_FIELD: [Command.clear()],
                             }
                         )
                     ],

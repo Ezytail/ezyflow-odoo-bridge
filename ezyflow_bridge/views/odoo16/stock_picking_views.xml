@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- The Odoo 16 twin of views/stock_picking_views.xml (ADR 0015, ADR 0035): the same
+         views and xml ids, the modifiers in the attrs syntax 16 reads; loaded
+         by the series loader on 16 only. Change the shared file and this one
+         together (the twin test checks the xml ids). -->
+    <record id="view_picking_form_ezyflow" model="ir.ui.view">
+        <field name="name">stock.picking.form.ezyflow</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//header/field[@name='state'][1]" position="before">
+                <field name="ezy_logistics_mode" invisible="1" />
+                <field name="ezy_is_frozen" invisible="1" />
+                <button
+                    name="action_ezy_offer_to_logistics"
+                    string="Offer to logistics"
+                    type="object"
+                    groups="stock.group_stock_user"
+                    attrs="{'invisible': ['|', '|', '|', '|', ('ezy_wms_state', '!=', False), ('ezy_hold', '=', True), ('ezy_logistics_mode', '!=', 'manual'), ('picking_type_code', '=', 'internal'), ('state', 'not in', ['confirmed', 'assigned'])]}"
+                />
+                <field name="ezy_wms_state" widget="badge" readonly="1" />
+            </xpath>
+            <xpath expr="//sheet" position="before">
+                <div class="alert alert-warning" role="alert" attrs="{'invisible': [('ezy_is_frozen', '=', False)]}">
+                    This transfer is in the hands of the WMS: Odoo neither reserves nor
+                    unreserves it, and only the EzyFlow connector may change its lines.
+                </div>
+            </xpath>
+            <xpath expr="//field[@name='picking_type_id']" position="after">
+                <field name="ezy_channel" attrs="{'readonly': [('state', 'in', ['cancel', 'done'])]}" />
+                <field name="ezy_hold" attrs="{'readonly': [('state', 'in', ['cancel', 'done'])]}" />
+                <field name="ezy_final_recipient_id" attrs="{'readonly': [('state', 'in', ['cancel', 'done'])]}" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="vpicktree_ezyflow" model="ir.ui.view">
+        <field name="name">stock.picking.list.ezyflow</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.vpicktree" />
+        <field name="arch" type="xml">
+            <field name="state" position="after">
+                <field
+                    name="ezy_wms_state"
+                    optional="show"
+                    widget="badge"
+                    readonly="1"
+                    decoration-danger="ezy_wms_state in ('refused_by_logistics', 'cancelled_by_logistics')"
+                    decoration-success="ezy_wms_state == 'shipped'"
+                    decoration-info="ezy_wms_state == 'ready_for_logistics'"
+                />
+                <field name="ezy_hold" optional="hide" />
+                <field name="ezy_channel" optional="hide" />
+            </field>
+        </field>
+    </record>
+
+    <record id="view_picking_internal_search_ezyflow" model="ir.ui.view">
+        <field name="name">stock.picking.search.ezyflow</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_internal_search" />
+        <field name="arch" type="xml">
+            <filter name="status" position="after">
+                <filter string="WMS state" name="ezy_wms_state" context="{'group_by': 'ezy_wms_state'}" />
+            </filter>
+        </field>
+    </record>
+</odoo>

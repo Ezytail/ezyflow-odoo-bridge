@@ -18,6 +18,77 @@ Which bridge version each service release was built with, the pairing, is kept
 in the connector repository and no longer in this
 file.
 
+## 3.16.0
+
+The bridge installs on Odoo 16: the same module and the same behaviours on
+16, 18, 19 and 20. Its views are loaded by the series loader, the shared tree
+on 17 and later and a twin written for 16 under `views/odoo16/`; the access
+rights of 16 live under `security/odoo16/`; the dependency on the carrier is
+the `delivery` module, which every series has (17 and later install
+`stock_delivery` next to it on their own). On 16 the connector's own
+application of a stock report runs with the stock manager's field check
+lifted, the one right the series grants it beyond the others. The ten-year API
+key duration is written by the series folders from 18 (a key carries no
+expiry on 16). Nothing changes on 18, 19 and 20.
+
+**For the administrator:** optional on 18, 19 and 20, required to install on
+16. No migration, and nothing to install on an existing 18, 19 or 20 database
+(the carrier module the bridge now names is already there). Restart Odoo after
+the upgrade and update the apps list; on 16, check that the EzyFlow settings page shows its blocks and that a
+transfer's form shows the WMS state. The legacy glue installs on 16 the same
+way; its CMS companion does not, there being no CMS bridge on 16.
+
+## 3.15.0
+
+The legacy glue ships next to the bridge: two addons, `ezyflow_bridge_legacy_glue`
+and `ezyflow_bridge_legacy_glue_cms`, installed by Odoo on their own where the
+legacy logistics module (and, for the second, the EzyFlow NG CMS bridge) is
+present, never where it is not. On such a database the legacy module keeps
+owning the WMS state, the hold, the channel, the carrier names, the shop ids,
+the eligibility of transfers, the backorders and the WMS constraints; the
+bridge's fields mirror them so the EzyFlow connector reads and writes the
+bridge's fields only. The EzyFlow logistics mode reads off on every operation
+type there, with a notice on the EzyFlow settings page, and the EzyFlow WMS
+constraints are switched off at install. The connector user gains the legacy
+module's right to change logistics states; its own writes keep the WMS state
+across a move's state change and give a reservation back to the quants, which
+the legacy module left on them. Nothing changes on a database without the
+legacy module.
+
+**For the administrator:** optional. No migration. Restart Odoo after the
+upgrade and update the apps list; on a database with the legacy logistics
+module, check in Apps that the two glue addons are installed, that the
+EzyFlow settings page shows the legacy notice, and that a transfer the
+warehouse offers reaches the connector as before. A database without the
+legacy module shows no glue addon and nothing else changes.
+
+## 3.14.0
+
+Odoo 18 joins the series the bridge installs on, next to 19 and 20, from one
+source tree. Nothing changes for a database on 19 or 20 beyond where the
+connector group hangs in Settings, which each series now declares for itself.
+On 18 the frozen-transfer banner sits above the form's sheet, the SMS
+confirmation setting is read where 18 keeps it, and the connector user is kept
+off the followers of a transfer it validates, as on 19 and 20. On 18 the
+rotation date type sits next to the tracking choice on the product form's
+General Information page, since 18 keeps the Traceability group hidden; on 19
+and 20 it stays in that group. On 18 the connector may also write a sales order whose
+transfer is in the WMS hand-off, not only one that came from a shop: 18 lets a
+user post on a document it may write only, and Odoo posts on the order when a
+validation adds a line the order did not name. A stock count the connector
+applies names its stock move with the connector's reference on 18 as on 19
+and 20 (behaviour 14), so a report delivered twice is applied once.
+
+**For the administrator:** optional on Odoo 19 and 20, required to run the
+bridge on Odoo 18. No migration. Restart Odoo after the upgrade. On Odoo 18
+give the connector user an email address (18 refuses a note without one) and,
+if SMS confirmation at delivery is on, open Settings > General Settings >
+In-App Purchases once so the SMS account exists before the connector
+validates a delivery. Check that the EzyFlow connector group still shows
+under the EzyFlow heading of Settings > Users, that a transfer the connector
+validates gains no follower, and that a stock count applied by the connector
+shows its reference as the move's description.
+
 ## 3.13.0
 
 The rotation date type on the product: the date a traceable product's stock

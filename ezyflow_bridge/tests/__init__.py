@@ -14,6 +14,7 @@ from . import (
     test_group_by,
     test_help_page,
     test_i18n,
+    test_inventory_name,
     test_offer,
     test_order_rights,
     test_product_rights,

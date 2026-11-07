@@ -1,10 +1,14 @@
 # Part of the EzyFlow connector for Odoo. See LICENSE in the repository root.
 from odoo.tests import tagged
 
-from .common import EzyflowBridgeCase
+from .common import EzyflowBridgeCase, bridge_owned
 
 
 @tagged("post_install", "-at_install")
+@bridge_owned(
+    "the OCA delivery state and the legacy module own the order's delivery status",
+    module="sale_stock_delivery_state",
+)
 class TestDeliveryStatus(EzyflowBridgeCase):
     """Behaviour 7: the sales order's delivery status shows the WMS values."""
 

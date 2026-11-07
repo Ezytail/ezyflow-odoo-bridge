@@ -19,7 +19,9 @@
                 />
                 <field name="ezy_wms_state" widget="badge" readonly="1" />
             </xpath>
-            <xpath expr="//div[@role='alert'][1]" position="before">
+            <!-- Before the sheet, where Odoo's own banners sit on 19 and 20 and
+                 where 18 has none to anchor on. -->
+            <xpath expr="//sheet" position="before">
                 <div class="alert alert-warning" role="alert" invisible="not ezy_is_frozen">
                     This transfer is in the hands of the WMS: Odoo neither reserves nor
                     unreserves it, and only the EzyFlow connector may change its lines.

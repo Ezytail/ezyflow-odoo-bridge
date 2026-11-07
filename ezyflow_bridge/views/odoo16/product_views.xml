@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- The Odoo 16 twin of views/product_views.xml (ADR 0015, ADR 0035): the same
+         views and xml ids, the modifiers in the attrs syntax 16 reads; loaded
+         by the series loader on 16 only. Change the shared file and this one
+         together (the twin test checks the xml ids). -->
+    <record id="product_template_form_view_ezyflow" model="ir.ui.view">
+        <field name="name">product.template.form.ezyflow</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view" />
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='group_general']" position="inside">
+                <field name="ezy_shop_product_id" />
+            </xpath>
+            <xpath expr="//group[@name='traceability']" position="inside">
+                <field name="tracking" invisible="1" />
+                <field name="ezy_rotation_date_type" attrs="{'invisible': [('tracking', 'not in', ['lot', 'serial'])]}" />
+            </xpath>
+        </field>
+    </record>
+    <record id="product_normal_form_view_ezyflow" model="ir.ui.view">
+        <field name="name">product.product.form.ezyflow</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_normal_form_view" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='default_code']" position="after">
+                <field name="ezy_shop_variant_id" />
+            </xpath>
+        </field>
+    </record>
+</odoo>

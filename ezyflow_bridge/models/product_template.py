@@ -1,5 +1,5 @@
 # Part of the EzyFlow connector for Odoo. See LICENSE in the repository root.
-from odoo import api, fields, models
+from odoo import api, fields, models, release
 from odoo.exceptions import ValidationError
 
 from .wms_constraints import DEFER_KEY, PRODUCT_NAME_LIMIT, binds, deferred
@@ -103,6 +103,39 @@ class ProductTemplate(models.Model):
                     )
                 )
 
+    # The template fields the product source publishes from the variant's
+    # page (S6, ADR 0034): a change bumps the variants' write date on 17 and
+    # later; 16 leaves it, so the source would miss the change there.
+    _EZY_PUBLISHED_TEMPLATE_FIELDS = frozenset(
+        {
+            "name",
+            "active",
+            "sale_ok",
+            "detailed_type",
+            "tracking",
+            "ezy_rotation_date_type",
+            "ezy_shop_product_id",
+            "hs_code",
+            "country_of_origin",
+            "list_price",
+        }
+    )
+
+    def write(self, vals):
+        result = super().write(vals)
+        if release.version_info[0] < 17 and self._EZY_PUBLISHED_TEMPLATE_FIELDS.intersection(vals):
+            variants = self.with_context(active_test=False).product_variant_ids
+            if variants:
+                self.env.cr.execute(
+                    "UPDATE product_product SET write_date = now() AT TIME ZONE 'UTC' "
+                    "WHERE id IN %s",
+                    (tuple(variants.ids),),
+                )
+                variants.invalidate_recordset(["write_date"])
+        return result
+
     def _ezy_is_sellable_goods(self):
         self.ensure_one()
-        return self.sale_ok and self.type == "consu"
+        # Goods: "consu" from 17 (storable or not); on 16 the type is "product"
+        # for storable goods and "consu" for the others.
+        return self.sale_ok and self.type in ("consu", "product")

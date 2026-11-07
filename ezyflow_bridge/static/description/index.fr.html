@@ -27,7 +27,7 @@
         <code>Ezytail/ezyflow-odoo-bridge</code>. Chaque version du module est un tag de ce dépôt et
         une publication de sa page <strong>Releases</strong>, avec une archive zip de ce module, un
         fichier <code>SHA256SUMS</code> pour vérifier l'archive, et des notes de version. Le même
-        module s'installe sur Odoo 19 et sur Odoo 20. Choisissez l'une des trois voies :
+        module s'installe sur Odoo 16, Odoo 18, Odoo 19 et Odoo 20. Choisissez l'une des trois voies :
     </p>
     <ul>
         <li>
@@ -277,7 +277,20 @@
         base : elles se règlent donc une seule fois.
     </p>
 
-    <h2>Utiliser</h2>
+        <h3>8. L'ancien module logistique</h3>
+    <p>
+        Une base qui fait encore tourner l'ancien module logistique reçoit deux modules de plus
+        dans la même archive, qu'Odoo installe de lui-même : la colle EzyFlow et, lorsque le
+        pont CMS EzyFlow NG est installé aussi, son compagnon pour les identifiants boutique.
+        Avec eux, l'ancien module continue de décider quels transferts partent vers le WMS,
+        leur canal, leur blocage, leurs reliquats et les contraintes WMS ; les champs EzyFlow
+        suivent ses valeurs, dans les deux sens. Le mode logistique EzyFlow se lit « désactivé »
+        sur chaque type d'opération et cette page l'indique dans un encart ; les contraintes WMS
+        EzyFlow sont désactivées. L'utilisateur connecteur reçoit le droit de l'ancien module de
+        changer les états logistiques. Rien à configurer, rien à migrer : désinstaller la colle et
+        l'ancien module plus tard conserve chaque valeur EzyFlow.
+    </p>
+<h2>Utiliser</h2>
 
     <h3>1. Les transferts et le WMS</h3>
     <p>

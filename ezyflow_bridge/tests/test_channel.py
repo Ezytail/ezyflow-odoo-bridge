@@ -2,10 +2,11 @@
 from odoo.exceptions import ValidationError
 from odoo.tests import tagged
 
-from .common import EzyflowBridgeCase
+from .common import EzyflowBridgeCase, bridge_owned
 
 
 @tagged("post_install", "-at_install")
+@bridge_owned("the channel is the legacy six, copied down by the legacy module")
 class TestChannel(EzyflowBridgeCase):
     """Behaviour 3: the channel is copied down partner, order, transfer."""
 

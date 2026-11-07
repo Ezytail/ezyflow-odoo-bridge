@@ -1,13 +1,14 @@
 # Part of the EzyFlow connector for Odoo. See LICENSE in the repository root.
 import lxml.html
 
+from odoo import release
 from odoo.exceptions import ValidationError
 from odoo.tests import tagged
 from odoo.tools import html_sanitize
 from odoo.tools.misc import file_path
 from odoo.tools.translate import PoFileReader, TranslationModuleReader
 
-from .common import EzyflowBridgeCase
+from .common import EzyflowBridgeCase, bridge_owned
 
 MODULE = "ezyflow_bridge"
 PO = "ezyflow_bridge/i18n/fr.po"
@@ -31,6 +32,7 @@ def rendered(path):
 
 
 @tagged("post_install", "-at_install")
+@bridge_owned("the term list mixes the legacy substates in")
 class TestI18n(EzyflowBridgeCase):
     """English and French (ADR 0031): every term the module has is in fr.po,
     the screens and the refusals follow the person's language, the help page
@@ -53,7 +55,7 @@ class TestI18n(EzyflowBridgeCase):
     # Terms Odoo owns and renames between series (a core model's name, the
     # module metadata): one series extracts them and the other does not, so a
     # French line for one of them is never stale.
-    SERIES_OWNED = ("ir.model,", "ir.module.module,", "res.groups.privilege,")
+    SERIES_OWNED = ("ir.model,", "ir.model.fields,", "ir.module.module,", "res.groups.privilege,")
 
     def test_every_term_of_the_module_has_a_french_translation(self):
         terms = {
@@ -84,6 +86,11 @@ class TestI18n(EzyflowBridgeCase):
             "empty translations in i18n/fr.po:\n  "
             + "\n  ".join(repr(term) for term in sorted(untranslated)),
         )
+        if release.version_info[0] < 17:
+            # Odoo 16's extractor does not read ``env._`` calls (17's call, the
+            # one the models make on every series), so the Python terms are
+            # not in its export and cannot be told stale there.
+            return
         stale = sorted(
             {
                 entry["src"]
@@ -131,7 +138,7 @@ class TestI18n(EzyflowBridgeCase):
         template = self.env["product.template"].create(
             {
                 "name": "Untracked good",
-                "is_storable": True,
+                **self.storable(),
                 "sale_ok": False,
                 "tracking": "none" if "none" in selection else False,
             }
