@@ -18,6 +18,26 @@ Which bridge version each service release was built with, the pairing, is kept
 in the connector repository and no longer in this
 file.
 
+## 3.17.0
+
+The bridge keeps a stock journal: every saved change of a stock quantity or
+of a reservation adds one line per product and location it touched, naming
+the product, the location and the moment, written once when the change is
+saved, including a quantity that drops to zero and a
+reservation that is released. The EzyFlow connector reads the journal to tell
+the shops what Odoo holds and what its open orders have reserved, whenever it
+changes. The connector user reads the lines of its companies' locations
+only, and nobody writes to the journal by hand; a daily scheduled action, **EzyFlow: purge the stock journal**, deletes
+the lines older than seven days. Nothing changes on the screens people use.
+
+**For the administrator:** optional; recommended once the connector serving
+your publication is built with 3.17.0, since below it the shops are told the
+quantity on hand without the reservations. No migration: the journal starts
+empty and the connector derives every stock level once on its next tick.
+Restart Odoo after the upgrade and update the apps list; check in Settings,
+Technical, Scheduled Actions that **EzyFlow: purge the stock journal** is
+active and runs every day.
+
 ## 3.16.0
 
 The bridge installs on Odoo 16: the same module and the same behaviours on

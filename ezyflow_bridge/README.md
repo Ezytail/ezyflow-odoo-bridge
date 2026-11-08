@@ -67,6 +67,10 @@ meet on Odoo's screens. Nothing of it is repeated here.
   the connector computes the same key and Python and .NET disagree on Unicode
   case. It is computed for every product when the module is installed or
   upgraded to 3.7.0.
+- The stock journal (`ezyflow.stock.journal`, since 3.17.0): one row per change
+  of a quant, behaviour 15, and the daily cron that purges it. The connector
+  group reads it; the inventory user rights it implies already read the move
+  lines and transfers the stock level source reads next to it.
 - The behaviours behind those fields, listed below.
 - The **EzyFlow** page of the Settings, with its own icon
   (`static/description/icon.png`), and the bridge help page
@@ -229,6 +233,21 @@ meet on Odoo's screens. Nothing of it is repeated here.
     and by suffixing the counting user's name; the bridge keeps the context
     through the inverse and makes the connector's reference the move's whole
     name, so the behaviour reads the same on 16, 18, 19 and 20.
+15. Stock journal (added in 3.17.0). Every change of a quant's quantity or
+    reservation passes through `stock.quant._update_available_quantity` or
+    `_update_reserved_quantity` on every series; each call names the
+    location it was given and, on 16's non-strict reservation, each location
+    whose quant it reserved on. The transaction keeps the cells it named and
+    its pre-commit writes them to `ezyflow.stock.journal` (product, location,
+    instant) in one statement, one row per cell, id and instant taken at
+    commit; a rolled-back change leaves none. A quant Odoo deletes at zero and an
+    unreservation leave a row where they leave no quant or move line. Rows are
+    written as the superuser whatever user moved the stock, read by the
+    connector group for its companies' locations and shared ones only (a
+    record rule per series, `ir.access` with its domain on 20; ADR 0014),
+    never written by anyone else, and purged after seven
+    days by the daily cron **EzyFlow: purge the stock journal**. The
+    connector's stock level source reads them by id (ADR 0041).
 
 ## Conventions
 

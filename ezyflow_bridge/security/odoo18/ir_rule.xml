@@ -33,4 +33,18 @@
         <field name="perm_create" eval="False" />
         <field name="perm_unlink" eval="False" />
     </record>
+
+    <!-- S36 (ADR 0014, ADR 0041): the stock journal carries no company of its
+         own; the connector reads the rows of its companies' locations, and of
+         shared ones, only. -->
+    <record id="rule_ezyflow_stock_journal_ezyflow_connector" model="ir.rule">
+        <field name="name">EzyFlow connector: the stock journal of its companies</field>
+        <field name="model_id" ref="model_ezyflow_stock_journal" />
+        <field name="groups" eval="[(4, ref('group_ezyflow_connector'))]" />
+        <field name="domain_force">["|", ("location_id.company_id", "=", False), ("location_id.company_id", "in", company_ids)]</field>
+        <field name="perm_read" eval="True" />
+        <field name="perm_write" eval="False" />
+        <field name="perm_create" eval="False" />
+        <field name="perm_unlink" eval="False" />
+    </record>
 </odoo>

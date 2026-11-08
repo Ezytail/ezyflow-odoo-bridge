@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!--
+        Behaviour 15 (ADR 0041): the stock journal keeps seven days, longer
+        than any outage the connector's alarms leave unattended; this daily
+        job deletes the older rows. Written to the fields every series shares;
+        Odoo 16 runs a cron once unless told otherwise, so its folder under
+        security/ keeps this one repeating (security/odoo16/ir_cron.xml).
+    -->
+    <record id="ir_cron_ezyflow_stock_journal_purge" model="ir.cron">
+        <field name="name">EzyFlow: purge the stock journal</field>
+        <field name="model_id" ref="model_ezyflow_stock_journal" />
+        <field name="state">code</field>
+        <field name="code">model._ezy_purge()</field>
+        <field name="user_id" ref="base.user_root" />
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active" eval="True" />
+    </record>
+</odoo>

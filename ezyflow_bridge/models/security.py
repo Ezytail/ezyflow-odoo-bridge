@@ -17,9 +17,16 @@ from odoo.tools.convert import convert_file
 MODULE = "ezyflow_bridge"
 
 # One folder per supported series; a series without a folder cannot install
-# the bridge, which is the intended failure (CONTEXT.md, "Odoo series").
+# the bridge, which is the intended failure (CONTEXT.md, "Odoo series"). The
+# 16 folder also keeps the stock journal's purge repeating (a 16 cron runs
+# once by default); the cron itself is data/ir_cron.xml, loaded before.
 SERIES_FILES = {
-    16: ("odoo16/res_groups.xml", "odoo16/ir.model.access.csv", "odoo16/ir_rule.xml"),
+    16: (
+        "odoo16/res_groups.xml",
+        "odoo16/ir.model.access.csv",
+        "odoo16/ir_rule.xml",
+        "odoo16/ir_cron.xml",
+    ),
     18: ("odoo18/res_groups.xml", "odoo18/ir.model.access.csv", "odoo18/ir_rule.xml"),
     19: ("odoo19/res_groups.xml", "odoo19/ir.model.access.csv", "odoo19/ir_rule.xml"),
     20: ("odoo20/res_groups.xml", "odoo20/ir.access.csv"),

@@ -25,6 +25,7 @@ from . import (
     test_shop_identity,
     test_shop_total,
     test_sms_warning,
+    test_stock_journal,
     test_stock_settings,
     test_template_identity,
     test_wakeup,

@@ -15,3 +15,4 @@ access_product_attribute_ezyflow_connector,product.attribute read create for the
 access_product_attribute_value_ezyflow_connector,product.attribute.value read create for the EzyFlow connector,product.attribute.value,group_ezyflow_connector,cr,
 access_product_template_attribute_line_ezyflow_connector,product.template.attribute.line read write create for the EzyFlow connector,product.template.attribute.line,group_ezyflow_connector,cru,
 access_product_template_attribute_value_ezyflow_connector,product.template.attribute.value read write create for the EzyFlow connector,product.template.attribute.value,group_ezyflow_connector,cru,
+access_ezyflow_stock_journal_ezyflow_connector,ezyflow.stock.journal read for the EzyFlow connector on its companies,ezyflow.stock.journal,group_ezyflow_connector,r,"['|', ('location_id.company_id', '=', False), ('location_id.company_id', 'in', company_ids)]"

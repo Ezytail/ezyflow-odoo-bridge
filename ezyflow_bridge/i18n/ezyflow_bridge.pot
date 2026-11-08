@@ -524,6 +524,7 @@ msgstr ""
 #. module: ezyflow_bridge
 #: model:ir.model.fields,field_description:ezyflow_bridge.field_delivery_carrier__display_name
 #: model:ir.model.fields,field_description:ezyflow_bridge.field_ezyflow_bridge_security__display_name
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_ezyflow_stock_journal__display_name
 #: model:ir.model.fields,field_description:ezyflow_bridge.field_ezyflow_wakeup__display_name
 #: model:ir.model.fields,field_description:ezyflow_bridge.field_ir_module_module__display_name
 #: model:ir.model.fields,field_description:ezyflow_bridge.field_ir_sequence__display_name
@@ -588,8 +589,19 @@ msgid "EzyFlow connector"
 msgstr ""
 
 #. module: ezyflow_bridge
+#: model:ir.model,name:ezyflow_bridge.model_ezyflow_stock_journal
+msgid "EzyFlow stock journal"
+msgstr ""
+
+#. module: ezyflow_bridge
 #: model:ir.model,name:ezyflow_bridge.model_ezyflow_wakeup
 msgid "EzyFlow wake-up"
+msgstr ""
+
+#. module: ezyflow_bridge
+#: model:ir.actions.server,name:ezyflow_bridge.ir_cron_ezyflow_stock_journal_purge_ir_actions_server
+#: model:ir.cron,cron_name:ezyflow_bridge.ir_cron_ezyflow_stock_journal_purge
+msgid "EzyFlow: purge the stock journal"
 msgstr ""
 
 #. module: ezyflow_bridge
@@ -635,6 +647,7 @@ msgstr ""
 #. module: ezyflow_bridge
 #: model:ir.model.fields,field_description:ezyflow_bridge.field_delivery_carrier__id
 #: model:ir.model.fields,field_description:ezyflow_bridge.field_ezyflow_bridge_security__id
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_ezyflow_stock_journal__id
 #: model:ir.model.fields,field_description:ezyflow_bridge.field_ezyflow_wakeup__id
 #: model:ir.model.fields,field_description:ezyflow_bridge.field_ir_module_module__id
 #: model:ir.model.fields,field_description:ezyflow_bridge.field_ir_sequence__id
@@ -651,6 +664,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:ezyflow_bridge.field_stock_picking__id
 #: model:ir.model.fields,field_description:ezyflow_bridge.field_stock_picking_type__id
 msgid "ID"
+msgstr ""
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_ezyflow_stock_journal__instant
+msgid "Instant"
 msgstr ""
 
 #. module: ezyflow_bridge
@@ -680,6 +698,16 @@ msgstr ""
 #. module: ezyflow_bridge
 #: model:ir.model.fields,help:ezyflow_bridge.field_stock_picking__ezy_hold
 msgid "Keeps this transfer out of the WMS whatever its operation type says."
+msgstr ""
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_ezyflow_stock_journal____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_ezyflow_stock_journal__location_id
+msgid "Location"
 msgstr ""
 
 #. module: ezyflow_bridge
@@ -781,6 +809,7 @@ msgstr ""
 
 #. module: ezyflow_bridge
 #: model:ir.model,name:ezyflow_bridge.model_product_template
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_ezyflow_stock_journal__product_id
 msgid "Product"
 msgstr ""
 

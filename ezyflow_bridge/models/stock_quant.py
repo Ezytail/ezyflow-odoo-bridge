@@ -14,14 +14,39 @@ is the move's whole name. The inverse below is core 18's body with its context
 merged, applied to the connector's transactions only (ADR 0011); the weekly job
 on the floating ``odoo:18`` image is the gate that catches a point release
 changing that body.
+
+The same model carries the stock journal's two overrides (behaviour 15, ADR
+0041): every change of a quant's quantity or reservation appends a row to
+``ezyflow.stock.journal``. Both pass Odoo's own arguments through untouched,
+so 16's ``_update_available_quantity``, which lacks ``reserved_quantity``, is
+served by the same override as 18, 19 and 20.
 """
-from odoo import models, release
+from odoo import api, models, release
 
 from .connector import is_connector_transaction
 
 
 class StockQuant(models.Model):
     _inherit = "stock.quant"
+
+    @api.model
+    def _update_available_quantity(self, product_id, location_id, *args, **kwargs):
+        result = super()._update_available_quantity(product_id, location_id, *args, **kwargs)
+        self.env["ezyflow.stock.journal"]._ezy_append(product_id, location_id)
+        return result
+
+    @api.model
+    def _update_reserved_quantity(self, product_id, location_id, *args, **kwargs):
+        result = super()._update_reserved_quantity(product_id, location_id, *args, **kwargs)
+        locations = location_id
+        # Odoo 16 reserves non-strictly, on the quants of the location's children
+        # too, and answers [(quant, quantity)]; 17 and later reserve on the one
+        # location through _update_available_quantity and answer nothing.
+        if isinstance(result, list):
+            for quant, _quantity in result:
+                locations |= quant.location_id
+        self.env["ezyflow.stock.journal"]._ezy_append(product_id, locations)
+        return result
 
     def user_has_groups(self, groups):
         """Odoo 16 applies a count for stock managers only ("Only a stock

@@ -404,8 +404,11 @@
     <p>
         The WMS keeps the stock of lots and serial numbers. Odoo records which lot went where on the
         transfers, but the quantity Odoo shows per lot is not reconciled with the WMS; the figure to
-        trust per product is the total. A kit's availability is republished to the shops whenever one
-        of its components moves or its bill of materials changes, between two reports.
+        trust per product is the total. Between two reports, whenever a quantity on hand or a
+        reservation changes in Odoo, the shops are told what Odoo holds and what its open transfers
+        have reserved, per sales channel; a kit's availability follows its components and its bill of
+        materials. The bridge keeps the trace of those changes for seven days; the scheduled action
+        <strong>EzyFlow: purge the stock journal</strong> deletes the older ones every day.
     </p>
 
     <h3>6. Who did what</h3>

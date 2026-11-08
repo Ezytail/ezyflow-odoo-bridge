@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Odoo 16's ir.cron defaults to one call; the purge of the stock journal
+         (data/ir_cron.xml) runs every day, and a missed day is not caught up. -->
+    <record id="ir_cron_ezyflow_stock_journal_purge" model="ir.cron">
+        <field name="numbercall">-1</field>
+        <field name="doall" eval="False" />
+    </record>
+</odoo>

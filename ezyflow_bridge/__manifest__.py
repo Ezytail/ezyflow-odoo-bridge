@@ -4,7 +4,7 @@
     "summary": "Fields and behaviours the EzyFlow connector needs, nothing else",
     # Series-less on purpose (ADR 0015): Odoo prepends its own series when it
     # records the installed version, so one tree serves Odoo 16, 18, 19 and 20.
-    "version": "3.16.0",
+    "version": "3.17.0",
     "category": "Supply Chain",
     "author": "Ezytail",
     "website": "https://github.com/Ezytail/ezyflow-odoo-bridge",
@@ -17,6 +17,8 @@
     # The views are loaded by the series loader (views/series_views.xml, last):
     # the shared tree on 17 and later, its views/odoo16/ twin on 16 (ADR 0015).
     "data": [
+        # Before the security file: the 16 folder it loads adjusts the cron.
+        "data/ir_cron.xml",
         "security/ezyflow_security.xml",
         "data/ir_config_parameter.xml",
         "views/series_views.xml",

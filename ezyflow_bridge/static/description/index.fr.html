@@ -439,9 +439,12 @@
     <p>
         Le WMS tient le stock des lots et numéros de série. Odoo enregistre sur les transferts quel
         lot est allé où, mais la quantité qu'Odoo affiche par lot n'est pas rapprochée de celle du
-        WMS ; le chiffre fiable par produit est le total. La disponibilité d'un kit est republiée aux
-        boutiques chaque fois que l'un de ses composants bouge ou que sa nomenclature change, entre
-        deux rapports.
+        WMS ; le chiffre fiable par produit est le total. Entre deux rapports, chaque fois qu'une
+        quantité en stock ou une réservation change dans Odoo, les boutiques apprennent ce qu'Odoo
+        détient et ce que ses transferts ouverts ont réservé, par canal de vente ; la disponibilité
+        d'un kit suit ses composants et sa nomenclature. Le bridge garde la trace de ces changements
+        sept jours ; l'action planifiée <strong>EzyFlow : purge du journal de stock</strong> efface
+        chaque jour les plus anciennes.
     </p>
 
     <h3>6. Qui a fait quoi</h3>
