@@ -7,6 +7,7 @@ from . import (
     test_apps_visibility,
     test_bridge_settings,
     test_channel,
+    test_company_partner,
     test_constraints,
     test_delivery_status,
     test_freeze,

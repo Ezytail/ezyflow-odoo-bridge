@@ -8,6 +8,7 @@
             <xpath expr="//page[@name='sales_purchases']//group[@name='misc']" position="inside">
                 <field name="ezy_channel" />
                 <field name="ezy_relay_code" />
+                <field name="ezy_company_partner" groups="base.group_system" />
                 <field name="ezy_relay_carrier_id" invisible="not ezy_relay_code" />
             </xpath>
         </field>

@@ -18,6 +18,73 @@ Which bridge version each service release was built with, the pairing, is kept
 in the connector repository and no longer in this
 file.
 
+## 3.18.1
+
+The help page has a section on manufacturing: when a warehouse's
+manufacturing is served by the WMS, it manufactures in two or three steps, a
+person still confirms and closes each order in Odoo, and the connector
+validates the pick components and store finished products transfers from the
+WMS's reports.
+
+- `static/description/index.html` and its French twin: a Manufacturing section
+  under Run; the two sections after it are renumbered.
+- No new field, no new right, no migration. A patch: nothing the connector
+  reads changes.
+
+**For the administrator:** Optional. No migration. A restart is not needed for
+this version. After the upgrade, if your warehouse's manufacturing is to be
+served by the WMS, check that the warehouse manufactures in two or three steps.
+
+## 3.18.0
+
+A partner carries **EzyFlow company partner**, a box the connector ticks on
+a partner it creates as the company of a shop address. A shop address that
+names a company is then written under that company partner, and the person
+who placed the order stays the customer. Odoo 20 decides **Is a Company**
+from the VAT number, which a shop does not send, so the box records what the
+connector meant on every series.
+
+- `res.partner`: `ezy_company_partner`, a checkbox, off by default, shown
+  to administrators on the partner form next to the other EzyFlow fields
+  (Sales and Purchase tab), where they may tick it on a company created by
+  hand.
+- No new right, no migration. A minor: the connector relies on it from this
+  version on; on Odoo 20 it requires it, on 16 to 19 it works without it.
+
+**For the administrator:** Required on Odoo 20, optional on 16 to 19. No migration. A restart is not needed
+beyond the module upgrade. After the upgrade, check that the delivery and
+invoice addresses of a B2B shop order now hang under a company partner whose
+form shows **EzyFlow company partner** ticked.
+
+## 3.17.2
+
+The help page says that Odoo's own pro forma invoice, the proforma rendered
+when no Proforma report is chosen, shows neither the HS Code nor the Origin of
+Goods of the products.
+
+- `static/description/index.html` and its French twin: one sentence more under
+  Documents, pointing to a report that prints them when the paperwork of a
+  shipment abroad needs them.
+- No new field, no new right, no migration. A patch: nothing the connector
+  reads changes.
+
+**For the administrator:** Optional. No migration. A restart is not needed for
+this version. After the upgrade, if your shipments abroad need the customs data
+on the proforma, check the Proforma report chosen on the EzyFlow settings page.
+
+## 3.17.1
+
+The module description counts the WMS constraint switches right: fifteen,
+one per constraint, as the EzyFlow settings page has shown since 3.7.0.
+
+- `README.md`, which Odoo reads as the module description: "fourteen" becomes
+  "fifteen".
+- No new field, no new right, no migration. A patch: nothing the connector
+  reads changes.
+
+**For the administrator:** Optional. No migration. A restart is not needed for
+this version. Nothing to check after the upgrade.
+
 ## 3.17.0
 
 The bridge keeps a stock journal: every saved change of a stock quantity or

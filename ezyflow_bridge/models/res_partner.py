@@ -46,6 +46,13 @@ class ResPartner(models.Model):
         ondelete="set null",
         help="The carrier this relay point belongs to.",
     )
+    ezy_company_partner = fields.Boolean(
+        string="EzyFlow company partner",
+        default=False,
+        help="Set by the connector on a partner it created as the company of a "
+        "shop address. Odoo 20 computes Is a Company from the VAT number, so this "
+        "marker says what the connector meant.",
+    )
 
     @api.constrains("ezy_channel")
     def _check_ezy_channel(self):

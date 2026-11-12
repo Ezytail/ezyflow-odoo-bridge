@@ -186,7 +186,9 @@
         <strong>Documents</strong>. <strong>Rapport proforma</strong>, par société : le rapport de
         commande client que le connecteur génère comme proforma des commandes de la société et
         transmet au WMS pour les documents d'expédition. La liste ne propose que des rapports de
-        commande client. Laissé vide, le connecteur génère la facture pro forma d'Odoo.
+        commande client. Laissé vide, le connecteur génère la facture pro forma d'Odoo, qui ne
+        montre ni le <strong>Code SH</strong> ni l'<strong>Origine des marchandises</strong> des produits : quand les documents
+        d'une expédition à l'étranger en ont besoin, choisissez un rapport qui les imprime.
     </p>
 
     <h3>4. Types d'opération que sert le WMS</h3>
@@ -422,7 +424,13 @@
         lignes de rue, la ville, le code postal, le téléphone et l'e-mail ont chacun une limite, et le
         message la nomme. Un point relais est un contact comme un autre, créé par le connecteur avec
         un <strong>Code relais</strong> et un <strong>Transporteur relais</strong> ; laissez ces deux
-        champs tels quels.
+        champs tels quels. Quand une boutique nomme une société sur une adresse de livraison ou de
+        facturation, le connecteur écrit l'adresse sous une société de ce nom et de ce pays, créée une
+        fois et cochée <strong>Partenaire société EzyFlow</strong> ; la personne qui a commandé reste
+        le client. Une société que vous avez créée est reprise quand c'est une société
+        (<strong>Est une société</strong>, ou sur Odoo 20 un numéro de TVA) ; un administrateur peut
+        aussi y cocher <strong>Partenaire société EzyFlow</strong>. Odoo 20 ne coche <strong>Est une société</strong> qu'une fois un numéro de TVA
+        renseigné, ce qu'une boutique n'envoie pas.
     </p>
 
     <h3>5. Inventaire</h3>
@@ -447,7 +455,30 @@
         chaque jour les plus anciennes.
     </p>
 
-    <h3>6. Qui a fait quoi</h3>
+    <h3>6. Fabrication</h3>
+    <p>
+        Quand la publication déclare un atelier pour un entrepôt, le WMS sert la fabrication de cet
+        entrepôt : un ordre de fabrication confirmé est envoyé au WMS, qui apporte les composants à
+        l'atelier et entre les produits en stock. Rien n'est à cocher dans Odoo pour cela, mais
+        l'entrepôt doit fabriquer en deux étapes (<strong>Prélever les composants puis
+        fabriquer</strong>) ou en trois (<strong>Prélever les composants, fabriquer, puis stocker les
+        produits</strong>), réglé dans <strong>Inventaire</strong>, <strong>Configuration</strong>,
+        <strong>Entrepôts</strong>. Un ordre d'un entrepôt qui fabrique en une étape reste l'affaire
+        d'Odoo, de même qu'un désassemblage.
+    </p>
+    <p>
+        Une personne mène l'ordre dans Odoo comme sans WMS : elle le confirme, change sa quantité, le
+        clôture avec ce qui a été produit et consommé, le lot, et si le reliquat est gardé en un autre
+        ordre. Le connecteur n'écrit jamais sur un ordre de fabrication. À mesure que le WMS déclare
+        les composants apportés, le connecteur valide le transfert de prélèvement des composants avec
+        ce qui est arrivé et garde le reste ouvert, puis annule ce qui reste quand le WMS dit
+        l'approvisionnement terminé ; en trois étapes, il valide le transfert de stockage des
+        produits finis une fois que le WMS a entré les produits en stock. Clôturez l'ordre sur ce qui
+        a vraiment été consommé : la pré-production détient ce que le WMS a apporté, pas plus.
+        L'utilisateur connecteur n'a besoin d'aucun droit Fabrication.
+    </p>
+
+    <h3>7. Qui a fait quoi</h3>
     <p>
         L'utilisateur connecteur ne laisse aucune ligne dans le fil de discussion, à dessein : un
         transfert que le WMS a fait passer par ses huit états porterait sinon un message par étape.
@@ -457,7 +488,7 @@
         couvre les écritures du connecteur, pas les messages d'Odoo.
     </p>
 
-    <h3>7. Quand quelque chose semble anormal</h3>
+    <h3>8. Quand quelque chose semble anormal</h3>
     <p>
         Avant d'appeler l'équipe EzyFlow, relevez dans Odoo : la référence du transfert ou de la
         commande, son <strong>État WMS</strong> ou son <strong>Statut de livraison</strong>, et

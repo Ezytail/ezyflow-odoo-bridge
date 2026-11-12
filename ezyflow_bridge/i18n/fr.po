@@ -368,6 +368,12 @@ msgid "EzyFlow connector"
 msgstr "Connecteur EzyFlow"
 
 #. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_partner__ezy_company_partner
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_res_users__ezy_company_partner
+msgid "EzyFlow company partner"
+msgstr "Partenaire société EzyFlow"
+
+#. module: ezyflow_bridge
 #: model:ir.model,name:ezyflow_bridge.model_ezyflow_stock_journal
 msgid "EzyFlow stock journal"
 msgstr "Journal de stock EzyFlow"
@@ -883,6 +889,18 @@ msgstr "Envoyé à la logistique"
 #: model:ir.model,name:ezyflow_bridge.model_ir_sequence
 msgid "Sequence"
 msgstr "Séquence"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_res_partner__ezy_company_partner
+#: model:ir.model.fields,help:ezyflow_bridge.field_res_users__ezy_company_partner
+msgid ""
+"Set by the connector on a partner it created as the company of a shop "
+"address. Odoo 20 computes Is a Company from the VAT number, so this marker "
+"says what the connector meant."
+msgstr ""
+"Coché par le connecteur sur un contact qu'il a créé comme société d'une "
+"adresse de boutique. Odoo 20 déduit Est une société du numéro de TVA : ce "
+"repère dit ce que le connecteur voulait."
 
 #. module: ezyflow_bridge
 #: model:ir.model.fields,help:ezyflow_bridge.field_res_partner__ezy_relay_code

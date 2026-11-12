@@ -172,7 +172,9 @@
         <strong>Documents</strong>. <strong>Proforma report</strong>, per company: the sales order
         report the connector renders as the proforma of the company's orders and forwards to the
         WMS for the shipment paperwork. The list offers sales order reports only. Left empty, the
-        connector renders Odoo's own pro forma invoice.
+        connector renders Odoo's own pro forma invoice, which shows neither the <strong>HS Code</strong>
+        nor the <strong>Origin of Goods</strong> of the products: when the paperwork of a shipment abroad needs them,
+        choose a report that prints them.
     </p>
 
     <h3>4. Operation types the WMS serves</h3>
@@ -388,7 +390,13 @@
         lines, the city, the postcode, the phone and the email each have a figure, and the message
         names it. A relay point is a contact like any other, created by the connector with a
         <strong>Relay code</strong> and a <strong>Relay carrier</strong>; leave those two fields as they
-        are.
+        are. When a shop names a company on a delivery or invoice address, the connector writes the
+        address under a company of that name and country, created once and ticked
+        <strong>EzyFlow company partner</strong>; the person who ordered stays the customer. A company
+        you created is reused when it is a company (<strong>Is a Company</strong>, or on Odoo 20 a VAT
+        number); an administrator may also tick <strong>EzyFlow company partner</strong> on it. Odoo 20
+        ticks <strong>Is a Company</strong> only once a VAT number is filled in, which a shop does not
+        send.
     </p>
 
     <h3>5. Inventory</h3>
@@ -411,7 +419,29 @@
         <strong>EzyFlow: purge the stock journal</strong> deletes the older ones every day.
     </p>
 
-    <h3>6. Who did what</h3>
+    <h3>6. Manufacturing</h3>
+    <p>
+        When the publication declares a workshop for a warehouse, the WMS serves that warehouse's
+        manufacturing: a confirmed manufacturing order is sent to the WMS, which brings the
+        components to the workshop and takes the products into stock. Nothing is ticked in Odoo for
+        this, but the warehouse must manufacture in two steps (<strong>Pick components then
+        manufacture</strong>) or three (<strong>Pick components, manufacture, then store
+        products</strong>), set in <strong>Inventory</strong>, <strong>Configuration</strong>,
+        <strong>Warehouses</strong>. An order of a warehouse that manufactures in one step stays
+        Odoo's business, and so does a disassembly.
+    </p>
+    <p>
+        A person runs the order in Odoo as without a WMS: confirms it, changes its quantity, closes
+        it with what was produced and consumed, the lot, and whether the remainder is kept as another
+        order. The connector never writes on a manufacturing order. As the WMS reports the
+        components it brought, the connector validates the pick components transfer with what
+        arrived and keeps the rest open, then cancels what is left once the WMS says the supply is
+        over; in three steps it validates the store finished products transfer once the WMS has
+        taken the products into stock. Close the order for what was really consumed: Pre-Production
+        holds what the WMS brought, no more. The connector user needs no Manufacturing access right.
+    </p>
+
+    <h3>7. Who did what</h3>
     <p>
         The connector user leaves no line in the chatter, by design: a transfer the WMS worked
         through its eight states would otherwise carry a message per step. To know whether the
@@ -420,7 +450,7 @@
         appear: the silence covers the connector's writes, not Odoo's messages.
     </p>
 
-    <h3>7. When something looks wrong</h3>
+    <h3>8. When something looks wrong</h3>
     <p>
         Before calling the EzyFlow team, read in Odoo: the reference of the transfer or of the order,
         its <strong>WMS state</strong> or <strong>Delivery Status</strong>, and the time it was last

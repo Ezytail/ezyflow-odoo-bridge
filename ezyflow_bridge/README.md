@@ -50,8 +50,10 @@ meet on Odoo's screens. Nothing of it is repeated here.
   the hold (`ezy_hold`) and the channel (`ezy_channel`, copied down from the
   sales order). Partner and sales order: the channel, copied from the delivery
   address when the order is created, and the shop total with its flag
-  (`ezy_shop_total`, `ezy_total_differs`, since 3.9.0). Company: one switch per WMS constraint
-  (`ezy_wms_*`, fourteen of them), on by default, and **Apply stock
+  (`ezy_shop_total`, `ezy_total_differs`, since 3.9.0). Partner: the
+  company partner marker (`ezy_company_partner`, since 3.18.0), behaviour 16.
+  Company: one switch per WMS constraint
+  (`ezy_wms_*`, fifteen of them), on by default, and **Apply stock
   reports** (`ezy_apply_stock_reports`, since 3.6.0), off by default,
   and the proforma report (`ezy_proforma_report_id`, since 3.8.0), a
   sales order report, Odoo's pro forma when empty, all on the EzyFlow page of
@@ -248,6 +250,13 @@ meet on Odoo's screens. Nothing of it is repeated here.
     never written by anyone else, and purged after seven
     days by the daily cron **EzyFlow: purge the stock journal**. The
     connector's stock level source reads them by id (ADR 0041).
+16. Company partner marker (added in 3.18.0). `ezy_company_partner`, a
+    boolean on the partner, off by default, set by the connector on a
+    partner it creates as the company of a shop address (with **Is a
+    Company**, which Odoo 20 recomputes from the VAT number). Shown on the
+    partner form to administrators, who may tick it on a company a person
+    created; the connector finds a company partner by it or by **Is a
+    Company**. Odoo's own flag is never written by anyone else.
 
 ## Conventions
 
