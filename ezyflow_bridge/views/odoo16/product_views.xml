@@ -11,6 +11,8 @@
         <field name="arch" type="xml">
             <xpath expr="//group[@name='group_general']" position="inside">
                 <field name="ezy_shop_product_id" />
+                <field name="tracking" invisible="1" />
+                <field name="ezy_warehouse_serials" attrs="{'invisible': [('tracking', 'in', ['lot', 'serial'])]}" />
             </xpath>
             <xpath expr="//group[@name='traceability']" position="inside">
                 <field name="tracking" invisible="1" />

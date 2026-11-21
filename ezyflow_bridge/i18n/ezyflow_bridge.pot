@@ -768,6 +768,14 @@ msgid "Offer to logistics"
 msgstr ""
 
 #. module: ezyflow_bridge
+#. odoo-python
+#: code:addons/ezyflow_bridge/models/stock_move.py:0
+msgid ""
+"Only the EzyFlow connector writes the shipped serial numbers of a transfer "
+"line."
+msgstr ""
+
+#. module: ezyflow_bridge
 #: model_terms:ir.ui.view,arch_db:ezyflow_bridge.res_config_settings_view_form_ezyflow
 msgid "Open the EzyFlow bridge help"
 msgstr ""
@@ -1070,6 +1078,12 @@ msgid "Sequence"
 msgstr ""
 
 #. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_product_product__ezy_warehouse_serials
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_product_template__ezy_warehouse_serials
+msgid "Serial numbers captured by the warehouse"
+msgstr ""
+
+#. module: ezyflow_bridge
 #: model:ir.model.fields,help:ezyflow_bridge.field_res_partner__ezy_company_partner
 #: model:ir.model.fields,help:ezyflow_bridge.field_res_users__ezy_company_partner
 msgid ""
@@ -1090,6 +1104,12 @@ msgstr ""
 #: model:ir.model.fields.selection,name:ezyflow_bridge.selection__sale_order__delivery_status__shipped
 #: model:ir.model.fields.selection,name:ezyflow_bridge.selection__stock_picking__ezy_wms_state__shipped
 msgid "Shipped"
+msgstr ""
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_sale_order_line__ezy_shipped_serials
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_stock_move__ezy_shipped_serials
+msgid "Shipped serial numbers"
 msgstr ""
 
 #. module: ezyflow_bridge
@@ -1314,6 +1334,33 @@ msgid ""
 "The secret the wake-ups are signed with, the value the publication's "
 "odoo_wakeup_secret points to. Cleared, every wake-up is refused and the "
 "connector polls on its interval only."
+msgstr ""
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_stock_move__ezy_shipped_serials
+msgid ""
+"The serial numbers the warehouse recorded on the units of this line as they "
+"shipped, one per line, written by the EzyFlow connector from the "
+"warehouse's shipped report. Information only: Odoo keeps no stock by them "
+"and the product's traceability is unchanged."
+msgstr ""
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_sale_order_line__ezy_shipped_serials
+msgid ""
+"The serial numbers the warehouse shipped for this line, gathered from its "
+"done deliveries. Information only."
+msgstr ""
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_product_product__ezy_warehouse_serials
+#: model:ir.model.fields,help:ezyflow_bridge.field_product_template__ezy_warehouse_serials
+msgid ""
+"The warehouse records the serial number of each unit of this product it "
+"ships, and the delivery and the sales order line list them (Shipped serial "
+"numbers). This does not turn on Odoo's tracking: Odoo creates no serial "
+"number and keeps no stock by serial number for this product. Has no effect "
+"on a product Odoo tracks by lots or by serial numbers."
 msgstr ""
 
 #. module: ezyflow_bridge

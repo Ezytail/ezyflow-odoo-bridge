@@ -30,6 +30,15 @@ class ProductTemplate(models.Model):
         "carries no such date; the warehouse keeps it.",
     )
 
+    ezy_warehouse_serials = fields.Boolean(
+        string="Serial numbers captured by the warehouse",
+        help="The warehouse records the serial number of each unit of this product it ships, and "
+        "the delivery and the sales order line list them (Shipped serial numbers). This does not "
+        "turn on Odoo's tracking: Odoo creates no serial number and keeps no stock by serial "
+        "number for this product. Has no effect on a product Odoo tracks by lots or by serial "
+        "numbers.",
+    )
+
     @api.model_create_multi
     def create(self, vals_list):
         # Odoo's template create generates the variants and validates them before
@@ -114,6 +123,7 @@ class ProductTemplate(models.Model):
             "detailed_type",
             "tracking",
             "ezy_rotation_date_type",
+            "ezy_warehouse_serials",
             "ezy_shop_product_id",
             "hs_code",
             "country_of_origin",

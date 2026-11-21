@@ -5,8 +5,18 @@
         <field name="model">product.template</field>
         <field name="inherit_id" ref="product.product_template_form_view" />
         <field name="arch" type="xml">
+            <!-- The warehouse's serial numbers: on the General Information
+                 page with no group, so a company that keeps Lots & Serial
+                 Numbers off sees it (Odoo's Traceability group and tracking
+                 choice need that setting, and 18 to 20 hide the group for an
+                 untracked product); hidden once Odoo tracks the product. -->
             <xpath expr="//group[@name='group_general']" position="inside">
                 <field name="ezy_shop_product_id" />
+                <field name="tracking" invisible="1" />
+                <field
+                    name="ezy_warehouse_serials"
+                    invisible="tracking in ('lot', 'serial')"
+                />
             </xpath>
             <!-- ADR 0034: under Odoo's Traceability group (stock, 19 and 20),
                  shown only for a product tracked by lots or serial numbers.

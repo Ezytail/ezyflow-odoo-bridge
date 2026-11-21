@@ -1,5 +1,7 @@
 # Part of the EzyFlow connector for Odoo. See LICENSE in the repository root.
-from odoo import fields, models
+import re
+
+from odoo import api, fields, models
 
 
 class SaleOrderLine(models.Model):
@@ -9,6 +11,35 @@ class SaleOrderLine(models.Model):
     ever records quotation lines."""
 
     _inherit = "sale.order.line"
+
+    # The shipped serial numbers of the line's done deliveries, gathered from
+    # their moves; computed as the superuser so that a person who reads the
+    # order without the stock rights still sees them.
+    ezy_shipped_serials = fields.Text(
+        string="Shipped serial numbers",
+        compute="_compute_ezy_shipped_serials",
+        compute_sudo=True,
+        help="The serial numbers the warehouse shipped for this line, gathered from its done "
+        "deliveries. Information only.",
+    )
+
+    @api.depends("move_ids.ezy_shipped_serials", "move_ids.state", "move_ids.picking_type_id.code")
+    def _compute_ezy_shipped_serials(self):
+        for line in self:
+            # Done deliveries only: a return subtracts nothing.
+            moves = line.move_ids.filtered(
+                lambda move: move.state == "done" and move.picking_type_id.code == "outgoing"
+            )
+            # Split on \r and \n only, as the connector does: splitlines()
+            # would also break on a form feed or a Unicode line separator.
+            serials = {
+                serial.strip()
+                for text in moves.mapped("ezy_shipped_serials")
+                if text
+                for serial in re.split(r"[\r\n]", text)
+                if serial.strip()
+            }
+            line.ezy_shipped_serials = "\n".join(sorted(serials)) or False
 
     def unlink(self):
         removed_at = fields.Datetime.now().isoformat()

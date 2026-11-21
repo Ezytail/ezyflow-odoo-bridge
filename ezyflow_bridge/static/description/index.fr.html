@@ -344,6 +344,14 @@
         l'entrepôt a préparés ou reçus sont écrits par le connecteur sur les lignes du transfert : le
         transfert indique ainsi quel lot est parti chez quel client, et lequel est entré.
     </p>
+    <p>
+        La colonne <strong>Numéros de série expédiés</strong> de l'onglet <strong>Opérations</strong>
+        d'une livraison liste les numéros de série que l'entrepôt a relevés sur les unités à leur
+        expédition, écrits par le connecteur depuis le rapport d'expédition de l'entrepôt, pour tout
+        produit, qu'Odoo le suive ou non. C'est une information seulement : aucun lot n'est créé, Odoo
+        ne tient aucun stock par ces numéros et la traçabilité du produit est inchangée. Seuls le
+        connecteur et les administrateurs peuvent les écrire.
+    </p>
 
     <h3>2. Commandes client venues d'une boutique</h3>
     <p>
@@ -383,6 +391,11 @@
         de livraison doit avoir un téléphone et un e-mail, car le transporteur a besoin des deux : la
         confirmation est refusée tant qu'ils ne sont pas renseignés.
     </p>
+    <p>
+        Une fois la livraison faite, les numéros de série que l'entrepôt a expédiés apparaissent aussi
+        sur chaque ligne de la commande, dans la colonne <strong>Numéros de série expédiés</strong> de
+        l'onglet <strong>Lignes de commande</strong>.
+    </p>
 
     <h3>3. Produits</h3>
     <p>
@@ -416,6 +429,24 @@
         au WMS au prochain passage du connecteur sur les produits. Le réglage WMS de chaque
         combinaison est mis en place par l'équipe EzyFlow ; en attendant, le WMS garde son réglage
         par défaut.
+    </p>
+    <p>
+        <strong>Numéros de série relevés par l'entrepôt.</strong> Un produit qu'Odoo ne suit pas
+        peut tout de même voir ses unités identifiées par numéro de série dans l'entrepôt : cochez
+        <strong>Numéros de série relevés par l'entrepôt</strong> dans l'onglet Informations
+        générales de la fiche produit. L'entrepôt est alors chargé de relever le numéro de série de
+        chaque unité qu'il expédie, et identifie les unités du produit par numéro de série dans ses
+        propres opérations ; les numéros de série apparaissent sur la livraison et sur la ligne de
+        commande client, dans la colonne <strong>Numéros de série expédiés</strong>. Ce n'est pas le
+        suivi d'Odoo : Odoo ne crée aucun lot ni numéro de série et ne tient aucun stock par numéro
+        de série pour ce produit. La case n'apparaît que sur un produit qu'Odoo ne suit pas ; sur un
+        produit suivi par lots ou par numéros de série, le suivi d'Odoo s'applique. Une
+        modification arrive au WMS au prochain passage du connecteur sur les produits. Deux
+        conditions avant de la cocher. Le WMS doit être paramétré pour relever les numéros de
+        série de ces produits, ce que l'équipe EzyFlow fait d'abord ; tant que ce n'est pas fait,
+        rien n'est relevé. Et cochez la case avant que la marchandise du produit n'arrive à
+        l'entrepôt : un WMS peut refuser de changer la façon dont il identifie un produit qui y a
+        déjà du stock.
     </p>
 
     <h3>4. Contacts</h3>

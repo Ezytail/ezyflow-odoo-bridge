@@ -15,6 +15,12 @@
                 <field name="ezy_shop_total" />
                 <field name="ezy_total_differs" invisible="1" />
             </xpath>
+            <xpath expr="//field[@name='order_line']//tree//field[@name='qty_delivered']" position="after">
+                <field name="ezy_shipped_serials" optional="show" />
+            </xpath>
+            <xpath expr="//field[@name='order_line']//form//div[@name='delivered_qty']" position="after">
+                <field name="ezy_shipped_serials" />
+            </xpath>
             <xpath expr="//sheet" position="before">
                 <div class="alert alert-warning" role="alert" attrs="{'invisible': [('ezy_total_differs', '=', False)]}">
                     The shop collected

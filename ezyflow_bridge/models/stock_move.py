@@ -1,5 +1,6 @@
 # Part of the EzyFlow connector for Odoo. See LICENSE in the repository root.
-from odoo import api, models
+from odoo import api, fields, models
+from odoo.exceptions import AccessError
 
 # The line content the WMS owns while a transfer is frozen (behaviour 6).
 # Housekeeping Odoo writes on behalf of a person working the transfer header
@@ -32,6 +33,19 @@ class StockMove(models.Model):
 
     _inherit = "stock.move"
 
+    # Information the warehouse gave about the units it shipped, whatever the
+    # product's traceability: no lot, no quant, written by the connector only.
+    # Outside GUARDED_MOVE_FIELDS: the freeze is not involved, and the
+    # connector writes it on a done move too.
+    ezy_shipped_serials = fields.Text(
+        string="Shipped serial numbers",
+        copy=False,
+        help="The serial numbers the warehouse recorded on the units of this line as they "
+        "shipped, one per line, written by the EzyFlow connector from the warehouse's "
+        "shipped report. Information only: Odoo keeps no stock by them and the product's "
+        "traceability is unchanged.",
+    )
+
     def _action_assign(self, force_qty=False):
         movable = self._ezy_not_frozen()
         result = super(StockMove, movable)._action_assign(force_qty=force_qty)
@@ -60,11 +74,15 @@ class StockMove(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
+        if any(vals.get("ezy_shipped_serials") for vals in vals_list):
+            self._ezy_check_may_write_shipped_serials()
         picking_ids = {vals["picking_id"] for vals in vals_list if vals.get("picking_id")}
         self.env["stock.picking"].browse(picking_ids)._ezy_check_lines_may_change()
         return super().create(vals_list)
 
     def write(self, vals):
+        if "ezy_shipped_serials" in vals:
+            self._ezy_check_may_write_shipped_serials()
         if GUARDED_MOVE_FIELDS.intersection(vals):
             self.picking_id._ezy_check_lines_may_change()
         return super().write(vals)
@@ -72,6 +90,17 @@ class StockMove(models.Model):
     def unlink(self):
         self.picking_id._ezy_check_lines_may_change()
         return super().unlink()
+
+    def _ezy_check_may_write_shipped_serials(self):
+        """Only the connector user, administrators and the superuser write the
+        shipped serial numbers; the picking's test reads the environment only."""
+        if not self.env["stock.picking"]._ezy_user_drives_wms():
+            raise AccessError(
+                self.env._(
+                    "Only the EzyFlow connector writes the shipped serial numbers of a "
+                    "transfer line."
+                )
+            )
 
     def _ezy_frozen(self):
         return self.filtered(lambda move: move.picking_id.ezy_is_frozen)

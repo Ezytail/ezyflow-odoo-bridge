@@ -11,6 +11,14 @@
                 <field name="ezy_shop_total" />
                 <field name="ezy_total_differs" invisible="1" />
             </xpath>
+            <!-- The shipped serial numbers of the line's done deliveries
+                 (behaviour 17), a computed read-only field. -->
+            <xpath expr="//field[@name='order_line']//list//field[@name='qty_delivered']" position="after">
+                <field name="ezy_shipped_serials" optional="show" />
+            </xpath>
+            <xpath expr="//field[@name='order_line']//form//div[@name='delivered_qty']" position="after">
+                <field name="ezy_shipped_serials" />
+            </xpath>
             <!-- Behaviour 12: the shop total differs from Odoo's; a person checks
                  the taxes and the fiscal position, the order stands. The two
                  fields below are shown a second time on purpose, read-only: the

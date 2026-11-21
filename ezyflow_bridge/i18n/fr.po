@@ -559,6 +559,16 @@ msgid "Offer to logistics"
 msgstr "Proposer à la logistique"
 
 #. module: ezyflow_bridge
+#. odoo-python
+#: code:addons/ezyflow_bridge/models/stock_move.py:0
+msgid ""
+"Only the EzyFlow connector writes the shipped serial numbers of a transfer "
+"line."
+msgstr ""
+"Seul le connecteur EzyFlow écrit les numéros de série expédiés d'une ligne "
+"de transfert."
+
+#. module: ezyflow_bridge
 #: model_terms:ir.ui.view,arch_db:ezyflow_bridge.res_config_settings_view_form_ezyflow
 msgid "Open the EzyFlow bridge help"
 msgstr "Ouvrir l'aide EzyFlow bridge"
@@ -891,6 +901,12 @@ msgid "Sequence"
 msgstr "Séquence"
 
 #. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_product_product__ezy_warehouse_serials
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_product_template__ezy_warehouse_serials
+msgid "Serial numbers captured by the warehouse"
+msgstr "Numéros de série relevés par l'entrepôt"
+
+#. module: ezyflow_bridge
 #: model:ir.model.fields,help:ezyflow_bridge.field_res_partner__ezy_company_partner
 #: model:ir.model.fields,help:ezyflow_bridge.field_res_users__ezy_company_partner
 msgid ""
@@ -918,6 +934,12 @@ msgstr ""
 #: model:ir.model.fields.selection,name:ezyflow_bridge.selection__stock_picking__ezy_wms_state__shipped
 msgid "Shipped"
 msgstr "Expédié"
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_sale_order_line__ezy_shipped_serials
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_stock_move__ezy_shipped_serials
+msgid "Shipped serial numbers"
+msgstr "Numéros de série expédiés"
 
 #. module: ezyflow_bridge
 #: model:ir.model,name:ezyflow_bridge.model_delivery_carrier
@@ -1188,6 +1210,45 @@ msgstr ""
 "Le secret avec lequel les réveils sont signés, la valeur vers laquelle "
 "pointe l'odoo_wakeup_secret de la publication. Effacé, chaque réveil est "
 "refusé et le connecteur n'interroge Odoo qu'à son intervalle."
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_stock_move__ezy_shipped_serials
+msgid ""
+"The serial numbers the warehouse recorded on the units of this line as they "
+"shipped, one per line, written by the EzyFlow connector from the "
+"warehouse's shipped report. Information only: Odoo keeps no stock by them "
+"and the product's traceability is unchanged."
+msgstr ""
+"Les numéros de série que l'entrepôt a relevés sur les unités de cette ligne "
+"à leur expédition, un par ligne, écrits par le connecteur EzyFlow depuis le "
+"rapport d'expédition de l'entrepôt. Information seulement : Odoo ne tient "
+"aucun stock par ces numéros et la traçabilité du produit est inchangée."
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_sale_order_line__ezy_shipped_serials
+msgid ""
+"The serial numbers the warehouse shipped for this line, gathered from its "
+"done deliveries. Information only."
+msgstr ""
+"Les numéros de série que l'entrepôt a expédiés pour cette ligne, rassemblés "
+"depuis ses livraisons faites. Information seulement."
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_product_product__ezy_warehouse_serials
+#: model:ir.model.fields,help:ezyflow_bridge.field_product_template__ezy_warehouse_serials
+msgid ""
+"The warehouse records the serial number of each unit of this product it "
+"ships, and the delivery and the sales order line list them (Shipped serial "
+"numbers). This does not turn on Odoo's tracking: Odoo creates no serial "
+"number and keeps no stock by serial number for this product. Has no effect "
+"on a product Odoo tracks by lots or by serial numbers."
+msgstr ""
+"L'entrepôt relève le numéro de série de chaque unité de cet article qu'il "
+"expédie, et la livraison et la ligne de commande client les listent "
+"(Numéros de série expédiés). Cela n'active pas le suivi d'Odoo : Odoo ne "
+"crée aucun numéro de série et ne tient aucun stock par numéro de série pour "
+"cet article. Sans effet sur un article qu'Odoo suit par lots ou par numéros "
+"de série."
 
 #. module: ezyflow_bridge
 #: model_terms:ir.ui.view,arch_db:ezyflow_bridge.view_order_form_ezyflow

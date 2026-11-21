@@ -23,6 +23,7 @@ from . import (
     test_relay,
     test_rotation_date_type,
     test_series_security,
+    test_shipped_serials,
     test_shop_identity,
     test_shop_total,
     test_sms_warning,
@@ -30,6 +31,7 @@ from . import (
     test_stock_settings,
     test_template_identity,
     test_wakeup,
+    test_warehouse_serials,
     test_wms_settings,
     test_wms_state,
 )

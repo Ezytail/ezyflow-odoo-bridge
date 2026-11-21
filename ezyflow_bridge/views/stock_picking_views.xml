@@ -27,6 +27,11 @@
                     unreserves it, and only the EzyFlow connector may change its lines.
                 </div>
             </xpath>
+            <!-- The shipped serial numbers the connector writes (behaviour 17):
+                 information, read-only for everyone on screen. -->
+            <xpath expr="//page[@name='operations']//field[@name='quantity']" position="after">
+                <field name="ezy_shipped_serials" optional="show" readonly="1" />
+            </xpath>
             <xpath expr="//field[@name='picking_type_id']" position="after">
                 <field name="ezy_channel" readonly="state in ('cancel', 'done')" />
                 <field name="ezy_hold" readonly="state in ('cancel', 'done')" />

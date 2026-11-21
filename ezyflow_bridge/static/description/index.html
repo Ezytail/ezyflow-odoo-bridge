@@ -318,6 +318,13 @@
         picked or received are written on the transfer's lines by the connector, so the transfer says
         which lot went to which customer, and which came in.
     </p>
+    <p>
+        The <strong>Shipped serial numbers</strong> column of a delivery's <strong>Operations</strong>
+        tab lists the serial numbers the warehouse recorded on the units as they shipped, written by
+        the connector from the warehouse's shipped report, for every product whether or not Odoo
+        tracks it. They are information only: no lot is created, Odoo keeps no stock by them and the
+        product's traceability is unchanged. Only the connector and administrators may write them.
+    </p>
 
     <h3>2. Sales orders from a shop</h3>
     <p>
@@ -353,6 +360,11 @@
         email required at confirmation</strong> is on, the delivery address needs a phone and an
         email, because the carrier needs both: the confirmation is refused until they are filled.
     </p>
+    <p>
+        Once a delivery is done, the serial numbers the warehouse shipped also appear on each order
+        line, in the <strong>Shipped serial numbers</strong> column of the <strong>Order Lines</strong>
+        tab.
+    </p>
 
     <h3>3. Products</h3>
     <p>
@@ -382,6 +394,22 @@
         the field before turning tracking off. A change reaches the WMS at the connector's next
         pass over the products. Which WMS setting each combination gets is set up by the EzyFlow
         team; until it is, the WMS keeps its default.
+    </p>
+    <p>
+        <strong>Serial numbers captured by the warehouse.</strong> A product Odoo does not track
+        can still have its units identified by serial number in the warehouse: tick
+        <strong>Serial numbers captured by the warehouse</strong> on the General Information tab of
+        the product form. The warehouse is then asked to record the serial number of each unit it
+        ships, and identifies the product's units by serial number in its own operations; the
+        serial numbers show on the delivery and on the sales order line, in the
+        <strong>Shipped serial numbers</strong> column. This is not Odoo's tracking: Odoo creates no
+        lot or serial number and keeps no stock by serial number for the product. The box only
+        appears on a product Odoo does not track; on a product tracked by lots or by serial numbers,
+        Odoo's tracking applies. A change reaches the WMS at the connector's next pass over the
+        products. Two conditions before you tick it. The WMS must be set up to record serial
+        numbers for such products, which the EzyFlow team does first; until it is, nothing is
+        recorded. And tick the box before the product's goods reach the warehouse: a WMS may
+        refuse to change how it identifies a product that already has stock there.
     </p>
 
     <h3>4. Contacts</h3>

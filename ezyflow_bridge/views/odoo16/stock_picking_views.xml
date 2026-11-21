@@ -27,6 +27,9 @@
                     unreserves it, and only the EzyFlow connector may change its lines.
                 </div>
             </xpath>
+            <xpath expr="//page[@name='operations']//field[@name='quantity_done']" position="after">
+                <field name="ezy_shipped_serials" optional="show" readonly="1" />
+            </xpath>
             <xpath expr="//field[@name='picking_type_id']" position="after">
                 <field name="ezy_channel" attrs="{'readonly': [('state', 'in', ['cancel', 'done'])]}" />
                 <field name="ezy_hold" attrs="{'readonly': [('state', 'in', ['cancel', 'done'])]}" />

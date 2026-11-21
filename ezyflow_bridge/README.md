@@ -73,6 +73,16 @@ meet on Odoo's screens. Nothing of it is repeated here.
   of a quant, behaviour 15, and the daily cron that purges it. The connector
   group reads it; the inventory user rights it implies already read the move
   lines and transfers the stock level source reads next to it.
+- The shipped serial numbers of a transfer line (`ezy_shipped_serials` on the
+  move, since 3.19.0): the serial numbers the warehouse recorded on the units
+  as they shipped, one per line, information only, whatever the product's
+  traceability; computed per sales order line from its done deliveries, and
+  shown as an optional column on both, behaviour 17.
+- The warehouse's serial numbers (`ezy_warehouse_serials` on the product
+  template, since 3.19.0): a checkbox, off by default, on the General
+  Information tab of the product form, shown only on a product Odoo does not
+  track; checked, the connector asks the warehouse to capture the serial number
+  of each unit shipped, without Odoo tracking, behaviour 18.
 - The behaviours behind those fields, listed below.
 - The **EzyFlow** page of the Settings, with its own icon
   (`static/description/icon.png`), and the bridge help page
@@ -257,6 +267,19 @@ meet on Odoo's screens. Nothing of it is repeated here.
     partner form to administrators, who may tick it on a company a person
     created; the connector finds a company partner by it or by **Is a
     Company**. Odoo's own flag is never written by anyone else.
+17. Shipped serial numbers (added in 3.19.0). Only the connector user,
+    administrators and the superuser write `ezy_shipped_serials` on a
+    transfer line, on an open or a done transfer alike; anyone else's write is
+    refused. The freeze is not involved, no lot or quant follows from it, and
+    a copy of the transfer does not carry it.
+18. Serial numbers captured by the warehouse (added in 3.19.0).
+    `ezy_warehouse_serials`, a boolean on the product template, off by
+    default, refused nowhere: tracking may be turned on afterwards and the
+    value stays, the connector ignores it on a product tracked by lots or by
+    serial numbers. Shown on the General Information tab of the product form,
+    outside the Lots & Serial Numbers setting, hidden once Odoo tracks the
+    product. A change moves the variants' write date on 16, like the other
+    template fields the product source publishes.
 
 ## Conventions
 

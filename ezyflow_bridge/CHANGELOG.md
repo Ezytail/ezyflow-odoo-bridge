@@ -18,6 +18,41 @@ Which bridge version each service release was built with, the pairing, is kept
 in the connector repository and no longer in this
 file.
 
+## 3.19.0
+
+A transfer line carries **Shipped serial numbers**: the serial numbers the
+warehouse recorded on the units as they shipped, written by the connector from
+the warehouse's shipped report, for every product whether or not Odoo tracks
+it. They are information only: no lot is created, no stock is kept by them and
+the product's traceability is unchanged. The same serial numbers appear on
+each sales order line once its delivery is done. A product Odoo does not
+track carries **Serial numbers captured by the warehouse**, a box that asks
+the warehouse to record the serial number of each unit of it shipped, without
+turning on Odoo's tracking.
+
+- `stock.move`: `ezy_shipped_serials`, a text field, one serial number per
+  line, not copied on duplicate, written only by the connector user,
+  administrators and the superuser, on an open or a done transfer; anyone
+  else's write is refused.
+- `sale.order.line`: `ezy_shipped_serials`, computed and read-only, the serial
+  numbers of the line's done deliveries, without duplicates, in order.
+- An optional read-only column **Shipped serial numbers** in the transfer's
+  Operations tab and in the sales order's Order Lines tab, and the field in
+  the order line's form.
+- `product.template`: `ezy_warehouse_serials`, a checkbox, off by default, on
+  the General Information tab of the product form, shown only on a product
+  Odoo does not track by lots or by serial numbers; the connector ignores it
+  on a tracked product. Odoo's tracking is not changed and no lot is created.
+- No new right, no migration. A minor: the connector writes the field from this
+  version on and writes nothing on an older bridge.
+
+**For the administrator:** Optional. No migration. A restart is not needed
+beyond the module upgrade. After the upgrade, open a delivery the warehouse
+shipped after the upgrade and check the **Shipped serial numbers** column of
+its Operations tab, and open the form of a product Odoo does not track and
+check that **Serial numbers captured by the warehouse** shows on its General
+Information tab.
+
 ## 3.18.1
 
 The help page has a section on manufacturing: when a warehouse's
