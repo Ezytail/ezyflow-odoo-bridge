@@ -1,8 +1,11 @@
 # Part of the EzyFlow connector for Odoo. See LICENSE in the repository root.
+import base64
+
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
-from .compat import has_read_access
+from .compat import binary_content, has_read_access
+from .picture import publishable_picture
 from .wms_constraints import (
     BARCODE_LIMIT,
     BARCODE_PATTERN,
@@ -47,10 +50,43 @@ class ProductProduct(models.Model):
         "and the connector compare SKUs by.",
     )
 
+    # The picture the connector publishes for the variant (CONTEXT.md, "Variant
+    # picture"): computed on each read, never stored, so it follows the images
+    # Odoo holds without a copy of its own. The connector group alone reads it:
+    # a read of every field by anyone else (an export, another integration)
+    # does not run the conversion.
+    ezy_picture = fields.Binary(
+        string="Published picture",
+        compute="_compute_ezy_picture",
+        attachment=False,
+        groups="ezyflow_bridge.group_ezyflow_connector",
+        help="The picture the connector publishes for this variant: its own image, else its "
+        "product's, at 256 pixels, as a JPEG or a PNG of at most 256 KB.",
+    )
+    ezy_picture_withheld = fields.Boolean(
+        string="Picture withheld",
+        compute="_compute_ezy_picture",
+        groups="ezyflow_bridge.group_ezyflow_connector",
+        help="This variant has a picture the connector cannot publish: Odoo cannot convert it "
+        "to a JPEG or a PNG of at most 256 KB. The warehouse and the shops keep the picture they "
+        "last received.",
+    )
+
     @api.depends("default_code")
     def _compute_ezy_sku_key(self):
         for product in self:
             product.ezy_sku_key = sku_key(product.default_code)
+
+    @api.depends("image_variant_256", "product_tmpl_id.image_256")
+    def _compute_ezy_picture(self):
+        # image_256 is Odoo's rendition: the variant's own image, else its
+        # template's, on every series. bin_size would give its size instead.
+        for product in self:
+            content, withheld = publishable_picture(
+                binary_content(product.with_context(bin_size=False).image_256)
+            )
+            product.ezy_picture = base64.b64encode(content).decode() if content else False
+            product.ezy_picture_withheld = withheld
 
     # The shape of a reference is judged before whether another product holds it.
     @api.constrains("default_code")

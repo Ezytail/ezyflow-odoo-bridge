@@ -83,6 +83,10 @@ meet on Odoo's screens. Nothing of it is repeated here.
   Information tab of the product form, shown only on a product Odoo does not
   track; checked, the connector asks the warehouse to capture the serial number
   of each unit shipped, without Odoo tracking, behaviour 18.
+- The variant's published picture (`ezy_picture` and `ezy_picture_withheld`
+  on the variant, since 3.20.0): the picture the connector publishes, Odoo's
+  256-pixel rendition brought to a JPEG or a PNG of at most 256 KB, computed
+  on each read, never stored, behaviour 19.
 - The behaviours behind those fields, listed below.
 - The **EzyFlow** page of the Settings, with its own icon
   (`static/description/icon.png`), and the bridge help page
@@ -280,6 +284,18 @@ meet on Odoo's screens. Nothing of it is repeated here.
     outside the Lots & Serial Numbers setting, hidden once Odoo tracks the
     product. A change moves the variants' write date on 16, like the other
     template fields the product source publishes.
+19. Published picture (added in 3.20.0). `ezy_picture` on the variant is
+    `image_256`, the variant's own image else its template's on every
+    series, as it is when it is a JPEG or a PNG of at most 256 KB; anything
+    else Pillow reads (a WEBP, which Odoo keeps as uploaded from 18, a GIF) is
+    fitted in 256 pixels and written as a PNG, else a JPEG at quality 85,
+    the first within 256 KB (`models/picture.py`). Nothing readable (an SVG)
+    a picture above Odoo's 50-megapixel upload limit (never decoded), or
+    nothing within 256 KB leaves it empty and sets `ezy_picture_withheld`;
+    no image at all leaves both empty. Both are computed on each read, never
+    stored, read-only, readable by the connector group only. A change of the template's image moves the variants'
+    write date on 16 like the other template fields above; 18 and later do it
+    themselves, and a variant's own image moves its own.
 
 ## Conventions
 

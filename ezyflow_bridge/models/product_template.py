@@ -128,6 +128,7 @@ class ProductTemplate(models.Model):
             "hs_code",
             "country_of_origin",
             "list_price",
+            "image_1920",
         }
     )
 

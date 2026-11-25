@@ -448,6 +448,16 @@
         l'entrepôt : un WMS peut refuser de changer la façon dont il identifie un produit qui y a
         déjà du stock.
     </p>
+    <p>
+        <strong>Image.</strong> L'image d'un produit arrive à l'entrepôt et aux boutiques avec le
+        produit : l'image propre de la variante, sinon celle du produit, réduite à 256 pixels. Une
+        image JPEG ou PNG est envoyée telle quelle ; une image WEBP ou GIF est d'abord convertie. Une
+        image qu'Odoo ne sait pas convertir (un SVG), ou qui reste au-dessus de 256 Ko, n'est pas
+        envoyée : l'entrepôt et les boutiques gardent l'image qu'ils avaient. Retirez l'image et le
+        produit est envoyé comme n'en ayant aucune. Une nouvelle image leur arrive au prochain
+        passage du connecteur sur les produits. Une image tenue par la boutique ne revient jamais
+        dans Odoo.
+    </p>
 
     <h3>4. Contacts</h3>
     <p>

@@ -7,6 +7,7 @@ from . import (
     ir_module_module,
     ir_sequence,
     mail_thread,
+    picture,
     product_product,
     product_template,
     purchase_order,

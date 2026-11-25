@@ -411,6 +411,15 @@
         recorded. And tick the box before the product's goods reach the warehouse: a WMS may
         refuse to change how it identifies a product that already has stock there.
     </p>
+    <p>
+        <strong>Picture.</strong> The picture of a product reaches the warehouse and the shops with
+        the product: the variant's own image, else the product's, reduced to 256 pixels. An image in
+        JPEG or PNG is sent as it is; a WEBP or a GIF is converted first. An image Odoo cannot
+        convert (an SVG), or one that stays above 256 KB, is not sent: the warehouse and the shops
+        keep the picture they had. Remove the image and the product is sent as having none.
+        A new image reaches them at the connector's next pass over the products. A picture the shop
+        holds never comes back into Odoo.
+    </p>
 
     <h3>4. Contacts</h3>
     <p>

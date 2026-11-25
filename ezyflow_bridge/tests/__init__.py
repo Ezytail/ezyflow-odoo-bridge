@@ -30,6 +30,7 @@ from . import (
     test_stock_journal,
     test_stock_settings,
     test_template_identity,
+    test_variant_picture,
     test_wakeup,
     test_warehouse_serials,
     test_wms_settings,

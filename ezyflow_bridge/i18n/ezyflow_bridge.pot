@@ -16,6 +16,31 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_product_product__ezy_picture_withheld
+msgid "Picture withheld"
+msgstr ""
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,field_description:ezyflow_bridge.field_product_product__ezy_picture
+msgid "Published picture"
+msgstr ""
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_product_product__ezy_picture
+msgid ""
+"The picture the connector publishes for this variant: its own image, else "
+"its product's, at 256 pixels, as a JPEG or a PNG of at most 256 KB."
+msgstr ""
+
+#. module: ezyflow_bridge
+#: model:ir.model.fields,help:ezyflow_bridge.field_product_product__ezy_picture_withheld
+msgid ""
+"This variant has a picture the connector cannot publish: Odoo cannot convert"
+" it to a JPEG or a PNG of at most 256 KB. The warehouse and the shops keep "
+"the picture they last received."
+msgstr ""
+
+#. module: ezyflow_bridge
 #: model:res.groups,comment:ezyflow_bridge.group_ezyflow_connector
 msgid ""
 "\n"

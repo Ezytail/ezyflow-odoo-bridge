@@ -8,7 +8,10 @@ place so the models are written to the 17-and-later API on every series:
   Odoo's term extraction sees the same calls on every series.
 - ``has_access`` and ``check_access`` exist from 18; below, the two checks
   of 16 and 17 answer (``has_read_access``, ``check_read_access``).
+- A binary field's value is a ``BinaryValue`` from 20 and base64 bytes
+  below; ``binary_content`` gives its raw bytes on every series.
 """
+import base64
 import inspect
 
 from odoo import api, modules
@@ -64,3 +67,14 @@ def check_read_access(records):
         return
     records.check_access_rights("read")
     records.check_access_rule("read")
+
+
+def binary_content(value):
+    """The raw bytes of a binary field's value: the content of 20's
+    ``BinaryValue``, the decoded base64 below; empty when the field is."""
+    if not value:
+        return b""
+    content = getattr(value, "content", None)
+    if content is not None:
+        return content
+    return base64.b64decode(value)

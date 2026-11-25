@@ -18,6 +18,33 @@ Which bridge version each service release was built with, the pairing, is kept
 in the connector repository and no longer in this
 file.
 
+## 3.20.0
+
+A product variant carries the **Published picture**: the picture the
+connector sends to the warehouse and the shops with the product, the
+variant's own image, else its product's, at 256 pixels, as a JPEG or a PNG of
+at most 256 KB. An image uploaded in another format (WEBP, GIF) is converted;
+one Odoo cannot read (SVG), larger than the 50 megapixels Odoo accepts on
+upload, or that stays above 256 KB, is not sent, and the warehouse and the
+shops keep the picture they last received. A product without an image is sent as having
+none. Changing the image of a product, not only of a variant, now marks its
+variants changed on Odoo 16 as on the later series, so the new picture is
+sent.
+
+- `product.product`: `ezy_picture`, a binary field, and
+  `ezy_picture_withheld`, a checkbox, both computed on each read, never
+  stored, read-only, readable by the EzyFlow connector group only, so no other
+  reader of the products pays for the conversion.
+- `product.template`: a change of the image marks the variants changed on
+  Odoo 16 (18 and later do it themselves).
+- No view, no new right, no migration. A minor: the connector reads the
+  fields from this version on and sends no picture from an older bridge.
+
+**For the administrator:** Optional. No migration. A restart is not needed
+beyond the module upgrade. After the upgrade, a product's picture reaches the
+warehouse and the shops the next time the product or its variant is saved;
+nothing is sent again for products that do not change.
+
 ## 3.19.0
 
 A transfer line carries **Shipped serial numbers**: the serial numbers the
